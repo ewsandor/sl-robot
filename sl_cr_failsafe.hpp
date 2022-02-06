@@ -15,7 +15,7 @@ typedef enum
   SL_CR_FAILSAFE_SBUS_MAX
 } sl_cr_failsafe_reason_e;
 
-typedef uint16_t sl_cr_failsafe_mask_t;
+typedef unsigned int sl_cr_failsafe_mask_t;
 
 /* Sets failsafe reason as active */
 void sl_cr_set_failsafe_mask(sl_cr_failsafe_reason_e reason);
