@@ -27,6 +27,10 @@ sl_cr_motor_driver_speed_t sl_cr_motor_driver_c::get_min_speed()
 {
   return min_speed;
 }
+sl_cr_motor_driver_speed_t sl_cr_motor_driver_c::get_neutral_speed()
+{
+  return ((min_speed+max_speed)/2);
+}
 sl_cr_motor_driver_speed_t sl_cr_motor_driver_c::get_max_speed()
 {
   return max_speed;

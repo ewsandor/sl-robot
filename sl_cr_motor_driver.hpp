@@ -1,7 +1,7 @@
 #ifndef __SL_CR_MOTOR_DRIVER_HPP__
 #define __SL_CR_MOTOR_DRIVER_HPP__
 
-typedef bool (*sl_cr_failsafe_f)(void);
+#include "sl_cr_types.hpp"
 
 #define SL_CR_MOTOR_DRIVER_DEFAULT_MAX_SPEED 1024
 #define SL_CR_MOTOR_DRIVER_DEFAULT_MIN_SPEED (-SL_CR_MOTOR_DRIVER_DEFAULT_MAX_SPEED)
@@ -12,8 +12,8 @@ typedef enum
 {
   /* Disabled due to emergency stop */
   SL_CR_MOTOR_DISABLE_ESTOP,
-  /* Disabled at request of external controller */
-  SL_CR_MOTOR_DISABLE_EXTERNAL,
+  /* Disabled at request of drive strategy */
+  SL_CR_MOTOR_DISABLE_DRIVE_STRATEGY,
   /* Disabled to to motor fault */
   SL_CR_MOTOR_DISABLE_FAULT,
 } sl_cr_motor_disable_reason_e;
@@ -46,6 +46,7 @@ class sl_cr_motor_driver_c
     sl_cr_motor_driver_c(sl_cr_failsafe_f);
 
     sl_cr_motor_driver_speed_t get_min_speed();
+    sl_cr_motor_driver_speed_t get_neutral_speed();
     sl_cr_motor_driver_speed_t get_max_speed();
 
     void disable(sl_cr_motor_disable_reason_e);

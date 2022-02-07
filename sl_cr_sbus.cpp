@@ -48,9 +48,9 @@ void sl_cr_sbus_loop()
 
 }
 
-sl_cr_sbus_ch_value_t sl_cr_sbus_get_ch_value(sl_cr_sbus_ch_t channel)
+sl_cr_rc_channel_value_t sl_cr_sbus_get_ch_value(sl_cr_rc_channel_t channel)
 {
-  sl_cr_sbus_ch_value_t value = SL_CR_SBUS_CH_INVALID_VALUE;
+  sl_cr_rc_channel_value_t value = SL_CR_RC_CH_INVALID_VALUE;
 
   if(!sl_cr_get_failsafe_set(SL_CR_FAILSAFE_SBUS_STALE) &&
      SL_CR_CH_TO_ARRAY_INDEX(channel) < bfs::SbusRx::NUM_CH())
