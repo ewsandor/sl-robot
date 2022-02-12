@@ -49,11 +49,17 @@ class sl_cr_motor_driver_c
     sl_cr_motor_driver_speed_t get_neutral_speed();
     sl_cr_motor_driver_speed_t get_max_speed();
 
+    /* Disable motor for given reason */
     void disable(sl_cr_motor_disable_reason_e);
+    /* Enable motor for given reason */
     void enable(sl_cr_motor_disable_reason_e);
+    /* Checks if motor is currently disabled for any reason */
     bool disabled();
 
+    /* Sets motor to a given speed */
     void set_speed(sl_cr_motor_driver_speed_t);
+    /* Sets motor to brake */
+    void brake_motor();
 
     void loop();
 };

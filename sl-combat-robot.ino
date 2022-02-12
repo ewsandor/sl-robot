@@ -1,3 +1,5 @@
+#include <arduino.h>
+
 #include "sl_cr_types.hpp"
 #include "sl_cr_failsafe.hpp"
 #include "sl_cr_sbus.hpp"
@@ -19,6 +21,8 @@ void setup() {
 }
 
 void loop() {
+  /* Read any new SBUS data */
   sl_cr_sbus_loop();
+  /* Check if ARM switch is set */
   sl_cr_failsafe_armswitch_loop();
 }

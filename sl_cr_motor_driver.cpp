@@ -55,6 +55,11 @@ void sl_cr_motor_driver_c::set_speed(sl_cr_motor_driver_speed_t new_speed)
   speed = new_speed;
 }
 
+void sl_cr_motor_driver_c::brake_motor()
+{
+  set_speed(get_neutral_speed());
+}
+
 void sl_cr_motor_driver_c::disable(sl_cr_motor_disable_reason_e reason)
 {
   disable_mask |= SL_CR_DISABLE_BIT(reason);
