@@ -53,7 +53,7 @@ void sl_cr_tank_drive_c::set_motor_speed(sl_cr_rc_channel_value_t rc_value, sl_c
   else
   {
     if((rc_value < (SL_CR_RC_CH_CENTER_VALUE+deadzone)) &&
-       (rc_value > (SL_CR_RC_CH_CENTER_VALUE>deadzone)))
+       (rc_value > (SL_CR_RC_CH_CENTER_VALUE-deadzone)))
     {
       /* Input is within deadzone, set motor to neutral */
       motor->brake_motor();

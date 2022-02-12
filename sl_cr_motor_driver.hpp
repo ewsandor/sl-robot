@@ -38,8 +38,8 @@ class sl_cr_motor_driver_c
     /* Active Parameters */
     sl_cr_motor_driver_speed_t speed;
 
-    virtual void disable_motor();
-    virtual void command_motor();
+    virtual void disable_motor() = 0;
+    virtual void command_motor() = 0;
 
   public:
     sl_cr_motor_driver_c();

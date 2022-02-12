@@ -1,5 +1,5 @@
-#include "string.h"
-#include "arduino.h"
+#include <arduino.h>
+#include <string.h>
 
 #include "sl_cr_motor_driver_virtual.hpp"
 
@@ -22,6 +22,7 @@ void sl_cr_motor_driver_virtual_c::command_motor()
 
   if(!active)
   {
+    strlcpy(output_string, this->name, sizeof(output_string));
     strlcat(output_string, " activated.", sizeof(output_string));
     Serial.println(output_string);
   }
@@ -31,7 +32,6 @@ void sl_cr_motor_driver_virtual_c::command_motor()
   {
     strlcpy(output_string, this->name, sizeof(output_string));
     strlcat(output_string, " braking.", sizeof(output_string));
-    Serial.println(output_string);
   }
   else if (speed > get_neutral_speed())
   {
@@ -63,7 +63,9 @@ void sl_cr_motor_driver_virtual_c::command_motor()
     strlcat(output_string, ". ", sizeof(output_string));
    }
   
+  /* Output and short delay */
   Serial.println(output_string);
+  delay(50);
 }
 
 sl_cr_motor_driver_virtual_c::sl_cr_motor_driver_virtual_c(const char* name, sl_cr_failsafe_f failsafe)

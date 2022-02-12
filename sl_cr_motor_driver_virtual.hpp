@@ -5,7 +5,7 @@
 
 #define SL_CR_MOTOR_DRIVER_VIRTUAL_MAX_CHARS 1024
 
-class sl_cr_motor_driver_virtual_c : sl_cr_motor_driver_c
+class sl_cr_motor_driver_virtual_c : public sl_cr_motor_driver_c
 {
   private:
     /* Name of this virtual motor */
@@ -13,8 +13,8 @@ class sl_cr_motor_driver_virtual_c : sl_cr_motor_driver_c
     /* Tracks if this motor is active */
     bool active;
 
-    void disable_motor();
-    void command_motor();
+    virtual void disable_motor();
+    virtual void command_motor();
 
   public:
     sl_cr_motor_driver_virtual_c(const char*, sl_cr_failsafe_f);
