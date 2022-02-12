@@ -6,3 +6,4 @@ This is my core software for any combat robot.  Currently, it assumed to run on 
 
 ## Dependencies:
 - SBUS Library: https://github.com/bolderflight/sbus
+- Teensy 4 Watchdog Timer Library: https://github.com/tonton81/WDT_T4

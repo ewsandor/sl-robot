@@ -65,7 +65,7 @@ void sl_cr_motor_driver_virtual_c::command_motor()
   
   /* Output and short delay */
   Serial.println(output_string);
-  delay(50);
+  delay(20);
 }
 
 sl_cr_motor_driver_virtual_c::sl_cr_motor_driver_virtual_c(const char* name, sl_cr_failsafe_f failsafe)
