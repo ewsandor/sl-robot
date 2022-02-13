@@ -1,10 +1,18 @@
 #ifndef __SL_CR_TYPES_HPP__
 #define __SL_CR_TYPES_HPP__
 
+#include "stdint.h"
+
 /* Time type (ms) */
 typedef unsigned long sl_cr_time_t;
 
+/* Failsafe function pointer */
 typedef bool (*sl_cr_failsafe_f)(void);
+
+/* Pin assignments */
+typedef uint8_t sl_cr_pin_t;
+#define SL_CR_PIN_INVALID     0xFF
+#define SL_CR_PIN_ONBOARD_LED 13
 
 /* RC Channel Index, starts from 1 */
 typedef unsigned int sl_cr_rc_channel_t;

@@ -1,4 +1,4 @@
-#include <arduino.h>
+#include <Arduino.h>
 #include <Watchdog_t4.h>
 
 #include "sl_cr_failsafe.hpp"
@@ -10,8 +10,6 @@
 sl_cr_motor_driver_c *left_motor;
 sl_cr_motor_driver_c *right_motor;
 sl_cr_tank_drive_c   *tank_drive;
-
-#define LED_PIN 13
 
 sl_cr_time_t watchdog_fed;
 
@@ -36,8 +34,8 @@ void setup() {
   /* Start of Bootup */
   Serial.println("######## BOOTUP START ########");
   /* Enable Bootup LED */
-  pinMode(LED_PIN, OUTPUT);
-  digitalWrite(LED_PIN, HIGH);
+  pinMode(SL_CR_PIN_ONBOARD_LED, OUTPUT);
+  digitalWrite(SL_CR_PIN_ONBOARD_LED, HIGH);
 
   /* Serial for debug logging */
   Serial.begin(115200);
@@ -58,7 +56,7 @@ void setup() {
   /* Bootup Complete */
   Serial.println("######### BOOTUP END #########");
   /* Clear Bootup LED */
-  digitalWrite(LED_PIN, LOW);
+  digitalWrite(SL_CR_PIN_ONBOARD_LED, LOW);
   /* Clear Bootup failsafe */
   sl_cr_clear_failsafe_mask(SL_CR_FAILSAFE_BOOT);
 }
@@ -66,7 +64,7 @@ void setup() {
 void loop() {
   if(millis() - watchdog_fed > 1)
   {
-    /* Feed the watchdog, feeding too frequently triggers reset due to minimum udpate window*/
+    /* Feed the watchdog, feeding too frequently triggers reset due to minimum update window*/
     wdt.feed();
     watchdog_fed = millis();
   }

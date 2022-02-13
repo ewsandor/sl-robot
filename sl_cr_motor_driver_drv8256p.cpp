@@ -1,0 +1,83 @@
+#include <Arduino.h>
+
+#include "sl_cr_motor_driver_drv8256p.hpp"
+
+void sl_cr_motor_driver_drv8256p_c::disable_motor()
+{
+  /* Put driver in sleep mode (active low) */
+  digitalWrite(sleep_bar, LOW);
+  /* Stop PWM pulses */
+  analogWrite(in1, 0);
+  analogWrite(in2, 0);
+}
+
+void sl_cr_motor_driver_drv8256p_c::command_motor()
+{
+  if(get_neutral_speed() == speed)
+  {
+    // in1: 0 in2: 0;  out1: L out2: L;  effect: brake low (outputs shorted to ground)
+    analogWrite(in1, 0);
+    analogWrite(in2, 0);
+  }
+  else if (speed > get_neutral_speed())
+  {
+    /* Positive direction */
+    const int positive_range = get_max_speed()-get_neutral_speed();
+    int pwm_value = ((speed-get_neutral_speed())*SL_CR_MOTOR_DRIVER_DRV8256_PWM_MAX_VALUE)/positive_range;
+
+    // in1: PWM in2: 0;  out1: PWM (H/L) out2: L;  effect: forward/brake at speed PWM %
+    analogWrite(in1, pwm_value);
+    analogWrite(in2, 0);
+  }
+  else
+  {
+    const int negative_range = get_neutral_speed()-get_min_speed();
+    int pwm_value = ((get_neutral_speed()-speed)*SL_CR_MOTOR_DRIVER_DRV8256_PWM_MAX_VALUE)/negative_range;
+
+    // in1: 0 in2: PWM;  out1: L out2: PWM (H/L);  effect: reverse/brake at speed PWM %
+    analogWrite(in1, 0);
+    analogWrite(in2, pwm_value);
+  }
+
+  /* Wakeup driver (active low) */
+  digitalWrite(sleep_bar, HIGH);
+}
+
+sl_cr_motor_driver_drv8256p_c::sl_cr_motor_driver_drv8256p_c(sl_cr_pin_t sleep_bar, sl_cr_pin_t in1, sl_cr_pin_t in2, sl_cr_pin_t fault_bar, sl_cr_failsafe_f failsafe)
+  : sl_cr_motor_driver_c(failsafe)
+{
+  this->sleep_bar = sleep_bar;
+  this->in1       = in1;
+  this->in2       = in2;
+  this->fault_bar = fault_bar;
+
+  /* Initialize output pins */
+  pinMode(this->sleep_bar, OUTPUT);
+  pinMode(this->in1, OUTPUT);
+  pinMode(this->in2, OUTPUT);
+  disable_motor();
+
+  if(this->fault_bar != SL_CR_PIN_INVALID)
+  {
+    pinMode(this->fault_bar, INPUT_PULLUP);
+  }
+}
+
+sl_cr_motor_driver_drv8256p_c::sl_cr_motor_driver_drv8256p_c(sl_cr_pin_t sleep_bar, sl_cr_pin_t in1, sl_cr_pin_t in2, sl_cr_failsafe_f failsafe)
+{
+  sl_cr_motor_driver_drv8256p_c(sleep_bar, in1, in2, SL_CR_PIN_INVALID, failsafe);
+}
+
+sl_cr_motor_driver_fault_status_e sl_cr_motor_driver_drv8256p_c::get_fault_status()
+{
+  sl_cr_motor_driver_fault_status_e ret_val = SL_CR_MOTOR_DRIVER_FAULT_STATUS_UNKNOWN;
+
+  if((fault_bar != SL_CR_PIN_INVALID) && 
+     (digitalRead(fault_bar) == 0))
+  {
+    /* Fault pin is configured and low (active low) */
+    ret_val = SL_CR_MOTOR_DRIVER_FAULT_STATUS_FAULT;
+  }
+
+  return ret_val;
+}

@@ -14,9 +14,31 @@ typedef enum
   SL_CR_MOTOR_DISABLE_ESTOP,
   /* Disabled at request of drive strategy */
   SL_CR_MOTOR_DISABLE_DRIVE_STRATEGY,
-  /* Disabled to to motor fault */
+  /* Disabled due to a motor driver fault */
   SL_CR_MOTOR_DISABLE_FAULT,
 } sl_cr_motor_disable_reason_e;
+
+typedef enum
+{
+  /* Motor driver is operational with no faults */
+  SL_CR_MOTOR_DRIVER_FAULT_STATUS_NONE,
+  /* Motor driver in a faulty state for a generic reason */
+  SL_CR_MOTOR_DRIVER_FAULT_STATUS_FAULT,
+  /* Motor driver in a faulty state for over-current protection */
+  SL_CR_MOTOR_DRIVER_FAULT_STATUS_OVERCURRENT,
+  /* Motor driver in a faulty state for over-voltage protection */
+  SL_CR_MOTOR_DRIVER_FAULT_STATUS_OVERVOLTAGE,
+  /* Motor driver in a faulty state for over-temperature protection */
+  SL_CR_MOTOR_DRIVER_FAULT_STATUS_OVERTEMP,
+  /* Motor driver fault status unknown */
+  SL_CR_MOTOR_DRIVER_FAULT_STATUS_UNKNOWN,
+
+} sl_cr_motor_driver_fault_status_e;
+
+/* Boolean check if motor driver is in faulty state */
+#define SL_CR_MOTOR_DRIVER_FAULTY(fault_status) \
+  ( (SL_CR_MOTOR_DRIVER_FAULT_STATUS_NONE    != fault_status) && \
+    (SL_CR_MOTOR_DRIVER_FAULT_STATUS_UNKNOWN != fault_status) )
 
 typedef unsigned int sl_cr_motor_disable_mask_t;
 
@@ -60,6 +82,8 @@ class sl_cr_motor_driver_c
     void set_speed(sl_cr_motor_driver_speed_t);
     /* Sets motor to brake */
     void brake_motor();
+
+    virtual sl_cr_motor_driver_fault_status_e get_fault_status();
 
     void loop();
 };
