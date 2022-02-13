@@ -13,6 +13,8 @@ sl_cr_tank_drive_c   *tank_drive;
 
 sl_cr_time_t watchdog_fed;
 
+//#define _SERIAL_DEBUG_MODE_
+
 WDT_T4<WDT3> wdt;
 void wdt_callback() {
   Serial.println("WATCHDOG ABOUT TO EXPIRE...");
@@ -38,8 +40,10 @@ void setup() {
   digitalWrite(SL_CR_PIN_ONBOARD_LED, HIGH);
 
   /* Serial for debug logging */
+  #ifdef _SERIAL_DEBUG_MODE_
   Serial.begin(115200);
   while (!Serial) {}
+  #endif
   Serial.print("Failsafe mask: 0x");
   Serial.println(sl_cr_get_failsafe_mask(), HEX);
 
