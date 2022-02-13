@@ -1,4 +1,4 @@
-#include <arduino.h>
+#include <Arduino.h>
 #include <string.h>
 
 #include "sl_cr_motor_driver_virtual.hpp"

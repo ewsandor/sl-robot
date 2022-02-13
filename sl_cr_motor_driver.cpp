@@ -82,6 +82,11 @@ bool sl_cr_motor_driver_c::disabled()
   return ret_val;
 }
 
+sl_cr_motor_driver_fault_status_e sl_cr_motor_driver_c::get_fault_status()
+{
+  return SL_CR_MOTOR_DRIVER_FAULT_STATUS_UNKNOWN;
+}
+
 void sl_cr_motor_driver_c::loop()
 {
   if(disabled())
