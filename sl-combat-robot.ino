@@ -1,8 +1,15 @@
 #include <Arduino.h>
 #include <Watchdog_t4.h>
 
+//#define _SERIAL_DEBUG_MODE_
+//#define _VIRTUAL_MOTORS_
+
 #include "sl_cr_failsafe.hpp"
+#ifdef _VIRTUAL_MOTORS_
 #include "sl_cr_motor_driver_virtual.hpp"
+#else
+#include "sl_cr_motor_driver_drv8256p.hpp"
+#endif
 #include "sl_cr_sbus.hpp"
 #include "sl_cr_tank_drive.hpp"
 #include "sl_cr_types.hpp"
@@ -12,8 +19,6 @@ sl_cr_motor_driver_c *right_motor;
 sl_cr_tank_drive_c   *tank_drive;
 
 sl_cr_time_t watchdog_fed;
-
-//#define _SERIAL_DEBUG_MODE_
 
 WDT_T4<WDT3> wdt;
 void wdt_callback() {
@@ -55,8 +60,15 @@ void setup() {
   Serial.println("SBUS Configured.");
 
   /* Configure Drive Motors and Strategy */
+#ifdef _VIRTUAL_MOTORS_
   left_motor  = new sl_cr_motor_driver_virtual_c("Left Motor", sl_cr_get_failsafe_set);
   right_motor = new sl_cr_motor_driver_virtual_c("Right Motor", sl_cr_get_failsafe_set);
+#else
+//  left_motor  = new sl_cr_motor_driver_drv8256p_c(SL_CR_PIN_LEFT_MOTOR_SLEEP,  SL_CR_PIN_LEFT_MOTOR_IN1,  SL_CR_PIN_LEFT_MOTOR_IN2,  SL_CR_PIN_LEFT_MOTOR_FAULT,  sl_cr_get_failsafe_set);
+//  right_motor = new sl_cr_motor_driver_drv8256p_c(SL_CR_PIN_RIGHT_MOTOR_SLEEP, SL_CR_PIN_RIGHT_MOTOR_IN1, SL_CR_PIN_RIGHT_MOTOR_IN2, SL_CR_PIN_RIGHT_MOTOR_FAULT, sl_cr_get_failsafe_set);
+  left_motor  = new sl_cr_motor_driver_drv8256p_c(SL_CR_PIN_LEFT_MOTOR_SLEEP,  SL_CR_PIN_LEFT_MOTOR_IN1,  SL_CR_PIN_LEFT_MOTOR_IN2,  sl_cr_get_failsafe_set);
+  right_motor = new sl_cr_motor_driver_drv8256p_c(SL_CR_PIN_RIGHT_MOTOR_SLEEP, SL_CR_PIN_RIGHT_MOTOR_IN1, SL_CR_PIN_RIGHT_MOTOR_IN2, sl_cr_get_failsafe_set);
+#endif
   tank_drive  = new sl_cr_tank_drive_c(left_motor,right_motor,SL_CR_TANK_DRIVE_LEFT_CH, SL_CR_TANK_DRIVE_RIGHT_CH);
   Serial.println("Drive Configured.");
   

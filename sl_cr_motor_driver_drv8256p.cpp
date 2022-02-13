@@ -68,8 +68,8 @@ sl_cr_motor_driver_drv8256p_c::sl_cr_motor_driver_drv8256p_c(sl_cr_pin_t sleep_b
 }
 
 sl_cr_motor_driver_drv8256p_c::sl_cr_motor_driver_drv8256p_c(sl_cr_pin_t sleep_bar, sl_cr_pin_t in1, sl_cr_pin_t in2, sl_cr_failsafe_f failsafe)
+  : sl_cr_motor_driver_drv8256p_c(sleep_bar, in1, in2, SL_CR_PIN_INVALID, failsafe)
 {
-  sl_cr_motor_driver_drv8256p_c(sleep_bar, in1, in2, SL_CR_PIN_INVALID, failsafe);
 }
 
 sl_cr_motor_driver_fault_status_e sl_cr_motor_driver_drv8256p_c::get_fault_status()
