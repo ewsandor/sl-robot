@@ -23,7 +23,7 @@ void sl_cr_motor_driver_drv8256p_c::command_motor()
   {
     /* Positive direction */
     const int positive_range = get_max_speed()-get_neutral_speed();
-    int pwm_value = ((speed-get_neutral_speed())*SL_CR_MOTOR_DRIVER_DRV8256_PWM_MAX_VALUE)/positive_range;
+    int pwm_value = ((speed-get_neutral_speed())*SL_CR_PWM_MAX_VALUE)/positive_range;
 
     // in1: PWM in2: 0;  out1: PWM (H/L) out2: L;  effect: forward/brake at speed PWM %
     analogWrite(in1, pwm_value);
@@ -32,7 +32,7 @@ void sl_cr_motor_driver_drv8256p_c::command_motor()
   else
   {
     const int negative_range = get_neutral_speed()-get_min_speed();
-    int pwm_value = ((get_neutral_speed()-speed)*SL_CR_MOTOR_DRIVER_DRV8256_PWM_MAX_VALUE)/negative_range;
+    int pwm_value = ((get_neutral_speed()-speed)*SL_CR_PWM_MAX_VALUE)/negative_range;
 
     // in1: 0 in2: PWM;  out1: L out2: PWM (H/L);  effect: reverse/brake at speed PWM %
     analogWrite(in1, 0);
@@ -46,15 +46,19 @@ void sl_cr_motor_driver_drv8256p_c::command_motor()
 sl_cr_motor_driver_drv8256p_c::sl_cr_motor_driver_drv8256p_c(sl_cr_pin_t sleep_bar, sl_cr_pin_t in1, sl_cr_pin_t in2, sl_cr_pin_t fault_bar, sl_cr_failsafe_f failsafe)
   : sl_cr_motor_driver_c(failsafe)
 {
+  /* Store pin assignments */
   this->sleep_bar = sleep_bar;
   this->in1       = in1;
   this->in2       = in2;
   this->fault_bar = fault_bar;
 
+
   /* Initialize output pins */
   pinMode(this->sleep_bar, OUTPUT);
   pinMode(this->in1, OUTPUT);
   pinMode(this->in2, OUTPUT);
+  analogWriteFrequency(this->in1, SL_CR_DEFAULT_PWM_FREQ);
+  analogWriteFrequency(this->in2, SL_CR_DEFAULT_PWM_FREQ);
   disable_motor();
 
   if(this->fault_bar != SL_CR_PIN_INVALID)

@@ -3,9 +3,6 @@
 
 #include "sl_cr_motor_driver.hpp"
 
-#define SL_CR_MOTOR_DRIVER_DRV8256_PWM_RESOLUTION 10
-#define SL_CR_MOTOR_DRIVER_DRV8256_PWM_MAX_VALUE  ((1<<SL_CR_MOTOR_DRIVER_DRV8256_PWM_RESOLUTION)-1)
-
 class sl_cr_motor_driver_drv8256p_c : public sl_cr_motor_driver_c
 {
   private:
@@ -26,7 +23,5 @@ class sl_cr_motor_driver_drv8256p_c : public sl_cr_motor_driver_c
 
     virtual sl_cr_motor_driver_fault_status_e get_fault_status();
 };
-
-
 
 #endif /* __SL_CR_MOTOR_DRIVER_DRV8256P_HPP__ */

@@ -14,6 +14,13 @@ typedef uint8_t sl_cr_pin_t;
 #define SL_CR_PIN_INVALID     0xFF
 #define SL_CR_PIN_ONBOARD_LED 13
 
+/* PWM Resolution */
+#define SL_CR_PWM_RESOLUTION 10
+#define SL_CR_PWM_MAX_VALUE  ((1<<SL_CR_PWM_RESOLUTION)-1)
+/* Default frequency to use for PWM pins (hz) */
+#define SL_CR_DEFAULT_PWM_FREQ 23437.5
+
+
 /* RC Channel Index, starts from 1 */
 typedef unsigned int sl_cr_rc_channel_t;
 /* Invalid RC Channel Index */

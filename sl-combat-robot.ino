@@ -43,6 +43,9 @@ void setup() {
   Serial.print("Failsafe mask: 0x");
   Serial.println(sl_cr_get_failsafe_mask(), HEX);
 
+  /* Configure PWM resolution */
+  analogWriteResolution(SL_CR_PWM_RESOLUTION);
+
   /* Begin the SBUS communication */
   sl_cr_sbus_init();
   Serial.println("SBUS Configured.");
