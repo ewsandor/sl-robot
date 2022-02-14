@@ -64,10 +64,8 @@ void setup() {
   left_motor  = new sl_cr_motor_driver_virtual_c("Left Motor", sl_cr_get_failsafe_set);
   right_motor = new sl_cr_motor_driver_virtual_c("Right Motor", sl_cr_get_failsafe_set);
 #else
-//  left_motor  = new sl_cr_motor_driver_drv8256p_c(SL_CR_PIN_LEFT_MOTOR_SLEEP,  SL_CR_PIN_LEFT_MOTOR_IN1,  SL_CR_PIN_LEFT_MOTOR_IN2,  SL_CR_PIN_LEFT_MOTOR_FAULT,  sl_cr_get_failsafe_set);
-//  right_motor = new sl_cr_motor_driver_drv8256p_c(SL_CR_PIN_RIGHT_MOTOR_SLEEP, SL_CR_PIN_RIGHT_MOTOR_IN1, SL_CR_PIN_RIGHT_MOTOR_IN2, SL_CR_PIN_RIGHT_MOTOR_FAULT, sl_cr_get_failsafe_set);
-  left_motor  = new sl_cr_motor_driver_drv8256p_c(SL_CR_PIN_LEFT_MOTOR_SLEEP,  SL_CR_PIN_LEFT_MOTOR_IN1,  SL_CR_PIN_LEFT_MOTOR_IN2,  sl_cr_get_failsafe_set);
-  right_motor = new sl_cr_motor_driver_drv8256p_c(SL_CR_PIN_RIGHT_MOTOR_SLEEP, SL_CR_PIN_RIGHT_MOTOR_IN1, SL_CR_PIN_RIGHT_MOTOR_IN2, sl_cr_get_failsafe_set);
+  right_motor = new sl_cr_motor_driver_drv8256p_c(SL_CR_PIN_DRIVE_MOTOR_1_SLEEP, SL_CR_PIN_DRIVE_MOTOR_1_IN1, SL_CR_PIN_DRIVE_MOTOR_1_IN2, sl_cr_get_failsafe_set);
+  left_motor  = new sl_cr_motor_driver_drv8256p_c(SL_CR_PIN_DRIVE_MOTOR_2_SLEEP, SL_CR_PIN_DRIVE_MOTOR_2_IN1, SL_CR_PIN_DRIVE_MOTOR_2_IN2, sl_cr_get_failsafe_set);
 #endif
   tank_drive  = new sl_cr_tank_drive_c(left_motor,right_motor,SL_CR_TANK_DRIVE_LEFT_CH, SL_CR_TANK_DRIVE_RIGHT_CH);
   Serial.println("Drive Configured.");
