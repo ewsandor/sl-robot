@@ -12,14 +12,14 @@ typedef bool (*sl_cr_failsafe_f)(void);
 /* Pin assignments */
 typedef uint8_t sl_cr_pin_t;
 #define SL_CR_PIN_INVALID           0xFF
-#define SL_CR_PIN_LEFT_MOTOR_SLEEP  2
-#define SL_CR_PIN_LEFT_MOTOR_IN1    3
-#define SL_CR_PIN_LEFT_MOTOR_IN2    4
-#define SL_CR_PIN_LEFT_MOTOR_FAULT  SL_CR_PIN_INVALID
-#define SL_CR_PIN_RIGHT_MOTOR_SLEEP 6
-#define SL_CR_PIN_RIGHT_MOTOR_IN1   7
-#define SL_CR_PIN_RIGHT_MOTOR_IN2   8
+#define SL_CR_PIN_RIGHT_MOTOR_IN1   2
+#define SL_CR_PIN_RIGHT_MOTOR_IN2   3
 #define SL_CR_PIN_RIGHT_MOTOR_FAULT SL_CR_PIN_INVALID
+#define SL_CR_PIN_RIGHT_MOTOR_SLEEP 5
+#define SL_CR_PIN_LEFT_MOTOR_IN1    6
+#define SL_CR_PIN_LEFT_MOTOR_IN2    7
+#define SL_CR_PIN_LEFT_MOTOR_FAULT  SL_CR_PIN_INVALID
+#define SL_CR_PIN_LEFT_MOTOR_SLEEP  9
 #define SL_CR_PIN_ONBOARD_LED       13
 
 /* PWM Resolution */

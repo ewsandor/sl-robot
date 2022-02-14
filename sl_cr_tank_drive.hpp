@@ -5,7 +5,7 @@
 #include "sl_cr_types.hpp"
 
 /* RC channel values < CENTER+DEADZONE && > CENTER-DEADZONE will be treated as neutral */
-#define SL_CR_TANK_DRIVE_DEFAULT_DEADZONE 25
+#define SL_CR_TANK_DRIVE_DEFAULT_DEADZONE 50
 
 class sl_cr_tank_drive_c
 {
