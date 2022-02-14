@@ -52,7 +52,7 @@ bool sl_cr_tank_drive_c::disabled()
 
 void sl_cr_tank_drive_c::set_motor_speed(sl_cr_rc_channel_value_t rc_value, sl_cr_motor_driver_c* motor)
 {
-  if(rc_value > SL_CR_RC_CH_MAX_VALUE || rc_value < SL_CR_RC_CH_MIN_VALUE)
+  if(!SL_CR_RC_CH_VALUE_VALID(rc_value))
   {
     /* Invalid input, disable motor */
     motor->disable(SL_CR_MOTOR_DISABLE_DRIVE_STRATEGY);
@@ -71,7 +71,7 @@ void sl_cr_tank_drive_c::set_motor_speed(sl_cr_rc_channel_value_t rc_value, sl_c
       const sl_cr_motor_driver_speed_t input_range = SL_CR_RC_CH_MAX_VALUE-SL_CR_RC_CH_MIN_VALUE;
       const sl_cr_motor_driver_speed_t motor_range = motor->get_max_speed()-motor->get_min_speed();
 
-      sl_cr_motor_driver_speed_t new_speed = (((rc_value-SL_CR_RC_CH_MIN_VALUE)*motor_range)/input_range)+motor->get_min_speed();
+      const sl_cr_motor_driver_speed_t new_speed = (((rc_value-SL_CR_RC_CH_MIN_VALUE)*motor_range)/input_range)+motor->get_min_speed();
       motor->set_speed(new_speed);
     }
 

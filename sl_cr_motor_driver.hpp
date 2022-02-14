@@ -74,16 +74,16 @@ class sl_cr_motor_driver_c
     sl_cr_motor_driver_c();
     sl_cr_motor_driver_c(sl_cr_failsafe_f);
 
-    sl_cr_motor_driver_speed_t get_min_speed();
-    sl_cr_motor_driver_speed_t get_neutral_speed();
-    sl_cr_motor_driver_speed_t get_max_speed();
+    sl_cr_motor_driver_speed_t get_min_speed() const;
+    sl_cr_motor_driver_speed_t get_neutral_speed() const;
+    sl_cr_motor_driver_speed_t get_max_speed() const;
 
     /* Disable motor for given reason */
     void disable(sl_cr_motor_disable_reason_e);
     /* Enable motor for given reason */
     void enable(sl_cr_motor_disable_reason_e);
     /* Checks if motor is currently disabled for any reason */
-    bool disabled();
+    bool disabled() const;
 
     /* Sets motor to a given speed */
     void set_speed(sl_cr_motor_driver_speed_t);

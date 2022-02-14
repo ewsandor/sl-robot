@@ -30,15 +30,15 @@ sl_cr_motor_driver_c::sl_cr_motor_driver_c(sl_cr_failsafe_f failsafe_check)
   this->failsafe_check = failsafe_check;
 }
 
-sl_cr_motor_driver_speed_t sl_cr_motor_driver_c::get_min_speed()
+sl_cr_motor_driver_speed_t sl_cr_motor_driver_c::get_min_speed() const
 {
   return min_speed;
 }
-sl_cr_motor_driver_speed_t sl_cr_motor_driver_c::get_neutral_speed()
+sl_cr_motor_driver_speed_t sl_cr_motor_driver_c::get_neutral_speed() const
 {
   return ((min_speed+max_speed)/2);
 }
-sl_cr_motor_driver_speed_t sl_cr_motor_driver_c::get_max_speed()
+sl_cr_motor_driver_speed_t sl_cr_motor_driver_c::get_max_speed() const
 {
   return max_speed;
 }
@@ -76,7 +76,7 @@ void sl_cr_motor_driver_c::enable(sl_cr_motor_disable_reason_e reason)
 {
   disable_mask &= ~(SL_CR_DISABLE_BIT(reason));
 }
-bool sl_cr_motor_driver_c::disabled()
+bool sl_cr_motor_driver_c::disabled() const
 {
   bool ret_val = false;
 
