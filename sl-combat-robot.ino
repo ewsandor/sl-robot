@@ -10,6 +10,7 @@
 
 //#define _SERIAL_DEBUG_MODE_
 //#define _VIRTUAL_MOTORS_
+#define _ARCADE_DRIVE_
 
 #include "sl_cr_failsafe.hpp"
 #ifdef _VIRTUAL_MOTORS_
@@ -18,13 +19,22 @@
 #include "sl_cr_motor_driver_drv8256p.hpp"
 #endif
 #include "sl_cr_sbus.hpp"
+#ifdef _ARCADE_DRIVE_
+#include "sl_cr_arcade_drive.hpp"
+#else
 #include "sl_cr_tank_drive.hpp"
+#endif
 #include "sl_cr_types.hpp"
 #include "sl_cr_version.h"
 
 sl_cr_motor_driver_c *left_motor;
 sl_cr_motor_driver_c *right_motor;
+
+#ifdef _ARCADE_DRIVE_
+sl_cr_arcade_drive_c *arcade_drive;
+#else
 sl_cr_tank_drive_c   *tank_drive;
+#endif
 
 sl_cr_time_t watchdog_fed;
 
@@ -78,7 +88,11 @@ void setup() {
   right_motor = new sl_cr_motor_driver_drv8256p_c(SL_CR_PIN_DRIVE_MOTOR_1_SLEEP, SL_CR_PIN_DRIVE_MOTOR_1_IN1, SL_CR_PIN_DRIVE_MOTOR_1_IN2, sl_cr_get_failsafe_set);
   left_motor  = new sl_cr_motor_driver_drv8256p_c(SL_CR_PIN_DRIVE_MOTOR_2_SLEEP, SL_CR_PIN_DRIVE_MOTOR_2_IN1, SL_CR_PIN_DRIVE_MOTOR_2_IN2, sl_cr_get_failsafe_set);
 #endif
+#ifdef _ARCADE_DRIVE_
+  arcade_drive  = new sl_cr_arcade_drive_c(left_motor,right_motor,SL_CR_ARCADE_DRIVE_THROTTLE_CH,SL_CR_ARCADE_DRIVE_STEERING_CH);
+#else
   tank_drive  = new sl_cr_tank_drive_c(left_motor,right_motor,SL_CR_TANK_DRIVE_LEFT_CH, SL_CR_TANK_DRIVE_RIGHT_CH);
+#endif
   Serial.println("Drive Configured.");
   
   /* Bootup Complete */
@@ -100,6 +114,13 @@ void loop() {
   sl_cr_sbus_loop();
   /* Check if ARM switch is set */
   sl_cr_failsafe_armswitch_loop();
+
+#ifdef _ARCADE_DRIVE_
+  /* Arcade Drive loop */
+  arcade_drive->loop();
+#else
   /* Tank Drive loop */
   tank_drive->loop();
+#endif
+
 }

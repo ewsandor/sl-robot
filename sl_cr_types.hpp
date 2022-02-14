@@ -43,6 +43,8 @@ typedef unsigned int sl_cr_rc_channel_t;
 /* Channel assignments */
 #define SL_CR_TANK_DRIVE_LEFT_CH  1
 #define SL_CR_TANK_DRIVE_RIGHT_CH 3
+#define SL_CR_ARCADE_DRIVE_STEERING_CH 2
+#define SL_CR_ARCADE_DRIVE_THROTTLE_CH 3
 #define SL_CR_ARM_SWITCH_CH       5
 
 /* RC Channel Value */

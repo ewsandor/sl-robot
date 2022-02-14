@@ -71,7 +71,7 @@ void sl_cr_arcade_drive_c::set_motor_speeds()
   const sl_cr_rc_channel_value_t throttle_raw = sl_cr_sbus_get_ch_value(throttle_channel);
   const sl_cr_rc_channel_value_t steering_raw = sl_cr_sbus_get_ch_value(steering_channel);
 
-  if(!SL_CR_RC_CH_VALUE_VALID(throttle_raw) || !SL_CR_RC_CH_VALUE_VALID(steering_channel))
+  if(!SL_CR_RC_CH_VALUE_VALID(throttle_raw) || !SL_CR_RC_CH_VALUE_VALID(steering_raw))
   {
     /* Invalid input, disable motor */
     left_motor->disable(SL_CR_MOTOR_DISABLE_DRIVE_STRATEGY);
@@ -79,8 +79,13 @@ void sl_cr_arcade_drive_c::set_motor_speeds()
   }
   else
   {
-    const sl_cr_motor_driver_speed_t left_motor_speed  = get_motor_speed_from_rc_value(throttle_raw, left_motor)  - get_motor_speed_from_rc_value(steering_raw, left_motor);
-    const sl_cr_motor_driver_speed_t right_motor_speed = get_motor_speed_from_rc_value(throttle_raw, right_motor) + get_motor_speed_from_rc_value(steering_raw, right_motor);
+    sl_cr_motor_driver_speed_t left_motor_speed  = get_motor_speed_from_rc_value(throttle_raw, left_motor)  + get_motor_speed_from_rc_value(steering_raw, left_motor);
+    sl_cr_motor_driver_speed_t right_motor_speed = get_motor_speed_from_rc_value(throttle_raw, right_motor) - get_motor_speed_from_rc_value(steering_raw, right_motor);
+
+    left_motor_speed = (left_motor_speed > left_motor->get_max_speed())?left_motor->get_max_speed():left_motor_speed;
+    left_motor_speed = (left_motor_speed < left_motor->get_min_speed())?left_motor->get_min_speed():left_motor_speed;
+    right_motor_speed = (right_motor_speed > right_motor->get_max_speed())?right_motor->get_max_speed():right_motor_speed;
+    right_motor_speed = (right_motor_speed < right_motor->get_min_speed())?right_motor->get_min_speed():right_motor_speed;
 
     left_motor->set_speed(left_motor_speed);
     right_motor->set_speed(right_motor_speed);
