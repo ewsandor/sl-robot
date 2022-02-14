@@ -1,3 +1,10 @@
+/*
+  sl-combat-robot.ino
+  Sandor Laboratories Combat Robot Software
+  Edward Sandor
+  February 2022
+*/
+
 #include <Arduino.h>
 #include <Watchdog_t4.h>
 
@@ -13,6 +20,7 @@
 #include "sl_cr_sbus.hpp"
 #include "sl_cr_tank_drive.hpp"
 #include "sl_cr_types.hpp"
+#include "sl_cr_version.h"
 
 sl_cr_motor_driver_c *left_motor;
 sl_cr_motor_driver_c *right_motor;
@@ -43,6 +51,9 @@ void setup() {
   /* Enable Bootup LED */
   pinMode(SL_CR_PIN_ONBOARD_LED, OUTPUT);
   digitalWrite(SL_CR_PIN_ONBOARD_LED, HIGH);
+
+  /* Log software details */
+  Serial.println(SL_CR_SOFTWARE_INTRO);
 
   /* Serial for debug logging */
   #ifdef _SERIAL_DEBUG_MODE_

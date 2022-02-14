@@ -1,7 +1,14 @@
+/*
+  sl_cr_types.hpp
+  Sandor Laboratories Combat Robot Software
+  Edward Sandor
+  February 2022
+*/
+
 #ifndef __SL_CR_TYPES_HPP__
 #define __SL_CR_TYPES_HPP__
 
-#include "stdint.h"
+#include <stdint.h>
 
 /* Time type (ms) */
 typedef unsigned long sl_cr_time_t;

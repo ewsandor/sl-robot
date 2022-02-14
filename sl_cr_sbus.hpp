@@ -1,3 +1,10 @@
+/*
+  sl_cr_sbus.hpp
+  Sandor Laboratories Combat Robot Software
+  Edward Sandor
+  February 2022
+*/
+
 #ifndef __SL_CR_SBUS_HPP__
 #define __SL_CR_SBUS_HPP__
 

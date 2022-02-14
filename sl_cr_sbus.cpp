@@ -1,3 +1,10 @@
+/*
+  sl_cr_sbus.cpp
+  Sandor Laboratories Combat Robot Software
+  Edward Sandor
+  February 2022
+*/
+
 #include <Arduino.h>
 #include <sbus.h>
 

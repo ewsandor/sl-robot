@@ -1,3 +1,10 @@
+/*
+  sl_cr_motor_driver.hpp
+  Sandor Laboratories Combat Robot Software
+  Edward Sandor
+  February 2022
+*/
+
 #ifndef __SL_CR_MOTOR_DRIVER_HPP__
 #define __SL_CR_MOTOR_DRIVER_HPP__
 

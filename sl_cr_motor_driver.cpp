@@ -1,3 +1,10 @@
+/*
+  sl_cr_motor_driver.cpp
+  Sandor Laboratories Combat Robot Software
+  Edward Sandor
+  February 2022
+*/
+
 #include "sl_cr_motor_driver.hpp"
 
 #define SL_CR_DISABLE_BIT(reason) (1 << reason)
