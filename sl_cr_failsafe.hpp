@@ -12,6 +12,8 @@ typedef enum
 {
   /* Initial failsafe set at bootup */
   SL_CR_FAILSAFE_BOOT,
+  /* Do not arm unless arming switch first entered disarmed state.  (Avoid unexpected arming if arm switch is active at startup) */
+  SR_CR_FAILSAFE_ARM_SWITCH_DISARM,
   /* Disabled by arming switch */
   SR_CR_FAILSAFE_ARM_SWITCH,
   /* SBUS in failsafe mode */
