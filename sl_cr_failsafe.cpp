@@ -75,18 +75,44 @@ bool sl_cr_get_failsafe_set(sl_cr_failsafe_reason_e reason)
   return (0 != (sl_cr_get_failsafe_mask() & SL_CR_FAILSAFE_BIT(reason)));
 }
 
+/* Only arm if prearm was triggered without arm switch armed (i.e. sequential pre-arm then arm) */
+bool prearmswitch_first = false;
+/* Only arm if both arm switches are first released */
+bool armswitches_released_first = false;
 void sl_cr_failsafe_armswitch_loop()
 {
   /* Check if arm switch is requsting robot to be armed */
   const sl_cr_rc_channel_value_t armswitch_raw = sl_cr_sbus_get_ch_value(SL_CR_ARM_SWITCH_CH);
   const bool armswitch_armed = SL_CR_RC_CH_VALUE_VALID(armswitch_raw) && (armswitch_raw > SL_CR_ARM_SWITCH_THRESHOLD);
-  
-  /* If armswitch is requesting arming, clear failsafe */
-  sl_cr_set_failsafe_mask_value(SR_CR_FAILSAFE_ARM_SWITCH, !armswitch_armed);
+
+  /* Check prearm switch state */
+  const sl_cr_rc_channel_value_t prearmswitch_raw = sl_cr_sbus_get_ch_value(SL_CR_PREARM_SWITCH_CH);
+  const bool prearmswitch_armed = SL_CR_RC_CH_VALUE_VALID(prearmswitch_raw) && (prearmswitch_raw > SL_CR_ARM_SWITCH_THRESHOLD);
+
+  if(armswitches_released_first && prearmswitch_first && prearmswitch_armed && armswitch_armed)
+  {
+    /* Clear arm switch failsafe if pre-arm was set first and both pre-arm and arm switch are requesting arming */
+    sl_cr_clear_failsafe_mask(SR_CR_FAILSAFE_ARM_SWITCH);
+    /* Do not rearm until both switches are released */
+    armswitches_released_first = false;
+  }
+  else if(!armswitch_armed)
+  {
+    /* If arm switch is not requesting arming, set failsafe */
+    sl_cr_set_failsafe_mask(SR_CR_FAILSAFE_ARM_SWITCH);
+  }
 
   /* If armswitch not requesting arming, clear disarm wait */
   if(SL_CR_RC_CH_VALUE_VALID(armswitch_raw) && !armswitch_armed)
   {
     sl_cr_clear_failsafe_mask(SR_CR_FAILSAFE_ARM_SWITCH_DISARM);
+  }
+
+  /* Prearm is armed before arming switch is armed */
+  prearmswitch_first = prearmswitch_armed && !armswitch_armed;
+  if(!prearmswitch_armed && !armswitch_armed)
+  {
+    /* Both arm switches have been released */
+    armswitches_released_first = true;
   }
 }

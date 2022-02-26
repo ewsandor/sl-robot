@@ -46,6 +46,7 @@ typedef unsigned int sl_cr_rc_channel_t;
 #define SL_CR_ARCADE_DRIVE_STEERING_CH 2
 #define SL_CR_ARCADE_DRIVE_THROTTLE_CH 3
 #define SL_CR_ARM_SWITCH_CH       5
+#define SL_CR_PREARM_SWITCH_CH    6
 
 /* RC Channel Value */
 typedef unsigned int sl_cr_rc_channel_value_t;
