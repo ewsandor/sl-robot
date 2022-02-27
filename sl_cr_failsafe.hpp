@@ -39,6 +39,11 @@ bool sl_cr_get_failsafe_set();
 /* Return boolean if failsafe is active for a specific reason*/
 bool sl_cr_get_failsafe_set(sl_cr_failsafe_reason_e reason);
 
+/* Time (in ms) failsafe may be active until re-arming the arm switch is required 
+   (allow short, self-correcting failsafes to correct, long events require explict user re-arm) */
+#define SL_CR_FAILSAFE_ARMSWITCH_REARM_TIMEOUT 200
+/* Maximum number of self-correcting failsafe events until rearm is required */
+#define SL_CR_FAILSAFE_REPEAT_REARM_THRESHOLD 5
 /* Arm switch maintenance, to be called every loop */
 void sl_cr_failsafe_armswitch_loop();
 
