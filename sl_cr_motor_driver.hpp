@@ -13,7 +13,7 @@
 #define SL_CR_MOTOR_DRIVER_DEFAULT_MAX_SPEED 1024
 #define SL_CR_MOTOR_DRIVER_DEFAULT_MIN_SPEED (-SL_CR_MOTOR_DRIVER_DEFAULT_MAX_SPEED)
 
-typedef int sl_cr_motor_driver_speed_t;
+typedef sl_cr_velocity_t sl_cr_motor_driver_speed_t;
 
 typedef enum
 {

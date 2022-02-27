@@ -13,6 +13,9 @@
 /* Time type (ms) */
 typedef unsigned long sl_cr_time_t;
 
+/* Speed type */
+typedef int sl_cr_velocity_t;
+
 /* Failsafe function pointer */
 typedef bool (*sl_cr_failsafe_f)(void);
 
