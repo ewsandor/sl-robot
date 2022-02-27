@@ -15,6 +15,7 @@ void sl_cr_motor_driver_c::init()
   disable_mask     = 0x0;
   invert_direction = false;
   speed            = 0;
+  target_speed     = 0;
   min_speed = SL_CR_MOTOR_DRIVER_DEFAULT_MIN_SPEED;
   max_speed = SL_CR_MOTOR_DRIVER_DEFAULT_MAX_SPEED;
 }
@@ -59,7 +60,7 @@ void sl_cr_motor_driver_c::set_speed(sl_cr_motor_driver_speed_t new_speed)
     new_speed = max_speed+min_speed-new_speed;
   }
 
-  speed = new_speed;
+  target_speed = new_speed;
 }
 
 void sl_cr_motor_driver_c::brake_motor()
@@ -89,7 +90,7 @@ bool sl_cr_motor_driver_c::disabled() const
   return ret_val;
 }
 
-sl_cr_motor_driver_fault_status_e sl_cr_motor_driver_c::get_fault_status()
+sl_cr_motor_driver_fault_status_e sl_cr_motor_driver_c::get_fault_status() const
 {
   return SL_CR_MOTOR_DRIVER_FAULT_STATUS_UNKNOWN;
 }
@@ -98,10 +99,12 @@ void sl_cr_motor_driver_c::loop()
 {
   if(disabled())
   {
+    speed = get_neutral_speed();
     disable_motor();
   }
   else
   {
+    speed = target_speed;
     command_motor();
   }
 }

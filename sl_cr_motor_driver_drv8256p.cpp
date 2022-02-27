@@ -79,7 +79,7 @@ sl_cr_motor_driver_drv8256p_c::sl_cr_motor_driver_drv8256p_c(sl_cr_pin_t sleep_b
 {
 }
 
-sl_cr_motor_driver_fault_status_e sl_cr_motor_driver_drv8256p_c::get_fault_status()
+sl_cr_motor_driver_fault_status_e sl_cr_motor_driver_drv8256p_c::get_fault_status() const
 {
   sl_cr_motor_driver_fault_status_e ret_val = SL_CR_MOTOR_DRIVER_FAULT_STATUS_UNKNOWN;
 

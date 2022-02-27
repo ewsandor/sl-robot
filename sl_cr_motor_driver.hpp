@@ -61,6 +61,9 @@ class sl_cr_motor_driver_c
     sl_cr_motor_driver_speed_t min_speed;
     sl_cr_motor_driver_speed_t max_speed;
 
+    /* Active Parameters */
+    sl_cr_motor_driver_speed_t target_speed;
+
     void init();
 
   protected:
@@ -90,7 +93,7 @@ class sl_cr_motor_driver_c
     /* Sets motor to brake */
     void brake_motor();
 
-    virtual sl_cr_motor_driver_fault_status_e get_fault_status();
+    virtual sl_cr_motor_driver_fault_status_e get_fault_status() const;
 
     void loop();
 };
