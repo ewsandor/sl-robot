@@ -7,6 +7,7 @@
 
 #include <Arduino.h>
 #include <Watchdog_t4.h>
+#include <arduino_freertos.h>
 
 //#define _SERIAL_DEBUG_MODE_
 //#define _VIRTUAL_MOTORS_
@@ -30,6 +31,7 @@
 sl_cr_motor_driver_c *left_motor;
 sl_cr_motor_driver_c *right_motor;
 
+#define SL_CR_DRIVE_PERIOD 100
 #ifdef _ARCADE_DRIVE_
 sl_cr_arcade_drive_c *arcade_drive;
 #else
@@ -37,7 +39,12 @@ sl_cr_tank_drive_c   *tank_drive;
 #endif
 
 sl_cr_time_t watchdog_fed;
-
+/* Watchdog Timeout in ms, 32ms to 522.232s */
+#define SL_CR_WATCHDOG_TIMEOUT 100 
+/* Watchdog feeding schedule in ms */
+#define SL_CR_WATCHDOG_FEEDING_SCHEDULE (SL_CR_WATCHDOG_TIMEOUT/2)
+/* Watchdog window in ms, 32ms to 522.232s, must be smaller than timeout */
+#define SL_CR_WATCHDOG_WINDOW (SL_CR_WATCHDOG_FEEDING_SCHEDULE/2)
 WDT_T4<WDT3> wdt;
 void wdt_callback() {
   Serial.println("WATCHDOG ABOUT TO EXPIRE...");
@@ -46,11 +53,46 @@ void wdt_callback() {
   Serial.flush();
 }
 
+static void drive_task(void*)
+{
+
+  TickType_t xLastWakeTime;
+  const TickType_t xFrequency = SL_CR_DRIVE_PERIOD / portTICK_PERIOD_MS;
+  xLastWakeTime = xTaskGetTickCount();
+
+  for(;;)
+  {
+    #ifdef _ARCADE_DRIVE_
+      /* Arcade Drive loop */
+      arcade_drive->loop();
+    #else
+      /* Tank Drive loop */
+      tank_drive->loop();
+    #endif
+    vTaskDelayUntil( &xLastWakeTime, xFrequency );
+  }
+}
+
+static void watchdog_task(void*)
+{
+  TickType_t xLastWakeTime;
+  const TickType_t xFrequency = (SL_CR_WATCHDOG_TIMEOUT/2) / portTICK_PERIOD_MS;
+  xLastWakeTime = xTaskGetTickCount();
+
+  for(;;)
+  {
+    wdt.feed();
+    watchdog_fed = millis();
+    vTaskDelayUntil( &xLastWakeTime, xFrequency );
+  }
+
+}
+
 void setup() {
   /* Configure Watchdog Timer before anything else */
   WDT_timings_t wdt_config;
-  wdt_config.window = 0;    /* in ms, 32ms to 522.232s, must be smaller than timeout */
-  wdt_config.timeout = 100; /* in ms, 32ms to 522.232s */
+  wdt_config.window = SL_CR_WATCHDOG_WINDOW;
+  wdt_config.timeout = SL_CR_WATCHDOG_TIMEOUT;
   wdt_config.callback = wdt_callback;
   watchdog_fed = millis();
   wdt.begin(wdt_config);
@@ -59,8 +101,8 @@ void setup() {
   /* Start of Bootup */
   Serial.println("######## BOOTUP START ########");
   /* Enable Bootup LED */
-  pinMode(SL_CR_PIN_ONBOARD_LED, OUTPUT);
-  digitalWrite(SL_CR_PIN_ONBOARD_LED, HIGH);
+  pinMode(SL_CR_PIN_ONBOARD_LED, arduino::OUTPUT);
+  digitalWrite(SL_CR_PIN_ONBOARD_LED, arduino::HIGH);
 
   /* Log software details */
   Serial.println(SL_CR_SOFTWARE_INTRO);
@@ -71,7 +113,7 @@ void setup() {
   while (!Serial) {}
   #endif
   Serial.print("Failsafe mask: 0x");
-  Serial.println(sl_cr_get_failsafe_mask(), HEX);
+  Serial.println(sl_cr_get_failsafe_mask(), arduino::HEX);
 
   /* Configure PWM resolution */
   analogWriteResolution(SL_CR_PWM_RESOLUTION);
@@ -98,29 +140,24 @@ void setup() {
   /* Bootup Complete */
   Serial.println("######### BOOTUP END #########");
   /* Clear Bootup LED */
-  digitalWrite(SL_CR_PIN_ONBOARD_LED, LOW);
+  digitalWrite(SL_CR_PIN_ONBOARD_LED, arduino::LOW);
   /* Clear Bootup failsafe */
   sl_cr_clear_failsafe_mask(SL_CR_FAILSAFE_BOOT);
+
+
+  xTaskCreate(watchdog_task, "watchdog_task", 128, nullptr, 2, nullptr);
+  xTaskCreate(drive_task, "drive_task", 128, nullptr, 2, nullptr);
+
+  Serial.println("setup(): starting scheduler...");
+  Serial.flush();
+
+  vTaskStartScheduler();
 }
 
 void loop() {
-  if(millis() - watchdog_fed > 1)
-  {
-    /* Feed the watchdog, feeding too frequently triggers reset due to minimum update window*/
-    wdt.feed();
-    watchdog_fed = millis();
-  }
   /* Read any new SBUS data */
   sl_cr_sbus_loop();
   /* Check if ARM switch is set */
   sl_cr_failsafe_armswitch_loop();
-
-#ifdef _ARCADE_DRIVE_
-  /* Arcade Drive loop */
-  arcade_drive->loop();
-#else
-  /* Tank Drive loop */
-  tank_drive->loop();
-#endif
 
 }
