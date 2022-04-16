@@ -31,7 +31,8 @@
 sl_cr_motor_driver_c *left_motor;
 sl_cr_motor_driver_c *right_motor;
 
-#define SL_CR_DRIVE_PERIOD 100
+/* Drive loop period in ms */
+#define SL_CR_DRIVE_PERIOD 10
 #ifdef _ARCADE_DRIVE_
 sl_cr_arcade_drive_c *arcade_drive;
 #else
@@ -53,7 +54,8 @@ void wdt_callback() {
   Serial.flush();
 }
 
-#define SL_CR_SBUS_PERIOD 14
+/* SBUS read frequency in ms */
+#define SL_CR_SBUS_PERIOD SL_CR_SBUS_UPDATE_PERIOD
 
 static void drive_task(void*)
 {
