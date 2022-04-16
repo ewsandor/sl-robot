@@ -53,11 +53,13 @@ void wdt_callback() {
   Serial.flush();
 }
 
+#define SL_CR_SBUS_PERIOD 14
+
 static void drive_task(void*)
 {
 
   TickType_t xLastWakeTime;
-  const TickType_t xFrequency = SL_CR_DRIVE_PERIOD / portTICK_PERIOD_MS;
+  const TickType_t xPeriod = pdMS_TO_TICKS(SL_CR_DRIVE_PERIOD);
   xLastWakeTime = xTaskGetTickCount();
 
   for(;;)
@@ -69,24 +71,40 @@ static void drive_task(void*)
       /* Tank Drive loop */
       tank_drive->loop();
     #endif
-    vTaskDelayUntil( &xLastWakeTime, xFrequency );
+    vTaskDelayUntil( &xLastWakeTime, xPeriod );
   }
 }
 
 static void watchdog_task(void*)
 {
   TickType_t xLastWakeTime;
-  const TickType_t xFrequency = (SL_CR_WATCHDOG_TIMEOUT/2) / portTICK_PERIOD_MS;
+  const TickType_t xPeriod = pdMS_TO_TICKS(SL_CR_WATCHDOG_FEEDING_SCHEDULE);
   xLastWakeTime = xTaskGetTickCount();
-
   for(;;)
   {
+    vTaskDelayUntil( &xLastWakeTime, xPeriod );
     wdt.feed();
     watchdog_fed = millis();
-    vTaskDelayUntil( &xLastWakeTime, xFrequency );
   }
 
 }
+
+static void sbus_task(void*)
+{
+  TickType_t xLastWakeTime;
+  const TickType_t xPeriod = pdMS_TO_TICKS(SL_CR_SBUS_PERIOD);
+  xLastWakeTime = xTaskGetTickCount();
+  for(;;)
+  {
+    /* Read any new SBUS data */
+    sl_cr_sbus_loop();
+    /* Check if ARM switch is set */
+    sl_cr_failsafe_armswitch_loop();
+    vTaskDelayUntil( &xLastWakeTime, xPeriod );
+  }
+
+}
+
 
 void setup() {
   /* Configure Watchdog Timer before anything else */
@@ -107,11 +125,12 @@ void setup() {
   /* Log software details */
   Serial.println(SL_CR_SOFTWARE_INTRO);
 
-  /* Serial for debug logging */
+   /* Serial for debug logging */
   #ifdef _SERIAL_DEBUG_MODE_
   Serial.begin(115200);
   while (!Serial) {}
   #endif
+
   Serial.print("Failsafe mask: 0x");
   Serial.println(sl_cr_get_failsafe_mask(), arduino::HEX);
 
@@ -137,6 +156,12 @@ void setup() {
 #endif
   Serial.println("Drive Configured.");
   
+  /* Configure FreeRTOS */
+  xTaskCreate(watchdog_task, "watchdog_task", 128, nullptr, 2, nullptr);
+  xTaskCreate(sbus_task, "drive_task", 128, nullptr, 2, nullptr);
+  xTaskCreate(drive_task, "drive_task", 128, nullptr, 2, nullptr);
+  Serial.println("FreeRTOS Configured.");
+
   /* Bootup Complete */
   Serial.println("######### BOOTUP END #########");
   /* Clear Bootup LED */
@@ -144,20 +169,9 @@ void setup() {
   /* Clear Bootup failsafe */
   sl_cr_clear_failsafe_mask(SL_CR_FAILSAFE_BOOT);
 
-
-  xTaskCreate(watchdog_task, "watchdog_task", 128, nullptr, 2, nullptr);
-  xTaskCreate(drive_task, "drive_task", 128, nullptr, 2, nullptr);
-
-  Serial.println("setup(): starting scheduler...");
+  Serial.println("Starting FreeRTOS scheduler.");
   Serial.flush();
-
   vTaskStartScheduler();
 }
 
-void loop() {
-  /* Read any new SBUS data */
-  sl_cr_sbus_loop();
-  /* Check if ARM switch is set */
-  sl_cr_failsafe_armswitch_loop();
-
-}
+void loop() {}
