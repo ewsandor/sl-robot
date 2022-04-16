@@ -9,9 +9,11 @@
 #include <Watchdog_t4.h>
 #include <arduino_freertos.h>
 
+//////////////////// FEATURIZATION ////////////////////
 //#define _SERIAL_DEBUG_MODE_
 //#define _VIRTUAL_MOTORS_
 #define _ARCADE_DRIVE_
+///////////////////////////////////////////////////////
 
 #include "sl_cr_failsafe.hpp"
 #ifdef _VIRTUAL_MOTORS_
@@ -28,9 +30,17 @@
 #include "sl_cr_types.hpp"
 #include "sl_cr_version.h"
 
+/* Default stack size to use for FreeRTOS Tasks (in words) */
+#define SL_CR_DEFAULT_TASK_STACK_SIZE 128
+#define SL_CR_DRIVE_TASK_STACK_SIZE SL_CR_DEFAULT_TASK_STACK_SIZE
+
 sl_cr_motor_driver_c *left_motor;
 sl_cr_motor_driver_c *right_motor;
-
+#ifdef _VIRTUAL_MOTORS_
+/* Larger stack required for strings */
+#undef  SL_CR_DRIVE_TASK_STACK_SIZE
+#define SL_CR_DRIVE_TASK_STACK_SIZE 1024
+#endif
 /* Drive loop period in ms */
 #define SL_CR_DRIVE_PERIOD 10
 #ifdef _ARCADE_DRIVE_
@@ -59,13 +69,25 @@ void wdt_callback() {
 
 static void drive_task(void*)
 {
-
   TickType_t xLastWakeTime;
   const TickType_t xPeriod = pdMS_TO_TICKS(SL_CR_DRIVE_PERIOD);
   xLastWakeTime = xTaskGetTickCount();
 
+  sl_cr_time_t last_drive_loop_time = millis();
+  sl_cr_time_t new_drive_loop_time;
+
   for(;;)
   {
+    vTaskDelayUntil( &xLastWakeTime, xPeriod );
+    new_drive_loop_time = millis();
+    if((new_drive_loop_time-last_drive_loop_time) > SL_CR_DRIVE_PERIOD)
+    {
+      Serial.print("Slow Drive Update: ");
+      Serial.print(new_drive_loop_time-last_drive_loop_time);
+      Serial.println("ms");
+    }
+    last_drive_loop_time = new_drive_loop_time;
+
     #ifdef _ARCADE_DRIVE_
       /* Arcade Drive loop */
       arcade_drive->loop();
@@ -73,7 +95,6 @@ static void drive_task(void*)
       /* Tank Drive loop */
       tank_drive->loop();
     #endif
-    vTaskDelayUntil( &xLastWakeTime, xPeriod );
   }
 }
 
@@ -85,6 +106,8 @@ static void watchdog_task(void*)
   for(;;)
   {
     vTaskDelayUntil( &xLastWakeTime, xPeriod );
+
+    /* Feed watchdog */
     wdt.feed();
     watchdog_fed = millis();
   }
@@ -98,17 +121,24 @@ static void sbus_task(void*)
   xLastWakeTime = xTaskGetTickCount();
   for(;;)
   {
+    vTaskDelayUntil( &xLastWakeTime, xPeriod );
+
     /* Read any new SBUS data */
     sl_cr_sbus_loop();
     /* Check if ARM switch is set */
     sl_cr_failsafe_armswitch_loop();
-    vTaskDelayUntil( &xLastWakeTime, xPeriod );
   }
 
 }
 
 
 void setup() {
+   /* Serial for debug logging */
+  #ifdef _SERIAL_DEBUG_MODE_
+  Serial.begin(115200);
+  while (!Serial) {}
+  #endif
+
   /* Configure Watchdog Timer before anything else */
   WDT_timings_t wdt_config;
   wdt_config.window = SL_CR_WATCHDOG_WINDOW;
@@ -126,12 +156,6 @@ void setup() {
 
   /* Log software details */
   Serial.println(SL_CR_SOFTWARE_INTRO);
-
-   /* Serial for debug logging */
-  #ifdef _SERIAL_DEBUG_MODE_
-  Serial.begin(115200);
-  while (!Serial) {}
-  #endif
 
   Serial.print("Failsafe mask: 0x");
   Serial.println(sl_cr_get_failsafe_mask(), arduino::HEX);
@@ -159,9 +183,9 @@ void setup() {
   Serial.println("Drive Configured.");
   
   /* Configure FreeRTOS */
-  xTaskCreate(watchdog_task, "watchdog_task", 128, nullptr, 2, nullptr);
-  xTaskCreate(sbus_task, "drive_task", 128, nullptr, 2, nullptr);
-  xTaskCreate(drive_task, "drive_task", 128, nullptr, 2, nullptr);
+  xTaskCreate(watchdog_task, "watchdog_task", SL_CR_DEFAULT_TASK_STACK_SIZE, nullptr, 2, nullptr);
+  xTaskCreate(sbus_task,     "sbus_task",     SL_CR_DEFAULT_TASK_STACK_SIZE, nullptr, 2, nullptr);
+  xTaskCreate(drive_task,    "drive_task",    SL_CR_DRIVE_TASK_STACK_SIZE,   nullptr, 2, nullptr);
   Serial.println("FreeRTOS Configured.");
 
   /* Bootup Complete */
