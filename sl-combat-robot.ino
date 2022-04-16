@@ -36,17 +36,20 @@
 
 sl_cr_motor_driver_c *left_motor;
 sl_cr_motor_driver_c *right_motor;
-#ifdef _VIRTUAL_MOTORS_
-/* Larger stack required for strings */
-#undef  SL_CR_DRIVE_TASK_STACK_SIZE
-#define SL_CR_DRIVE_TASK_STACK_SIZE 1024
-#endif
 /* Drive loop period in ms */
 #define SL_CR_DRIVE_PERIOD 10
 #ifdef _ARCADE_DRIVE_
 sl_cr_arcade_drive_c *arcade_drive;
 #else
 sl_cr_tank_drive_c   *tank_drive;
+#endif
+#ifdef _VIRTUAL_MOTORS_
+/* Larger stack required for strings */
+#undef  SL_CR_DRIVE_TASK_STACK_SIZE
+#define SL_CR_DRIVE_TASK_STACK_SIZE 1024
+/* Decrease drive period as Serial prints may be slow */
+#undef  SL_CR_DRIVE_PERIOD
+#define SL_CR_DRIVE_PERIOD 50
 #endif
 
 sl_cr_time_t watchdog_fed;
@@ -183,9 +186,9 @@ void setup() {
   Serial.println("Drive Configured.");
   
   /* Configure FreeRTOS */
-  xTaskCreate(watchdog_task, "watchdog_task", SL_CR_DEFAULT_TASK_STACK_SIZE, nullptr, 2, nullptr);
-  xTaskCreate(sbus_task,     "sbus_task",     SL_CR_DEFAULT_TASK_STACK_SIZE, nullptr, 2, nullptr);
-  xTaskCreate(drive_task,    "drive_task",    SL_CR_DRIVE_TASK_STACK_SIZE,   nullptr, 2, nullptr);
+  xTaskCreate(watchdog_task, "watchdog_task", SL_CR_DEFAULT_TASK_STACK_SIZE, nullptr, 1, nullptr);
+  xTaskCreate(drive_task,    "drive_task",    SL_CR_DRIVE_TASK_STACK_SIZE,   nullptr, 5, nullptr);
+  xTaskCreate(sbus_task,     "sbus_task",     SL_CR_DEFAULT_TASK_STACK_SIZE, nullptr, 7, nullptr);
   Serial.println("FreeRTOS Configured.");
 
   /* Bootup Complete */
