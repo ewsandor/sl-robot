@@ -106,13 +106,22 @@ static void watchdog_task(void*)
   TickType_t xLastWakeTime;
   const TickType_t xPeriod = pdMS_TO_TICKS(SL_CR_WATCHDOG_FEEDING_SCHEDULE);
   xLastWakeTime = xTaskGetTickCount();
+  sl_cr_time_t new_wdt_loop_time;
+
   for(;;)
   {
     vTaskDelayUntil( &xLastWakeTime, xPeriod );
+    new_wdt_loop_time = millis();
+    if((new_wdt_loop_time-watchdog_fed) > SL_CR_WATCHDOG_FEEDING_SCHEDULE)
+    {
+      Serial.print("Slow WDT Update: ");
+      Serial.print(new_wdt_loop_time-watchdog_fed);
+      Serial.println("ms");
+    }
 
     /* Feed watchdog */
     wdt.feed();
-    watchdog_fed = millis();
+    watchdog_fed = new_wdt_loop_time;
   }
 
 }
