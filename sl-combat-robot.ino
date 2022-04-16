@@ -47,7 +47,7 @@ sl_cr_tank_drive_c   *tank_drive;
 /* Larger stack required for strings */
 #undef  SL_CR_DRIVE_TASK_STACK_SIZE
 #define SL_CR_DRIVE_TASK_STACK_SIZE 1024
-/* Decrease drive period as Serial prints may be slow */
+/* Decrease drive period as serial prints may be slow */
 #undef  SL_CR_DRIVE_PERIOD
 #define SL_CR_DRIVE_PERIOD 50
 #endif
@@ -58,7 +58,7 @@ sl_cr_time_t watchdog_fed;
 /* Watchdog feeding schedule in ms */
 #define SL_CR_WATCHDOG_FEEDING_SCHEDULE (SL_CR_WATCHDOG_TIMEOUT/2)
 /* Watchdog window in ms, 32ms to 522.232s, must be smaller than timeout */
-#define SL_CR_WATCHDOG_WINDOW (SL_CR_WATCHDOG_FEEDING_SCHEDULE/2)
+#define SL_CR_WATCHDOG_WINDOW (SL_CR_WATCHDOG_FEEDING_SCHEDULE-1)
 WDT_T4<WDT3> wdt;
 void wdt_callback() {
   Serial.println("WATCHDOG ABOUT TO EXPIRE...");
@@ -110,7 +110,7 @@ static void watchdog_task(void*)
 
   for(;;)
   {
-    vTaskDelayUntil( &xLastWakeTime, xPeriod );
+    vTaskDelay(xPeriod);
     new_wdt_loop_time = millis();
     if((new_wdt_loop_time-watchdog_fed) > SL_CR_WATCHDOG_FEEDING_SCHEDULE)
     {
