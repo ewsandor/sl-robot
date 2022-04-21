@@ -13,6 +13,8 @@
 void sl_cr_encoder_c::init()
 {
   count                       = 0;
+  last_count                  = 0;
+  skipped_count               = 0;
   count_frequency             = 0;
   rpm                         = 0;
   last_frequency_update       = millis();
@@ -67,6 +69,10 @@ void sl_cr_encoder_c::apply_new_state(sl_cr_encoder_channel_state_t new_channel_
         {
           count--;
         }
+        else
+        {
+          skipped_count++;
+        }
         break;
       }
       case 0b10:
@@ -78,6 +84,10 @@ void sl_cr_encoder_c::apply_new_state(sl_cr_encoder_channel_state_t new_channel_
         else if(0b00 == new_channel_state)
         {
           count--;
+        }
+        else
+        {
+          skipped_count++;
         }
         break;
       }
@@ -91,6 +101,10 @@ void sl_cr_encoder_c::apply_new_state(sl_cr_encoder_channel_state_t new_channel_
         {
           count--;
         }
+        else
+        {
+          skipped_count++;
+        }
         break;
       }
       case 0b01:
@@ -102,6 +116,10 @@ void sl_cr_encoder_c::apply_new_state(sl_cr_encoder_channel_state_t new_channel_
         else if(0b11 == new_channel_state)
         {
           count--;
+        }
+        else
+        {
+          skipped_count++;
         }
         break;
       }
@@ -133,7 +151,6 @@ void sl_cr_encoder_c::sample_channels()
 
 void sl_cr_encoder_c::compute_rotation_frequency()
 {
-  sl_cr_encoder_count_t count_snapshot;
   const sl_cr_time_t    snapshot_time = millis();
 
   /* Only update if millis has incremented to avoid divide by 0 */
@@ -142,22 +159,51 @@ void sl_cr_encoder_c::compute_rotation_frequency()
     /* Atomically take snapshot of count and reset counter */
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
     {
-      count_snapshot = count;
+      last_count = count;
       count = 0;
     }
 
     if(invert_direction)
     {
-      count_snapshot = (-count_snapshot);
+      last_count = (-last_count);
     }
-    count_frequency = (count_snapshot * 1000) /
-                      ((snapshot_time-last_frequency_update));
-    rpm             = (count_snapshot * 1000 * 60 * reduction_ratio_numerator) / 
-                      ((snapshot_time-last_frequency_update) * counts_per_revolution * reduction_ratio_denominator);
+    count_frequency = (last_count * 1000) / 
+                      ((sl_cr_encoder_frequency_t) (snapshot_time-last_frequency_update));
+     rpm            = ((sl_cr_rpm_t)(last_count * 1000 * 60 * reduction_ratio_numerator)) / 
+                      ((sl_cr_rpm_t)((snapshot_time-last_frequency_update) * counts_per_revolution * reduction_ratio_denominator));
  
     last_frequency_update = snapshot_time;
   }
 }
+
+sl_cr_encoder_count_t sl_cr_encoder_c::get_count() const 
+{
+  sl_cr_encoder_count_t saved_count;
+  ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+  {
+    saved_count = count;
+  }
+  return saved_count;
+};
+sl_cr_encoder_count_t sl_cr_encoder_c::get_skipped_count() const 
+{
+  sl_cr_encoder_count_t saved_skipped_count;
+  ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+  {
+    saved_skipped_count = skipped_count;
+  }
+  return saved_skipped_count;
+};
+sl_cr_encoder_channel_state_t sl_cr_encoder_c::get_state() const
+{
+  sl_cr_encoder_channel_state_t saved_channel_state;
+  ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+  {
+    saved_channel_state = channel_state;
+  }
+  return saved_channel_state;
+};
+
 
 void sl_cr_encoder_c::loop()
 {

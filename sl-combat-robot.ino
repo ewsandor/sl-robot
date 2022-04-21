@@ -167,7 +167,7 @@ static void sbus_task(void *)
 static void serial_debug_task(void *)
 {
   TickType_t xLastWakeTime;
-  const TickType_t xPeriod = pdMS_TO_TICKS(100);
+  const TickType_t xPeriod = pdMS_TO_TICKS(1000);
   xLastWakeTime = xTaskGetTickCount();
   for (;;)
   {
@@ -179,6 +179,10 @@ static void serial_debug_task(void *)
     Serial.print(left_encoder->get_count_frequency());
     Serial.print(", count ");
     Serial.print(left_encoder->get_count());
+    Serial.print(", last_count ");
+    Serial.print(left_encoder->get_last_count());
+    Serial.print(", skipped_count ");
+    Serial.print(left_encoder->get_skipped_count());
     Serial.print(", state ");
     Serial.println(left_encoder->get_state());
   }
@@ -244,7 +248,7 @@ void setup()
   xTaskCreate(drive_task, "drive_task", SL_CR_DRIVE_TASK_STACK_SIZE, nullptr, 5, nullptr);
   xTaskCreate(sbus_task, "sbus_task", SL_CR_DEFAULT_TASK_STACK_SIZE, nullptr, 7, nullptr);
   #ifdef _SERIAL_DEBUG_MODE_
-  xTaskCreate(serial_debug_task, "serial_debug_task", SL_CR_DEFAULT_TASK_STACK_SIZE, nullptr, 7, nullptr);
+  xTaskCreate(serial_debug_task, "serial_debug_task", SL_CR_DEFAULT_TASK_STACK_SIZE, nullptr, 2, nullptr);
   #endif
   Serial.println("FreeRTOS Configured.");
 

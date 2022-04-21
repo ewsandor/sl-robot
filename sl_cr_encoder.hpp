@@ -30,6 +30,8 @@ class sl_cr_encoder_c
     /* State Information */
     volatile sl_cr_encoder_channel_state_t channel_state;
     volatile sl_cr_encoder_count_t         count;
+    volatile sl_cr_encoder_count_t         skipped_count;
+    sl_cr_encoder_count_t                  last_count;
     sl_cr_time_t                           last_frequency_update;
     sl_cr_encoder_frequency_t              count_frequency;
     sl_cr_rpm_t                            rpm;
@@ -73,10 +75,14 @@ class sl_cr_encoder_c
         Recommended to call < 1ms (millis() resolution).  less frequent will average better, but have greater latency */
     void loop();
 
-    sl_cr_rpm_t get_rpm()             const {return rpm;};
-    sl_cr_rpm_t get_count_frequency() const {return count_frequency;};
-    sl_cr_rpm_t get_count()           const {return count;};
-    sl_cr_rpm_t get_state()           const {return channel_state;};
+    /* Get Encoder Measurements */
+    sl_cr_rpm_t                   get_rpm()             const {return rpm;};
+    sl_cr_encoder_frequency_t     get_count_frequency() const {return count_frequency;};
+    sl_cr_encoder_count_t         get_last_count()      const {return last_count;};
+    /* Get Raw Encoder Values, not recommended as these requires atomic operations */
+    sl_cr_encoder_count_t         get_count()           const;
+    sl_cr_encoder_count_t         get_skipped_count()   const;
+    sl_cr_encoder_channel_state_t get_state()           const;
 };
 
 #endif // __SL_CR_ENCODER_HPP__
