@@ -13,8 +13,10 @@
 /* Time type (ms) */
 typedef unsigned long sl_cr_time_t;
 
-/* Speed type */
+/* Velocity type */
 typedef int sl_cr_velocity_t;
+/* RPM type */
+typedef int sl_cr_rpm_t;
 
 /* Failsafe function pointer */
 typedef bool (*sl_cr_failsafe_f)(void);
@@ -31,13 +33,14 @@ typedef uint8_t sl_cr_pin_t;
 #define SL_CR_PIN_DRIVE_MOTOR_2_FAULT SL_CR_PIN_INVALID
 #define SL_CR_PIN_DRIVE_MOTOR_2_SLEEP 9
 #define SL_CR_PIN_ONBOARD_LED         13
+#define SL_CR_PIN_DRIVE_ENCODER_1_A   22
+#define SL_CR_PIN_DRIVE_ENCODER_1_B   23
 
 /* PWM Resolution */
 #define SL_CR_PWM_RESOLUTION 10
 #define SL_CR_PWM_MAX_VALUE  ((1<<SL_CR_PWM_RESOLUTION)-1)
 /* Default frequency to use for PWM pins (hz) */
 #define SL_CR_DEFAULT_PWM_FREQ 23437.5
-
 
 /* RC Channel Index, starts from 1 */
 typedef unsigned int sl_cr_rc_channel_t;
