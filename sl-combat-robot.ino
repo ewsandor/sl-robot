@@ -224,7 +224,7 @@ void setup()
   Serial.println("SBUS Configured.");
 
   /* Configure Drive Motors, Encoders, and Drive Strategy */
-  left_encoder = new sl_cr_encoder_c(SL_CR_PIN_DRIVE_ENCODER_1_A, SL_CR_PIN_DRIVE_ENCODER_1_B);
+  left_encoder = new sl_cr_encoder_c(SL_CR_PIN_DRIVE_ENCODER_1_A, SL_CR_PIN_DRIVE_ENCODER_1_B,false,12,1,30);
 #ifdef _VIRTUAL_MOTORS_
   left_motor = new sl_cr_motor_driver_virtual_c("Left Motor", sl_cr_get_failsafe_set);
   right_motor = new sl_cr_motor_driver_virtual_c("Right Motor", sl_cr_get_failsafe_set);
