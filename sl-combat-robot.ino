@@ -10,7 +10,7 @@
 #include <arduino_freertos.h>
 
 //////////////////// FEATURIZATION ////////////////////
-//#define _SERIAL_DEBUG_MODE_
+#define _SERIAL_DEBUG_MODE_
 //#define _VIRTUAL_MOTORS_
 #define _ARCADE_DRIVE_
 ///////////////////////////////////////////////////////
@@ -74,6 +74,25 @@ void wdt_callback()
 /* SBUS read frequency in ms */
 #define SL_CR_SBUS_PERIOD SL_CR_SBUS_UPDATE_PERIOD
 
+
+
+/* Encoder interrupts */
+void interrupt_left_encoder_a()
+{
+  if(left_encoder)
+  {
+    left_encoder->sample_channel_a();
+  }
+}
+void interrupt_left_encoder_b()
+{
+  if(left_encoder)
+  {
+    left_encoder->sample_channel_b();
+  }
+}
+
+
 static void drive_task(void *)
 {
   TickType_t xLastWakeTime;
@@ -95,6 +114,7 @@ static void drive_task(void *)
     }
     last_drive_loop_time = new_drive_loop_time;
 
+    left_encoder->loop();
 #ifdef _ARCADE_DRIVE_
     /* Arcade Drive loop */
     arcade_drive->loop();
@@ -143,6 +163,28 @@ static void sbus_task(void *)
   }
 }
 
+#ifdef _SERIAL_DEBUG_MODE_
+static void serial_debug_task(void *)
+{
+  TickType_t xLastWakeTime;
+  const TickType_t xPeriod = pdMS_TO_TICKS(100);
+  xLastWakeTime = xTaskGetTickCount();
+  for (;;)
+  {
+    vTaskDelayUntil(&xLastWakeTime, xPeriod);
+
+    Serial.print("encoder: rpm ");
+    Serial.print(left_encoder->get_rpm());
+    Serial.print(", raw ");
+    Serial.print(left_encoder->get_count_frequency());
+    Serial.print(", count ");
+    Serial.print(left_encoder->get_count());
+    Serial.print(", state ");
+    Serial.println(left_encoder->get_state());
+  }
+}
+#endif
+
 void setup()
 {
   /* Serial for debug logging */
@@ -181,7 +223,8 @@ void setup()
   sl_cr_sbus_init();
   Serial.println("SBUS Configured.");
 
-  /* Configure Drive Motors and Strategy */
+  /* Configure Drive Motors, Encoders, and Drive Strategy */
+  left_encoder = new sl_cr_encoder_c(SL_CR_PIN_DRIVE_ENCODER_1_A, SL_CR_PIN_DRIVE_ENCODER_1_B);
 #ifdef _VIRTUAL_MOTORS_
   left_motor = new sl_cr_motor_driver_virtual_c("Left Motor", sl_cr_get_failsafe_set);
   right_motor = new sl_cr_motor_driver_virtual_c("Right Motor", sl_cr_get_failsafe_set);
@@ -200,6 +243,9 @@ void setup()
   xTaskCreate(watchdog_task, "watchdog_task", SL_CR_DEFAULT_TASK_STACK_SIZE, nullptr, 1, nullptr);
   xTaskCreate(drive_task, "drive_task", SL_CR_DRIVE_TASK_STACK_SIZE, nullptr, 5, nullptr);
   xTaskCreate(sbus_task, "sbus_task", SL_CR_DEFAULT_TASK_STACK_SIZE, nullptr, 7, nullptr);
+  #ifdef _SERIAL_DEBUG_MODE_
+  xTaskCreate(serial_debug_task, "serial_debug_task", SL_CR_DEFAULT_TASK_STACK_SIZE, nullptr, 7, nullptr);
+  #endif
   Serial.println("FreeRTOS Configured.");
 
   /* Bootup Complete */
@@ -208,6 +254,12 @@ void setup()
   digitalWrite(SL_CR_PIN_ONBOARD_LED, arduino::LOW);
   /* Clear Bootup failsafe */
   sl_cr_clear_failsafe_mask(SL_CR_FAILSAFE_BOOT);
+
+  Serial.println("Attaching Pin Interrupts.");
+  attachInterrupt(SL_CR_PIN_DRIVE_ENCODER_1_A, 
+                  interrupt_left_encoder_a, arduino::CHANGE);
+  attachInterrupt(SL_CR_PIN_DRIVE_ENCODER_1_B, 
+                  interrupt_left_encoder_b, arduino::CHANGE);
 
   Serial.println("Starting FreeRTOS scheduler.");
   Serial.flush();

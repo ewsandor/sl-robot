@@ -75,6 +75,8 @@ class sl_cr_encoder_c
 
     sl_cr_rpm_t get_rpm()             const {return rpm;};
     sl_cr_rpm_t get_count_frequency() const {return count_frequency;};
+    sl_cr_rpm_t get_count()           const {return count;};
+    sl_cr_rpm_t get_state()           const {return channel_state;};
 };
 
 #endif // __SL_CR_ENCODER_HPP__

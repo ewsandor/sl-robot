@@ -117,11 +117,13 @@ void sl_cr_encoder_c::sample_channel_a()
 {
   sl_cr_encoder_channel_state_t new_channel_state = (channel_state &= 0b01);
   new_channel_state |= (digitalReadFast(ch_a_pin) << 1);
+  apply_new_state(new_channel_state);
 }
 void sl_cr_encoder_c::sample_channel_b()
 {
   sl_cr_encoder_channel_state_t new_channel_state = (channel_state &= 0b10);
   new_channel_state |= digitalReadFast(ch_b_pin);
+  apply_new_state(new_channel_state);
 }
 void sl_cr_encoder_c::sample_channels()
 {
