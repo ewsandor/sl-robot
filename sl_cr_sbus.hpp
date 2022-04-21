@@ -10,6 +10,9 @@
 
 #include "sl_cr_types.hpp"
 
+/* Nominal period between SBUS packets (ms) */
+#define SL_CR_SBUS_UPDATE_PERIOD 14
+
 void sl_cr_sbus_init();
 void sl_cr_sbus_loop();
 

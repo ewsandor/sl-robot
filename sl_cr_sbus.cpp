@@ -12,8 +12,6 @@
 #include "sl_cr_failsafe.hpp"
 #include "sl_cr_sbus.hpp"
 
-/* Nominal period between SBUS packets (ms) */
-#define SL_CR_SBUS_UPDATE_PERIOD 14
 /* Time since last SBUS update to declare data stale (ms) */
 #define SL_CR_SBUS_STALE_TIMEOUT (4*SL_CR_SBUS_UPDATE_PERIOD)
 /* Channel to array mapping */
