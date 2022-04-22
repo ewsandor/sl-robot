@@ -10,7 +10,7 @@
 #include <arduino_freertos.h>
 
 //////////////////// FEATURIZATION ////////////////////
-#define _SERIAL_DEBUG_MODE_
+//#define _SERIAL_DEBUG_MODE_
 //#define _VIRTUAL_MOTORS_
 #define _ARCADE_DRIVE_
 ///////////////////////////////////////////////////////
