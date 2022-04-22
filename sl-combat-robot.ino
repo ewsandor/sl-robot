@@ -32,14 +32,15 @@
 #include "sl_cr_version.h"
 
 /* Default stack size to use for FreeRTOS Tasks (in words) */
-#define SL_CR_DEFAULT_TASK_STACK_SIZE 128
-#define SL_CR_DRIVE_TASK_STACK_SIZE SL_CR_DEFAULT_TASK_STACK_SIZE
+#define SL_CR_DEFAULT_TASK_STACK_SIZE      128
+#define SL_CR_CONTROL_LOOP_TASK_STACK_SIZE SL_CR_DEFAULT_TASK_STACK_SIZE
 
 sl_cr_encoder_c      *left_encoder;
 sl_cr_encoder_c      *right_encoder;
 sl_cr_motor_driver_c *left_motor;
 sl_cr_motor_driver_c *right_motor;
 /* Drive loop period in ms */
+#define SL_CR_CONTROL_LOOP_PERIOD 10
 #define SL_CR_DRIVE_PERIOD 10
 #ifdef _ARCADE_DRIVE_
 sl_cr_arcade_drive_c *arcade_drive;
@@ -48,8 +49,8 @@ sl_cr_tank_drive_c *tank_drive;
 #endif
 #ifdef _VIRTUAL_MOTORS_
 /* Larger stack required for strings */
-#undef SL_CR_DRIVE_TASK_STACK_SIZE
-#define SL_CR_DRIVE_TASK_STACK_SIZE 1024
+#undef SL_CR_CONTROL_LOOP_TASK_STACK_SIZE
+#defineSL_CR_CONTROL_LOOP_TASK_STACK_SIZE 1024
 /* Decrease drive period as serial prints may be slow */
 #undef SL_CR_DRIVE_PERIOD
 #define SL_CR_DRIVE_PERIOD 50
@@ -92,6 +93,23 @@ void interrupt_left_encoder_b()
   }
 }
 
+static void control_loop_task(void *)
+{
+  TickType_t xLastWakeTime;
+  const TickType_t xPeriod = pdMS_TO_TICKS(SL_CR_CONTROL_LOOP_PERIOD);
+  xLastWakeTime = xTaskGetTickCount();
+
+  for (;;)
+  {
+    vTaskDelayUntil(&xLastWakeTime, xPeriod);
+
+    /* Read Encoders */
+    left_encoder->loop();
+    /* Command Motors */
+    left_motor->loop();
+    right_motor->loop();
+  }
+}
 
 static void drive_task(void *)
 {
@@ -99,22 +117,10 @@ static void drive_task(void *)
   const TickType_t xPeriod = pdMS_TO_TICKS(SL_CR_DRIVE_PERIOD);
   xLastWakeTime = xTaskGetTickCount();
 
-  sl_cr_time_t last_drive_loop_time = millis();
-  sl_cr_time_t new_drive_loop_time;
-
   for (;;)
   {
     vTaskDelayUntil(&xLastWakeTime, xPeriod);
-    new_drive_loop_time = millis();
-    if ((new_drive_loop_time - last_drive_loop_time) > SL_CR_DRIVE_PERIOD)
-    {
-      Serial.print("Slow Drive Update: ");
-      Serial.print(new_drive_loop_time - last_drive_loop_time);
-      Serial.println("ms");
-    }
-    last_drive_loop_time = new_drive_loop_time;
 
-    left_encoder->loop();
 #ifdef _ARCADE_DRIVE_
     /* Arcade Drive loop */
     arcade_drive->loop();
@@ -244,12 +250,13 @@ void setup()
   Serial.println("Drive Configured.");
 
   /* Configure FreeRTOS */
-  xTaskCreate(watchdog_task, "watchdog_task", SL_CR_DEFAULT_TASK_STACK_SIZE, nullptr, 1, nullptr);
-  xTaskCreate(drive_task, "drive_task", SL_CR_DRIVE_TASK_STACK_SIZE, nullptr, 5, nullptr);
-  xTaskCreate(sbus_task, "sbus_task", SL_CR_DEFAULT_TASK_STACK_SIZE, nullptr, 7, nullptr);
   #ifdef _SERIAL_DEBUG_MODE_
-  xTaskCreate(serial_debug_task, "serial_debug_task", SL_CR_DEFAULT_TASK_STACK_SIZE, nullptr, 2, nullptr);
+  xTaskCreate(serial_debug_task, "Serial Debug Task", SL_CR_DEFAULT_TASK_STACK_SIZE,      nullptr, 1, nullptr);
   #endif
+  xTaskCreate(watchdog_task,     "Watchdog Task",     SL_CR_DEFAULT_TASK_STACK_SIZE,      nullptr, 2, nullptr);
+  xTaskCreate(drive_task,        "Drive Task",        SL_CR_DEFAULT_TASK_STACK_SIZE,      nullptr, 5, nullptr);
+  xTaskCreate(sbus_task,         "SBUS Task",         SL_CR_DEFAULT_TASK_STACK_SIZE,      nullptr, 6, nullptr);
+  xTaskCreate(control_loop_task, "Control Loop Task", SL_CR_CONTROL_LOOP_TASK_STACK_SIZE, nullptr, 7, nullptr);
   Serial.println("FreeRTOS Configured.");
 
   /* Bootup Complete */

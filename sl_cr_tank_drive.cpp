@@ -94,8 +94,4 @@ void sl_cr_tank_drive_c::loop()
     set_motor_speed(sl_cr_sbus_get_ch_value(left_channel),  left_motor);
     set_motor_speed(sl_cr_sbus_get_ch_value(right_channel), right_motor);
   }
-
-  /* Call motor loops */
-  left_motor->loop();
-  right_motor->loop();
 }

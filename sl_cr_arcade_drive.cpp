@@ -109,8 +109,4 @@ void sl_cr_arcade_drive_c::loop()
     /* Set motor speeds */
     set_motor_speeds();
   }
-
-  /* Call motor loops */
-  left_motor->loop();
-  right_motor->loop();
 }
