@@ -10,7 +10,7 @@
 #include <arduino_freertos.h>
 
 //////////////////// FEATURIZATION ////////////////////
-//#define _SERIAL_DEBUG_MODE_
+#define _SERIAL_DEBUG_MODE_
 //#define _VIRTUAL_MOTORS_
 #define _ARCADE_DRIVE_
 ///////////////////////////////////////////////////////
@@ -197,31 +197,32 @@ static void serial_debug_task(void *)
 
 void setup()
 {
+  /* Enable Bootup LED */
+  pinMode(SL_CR_PIN_ONBOARD_LED, arduino::OUTPUT);
+  digitalWrite(SL_CR_PIN_ONBOARD_LED, arduino::HIGH);
+
   /* Serial for debug logging */
 #ifdef _SERIAL_DEBUG_MODE_
   Serial.begin(115200);
   while (!Serial)
   {
   }
+  Serial.println("Serial Connected.");
 #endif
+  /* Start of Bootup */
+  Serial.println("######## BOOTUP START ########");
+
+  /* Log software details */
+  Serial.println(SL_CR_SOFTWARE_INTRO);
 
   /* Configure Watchdog Timer before anything else */
+  Serial.println("Activating Watchdog.");
   WDT_timings_t wdt_config;
   wdt_config.window = SL_CR_WATCHDOG_WINDOW;
   wdt_config.timeout = SL_CR_WATCHDOG_TIMEOUT;
   wdt_config.callback = wdt_callback;
   watchdog_fed = millis();
   wdt.begin(wdt_config);
-  Serial.println("Watchdog Active.");
-
-  /* Start of Bootup */
-  Serial.println("######## BOOTUP START ########");
-  /* Enable Bootup LED */
-  pinMode(SL_CR_PIN_ONBOARD_LED, arduino::OUTPUT);
-  digitalWrite(SL_CR_PIN_ONBOARD_LED, arduino::HIGH);
-
-  /* Log software details */
-  Serial.println(SL_CR_SOFTWARE_INTRO);
 
   Serial.print("Failsafe mask: 0x");
   Serial.println(sl_cr_get_failsafe_mask(), arduino::HEX);
@@ -239,7 +240,7 @@ void setup()
   left_motor = new sl_cr_motor_driver_virtual_c("Left Motor", sl_cr_get_failsafe_set);
   right_motor = new sl_cr_motor_driver_virtual_c("Right Motor", sl_cr_get_failsafe_set);
 #else
-  left_motor = new sl_cr_motor_driver_drv8256p_c(SL_CR_PIN_DRIVE_MOTOR_1_SLEEP, SL_CR_PIN_DRIVE_MOTOR_1_IN1, SL_CR_PIN_DRIVE_MOTOR_1_IN2, sl_cr_get_failsafe_set);
+  left_motor  = new sl_cr_motor_driver_drv8256p_c(SL_CR_PIN_DRIVE_MOTOR_1_SLEEP, SL_CR_PIN_DRIVE_MOTOR_1_IN1, SL_CR_PIN_DRIVE_MOTOR_1_IN2, sl_cr_get_failsafe_set);
   right_motor = new sl_cr_motor_driver_drv8256p_c(SL_CR_PIN_DRIVE_MOTOR_2_SLEEP, SL_CR_PIN_DRIVE_MOTOR_2_IN1, SL_CR_PIN_DRIVE_MOTOR_2_IN2, sl_cr_get_failsafe_set);
 #endif
 #ifdef _ARCADE_DRIVE_
