@@ -53,9 +53,9 @@ void sl_cr_encoder_c::apply_new_state(sl_cr_encoder_channel_state_t new_channel_
   if(channel_state != new_channel_state)
   {
     /* Encoder state order:
-      A: _|-|__|-|__|-|_
-      B: __|-|__|-|__|-|_
-      0b00->0b10->0b11->0b01->0b00
+        A: _|--|__|--|__|--|_
+        B: __|--|__|--|__|--|
+        0b00->0b10->0b11->0b01->0b00
     */
     switch(channel_state)
     {
@@ -145,8 +145,8 @@ void sl_cr_encoder_c::sample_channel_b()
 }
 void sl_cr_encoder_c::sample_channels()
 {
-  sample_channel_a();
-  sample_channel_b();
+  sl_cr_encoder_channel_state_t new_channel_state = ((digitalReadFast(ch_a_pin) << 1) | digitalReadFast(ch_b_pin));
+  apply_new_state(new_channel_state);
 }
 
 void sl_cr_encoder_c::compute_rotation_frequency()

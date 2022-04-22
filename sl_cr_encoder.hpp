@@ -39,9 +39,9 @@ class sl_cr_encoder_c
     /* RPM Configuration */
     bool                                  invert_direction;
     /* Counts per encoder revolution - total of rising and falling edges of both channels
-       Example - 12 counts per revolution:
-       A: _|-|__|-|__|-|_
-       B: __|-|__|-|__|-|_ */
+       Example - 12 counts per revolution (3 pulses per channel):
+        A: _|--|__|--|__|--|_
+        B: __|--|__|--|__|--| */
     sl_cr_encoder_count_t                 counts_per_revolution;
     /* Reduction ratio to account for gearing-type reductions */
     sl_cr_reduction_ratio_t               reduction_ratio_numerator;
