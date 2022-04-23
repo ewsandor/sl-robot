@@ -2,42 +2,43 @@
   sl_cr_control_loop.hpp
   Sandor Laboratories Combat Robot Software
   Edward Sandor
-  February 2022
+  February-April 2022
 */
 
 #ifndef __SL_CR_CONTROL_LOOP_HPP__
 #define __SL_CR_CONTROL_LOOP_HPP__
 
-#include "sl_cr_types.hpp"
-
+template <typename SETPOINT_T, typename OUTPUT_T>
 class sl_cr_control_loop_c
 {
   private:
-    sl_cr_velocity_t velocity;
-    sl_cr_velocity_t target_velocity;
+    SETPOINT_T  sp;
+    OUTPUT_T    output;
 
-    sl_cr_velocity_t min_velocity;
-    sl_cr_velocity_t neutral_velocity;
-    sl_cr_velocity_t max_velocity;
+    SETPOINT_T sp_min;
+    SETPOINT_T sp_max;
+    OUTPUT_T   output_min;
+    OUTPUT_T   output_max;
 
   protected:
-    sl_cr_velocity_t get_min_velocity()     const {return min_velocity;}
-    sl_cr_velocity_t get_neutral_velocity() const {return neutral_velocity;}
-    sl_cr_velocity_t get_max_velocity()     const {return max_velocity;}
+    SETPOINT_T get_sp_min()     const {return sp_min;}
+    SETPOINT_T get_sp_max()     const {return sp_max;}
 
   public:
-    /* Initialize control loop with min, neutral, and max values */
-    sl_cr_control_loop_c(sl_cr_velocity_t min_velocity, sl_cr_velocity_t neutral_velocity, sl_cr_velocity_t max_velocity);
+    /* Initialize control loop with Setpoint min, neutral, and max values */
+    sl_cr_control_loop_c(SETPOINT_T sp_min,     SETPOINT_T sp_max);
+    sl_cr_control_loop_c(SETPOINT_T sp_min,     SETPOINT_T sp_max,
+                         OUTPUT_T   output_min, OUTPUT_T   output_max);
 
-    /* Set new target value without running main loop */
-    void             set_target_velocity(sl_cr_velocity_t new_target_velocity) {target_velocity = new_target_velocity;}
+    /* Set new setpoint without running main loop */
+    void                change_setpoint(SETPOINT_T new_setpoint) {sp = new_setpoint;}
     /* Returns current output value without running main loop */
-    sl_cr_velocity_t get_velocity() const {return velocity;}
+    OUTPUT_T            get_output() const {return output;}
 
     /* Main control loop function.  Returns new output value */
-    virtual sl_cr_velocity_t loop();
-    /* Sets new target velocity and runs main control loop.  Returns new output value */
-    sl_cr_velocity_t         loop(sl_cr_velocity_t new_target_velocity) {set_target_velocity(new_target_velocity); return loop();}
+    virtual OUTPUT_T    loop();
+    /* Sets new target output and runs main control loop.  Returns new output value */
+    OUTPUT_T            loop(SETPOINT_T new_setpoint) {change_setpoint(new_setpoint); return loop();}
 };
 
 #endif // __SL_CR_CONTROL_LOOP_HPP__
