@@ -31,7 +31,7 @@ class sl_cr_tank_drive_c
     /* Initializes class with default values */
     void init();
 
-    /* Compute motor speed from RC input */
+    /* Compute motor rpm from RC input */
     void set_motor_speed(sl_cr_rc_channel_value_t, sl_cr_motor_driver_c*);
 
   public:

@@ -13,8 +13,6 @@
 #define SL_CR_MOTOR_DRIVER_DEFAULT_MAX_SPEED 1024
 #define SL_CR_MOTOR_DRIVER_DEFAULT_MIN_SPEED (-SL_CR_MOTOR_DRIVER_DEFAULT_MAX_SPEED)
 
-typedef sl_cr_velocity_t sl_cr_motor_driver_speed_t;
-
 typedef enum
 {
   /* Disabled due to emergency stop */
@@ -58,17 +56,17 @@ class sl_cr_motor_driver_c
 
     /* Config Parameters */
     bool                       invert_direction;
-    sl_cr_motor_driver_speed_t min_speed;
-    sl_cr_motor_driver_speed_t max_speed;
+    sl_cr_rpm_t min_rpm;
+    sl_cr_rpm_t max_rpm;
 
     /* Active Parameters */
-    sl_cr_motor_driver_speed_t target_speed;
+    sl_cr_rpm_t set_rpm;
 
     void init();
 
   protected:
     /* Active Parameters */
-    sl_cr_motor_driver_speed_t speed;
+    sl_cr_rpm_t rpm;
 
     virtual void disable_motor() = 0;
     virtual void command_motor() = 0;
@@ -77,9 +75,9 @@ class sl_cr_motor_driver_c
     sl_cr_motor_driver_c();
     sl_cr_motor_driver_c(sl_cr_failsafe_f);
 
-    sl_cr_motor_driver_speed_t get_min_speed() const;
-    sl_cr_motor_driver_speed_t get_neutral_speed() const;
-    sl_cr_motor_driver_speed_t get_max_speed() const;
+    sl_cr_rpm_t get_min_rpm() const;
+    sl_cr_rpm_t get_neutral_rpm() const;
+    sl_cr_rpm_t get_max_rpm() const;
 
     /* Disable motor for given reason */
     void disable(sl_cr_motor_disable_reason_e);
@@ -88,8 +86,8 @@ class sl_cr_motor_driver_c
     /* Checks if motor is currently disabled for any reason */
     bool disabled() const;
 
-    /* Sets motor to a given speed */
-    void set_speed(sl_cr_motor_driver_speed_t);
+    /* Sets motor to a given rpm */
+    void change_set_rpm(sl_cr_rpm_t);
     /* Sets motor to brake */
     void brake_motor();
 

@@ -20,28 +20,28 @@ void sl_cr_motor_driver_drv8256p_c::disable_motor()
 
 void sl_cr_motor_driver_drv8256p_c::command_motor()
 {
-  if(get_neutral_speed() == speed)
+  if(get_neutral_rpm() == rpm)
   {
     // in1: 0 in2: 0;  out1: L out2: L;  effect: brake low (outputs shorted to ground)
     analogWrite(in1, 0);
     analogWrite(in2, 0);
   }
-  else if (speed > get_neutral_speed())
+  else if (rpm > get_neutral_rpm())
   {
     /* Positive direction */
-    const int positive_range = get_max_speed()-get_neutral_speed();
-    int pwm_value = ((speed-get_neutral_speed())*SL_CR_PWM_MAX_VALUE)/positive_range;
+    const int positive_range = get_max_rpm()-get_neutral_rpm();
+    int pwm_value = ((rpm-get_neutral_rpm())*SL_CR_PWM_MAX_VALUE)/positive_range;
 
-    // in1: PWM in2: 0;  out1: PWM (H/L) out2: L;  effect: forward/brake at speed PWM %
+    // in1: PWM in2: 0;  out1: PWM (H/L) out2: L;  effect: forward/brake at rpm PWM %
     analogWrite(in1, pwm_value);
     analogWrite(in2, 0);
   }
   else
   {
-    const int negative_range = get_neutral_speed()-get_min_speed();
-    int pwm_value = ((get_neutral_speed()-speed)*SL_CR_PWM_MAX_VALUE)/negative_range;
+    const int negative_range = get_neutral_rpm()-get_min_rpm();
+    int pwm_value = ((get_neutral_rpm()-rpm)*SL_CR_PWM_MAX_VALUE)/negative_range;
 
-    // in1: 0 in2: PWM;  out1: L out2: PWM (H/L);  effect: reverse/brake at speed PWM %
+    // in1: 0 in2: PWM;  out1: L out2: PWM (H/L);  effect: reverse/brake at rpm PWM %
     analogWrite(in1, 0);
     analogWrite(in2, pwm_value);
   }

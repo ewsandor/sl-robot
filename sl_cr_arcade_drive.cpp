@@ -49,18 +49,18 @@ bool sl_cr_arcade_drive_c::disabled()
   return ret_val;
 }
 
-sl_cr_motor_driver_speed_t sl_cr_arcade_drive_c::get_motor_speed_from_rc_value(sl_cr_rc_channel_value_t rc_value, const sl_cr_motor_driver_c* motor)
+sl_cr_rpm_t sl_cr_arcade_drive_c::get_motor_speed_from_rc_value(sl_cr_rc_channel_value_t rc_value, const sl_cr_motor_driver_c* motor)
 {
-  sl_cr_motor_driver_speed_t new_speed = 0;
+  sl_cr_rpm_t new_speed = 0;
 
   if((rc_value > (SL_CR_RC_CH_CENTER_VALUE+deadzone)) ||
       (rc_value < (SL_CR_RC_CH_CENTER_VALUE-deadzone)))
   {
     /* Input is not within deadzone, scale motor to input */
-    const sl_cr_motor_driver_speed_t input_range = SL_CR_RC_CH_MAX_VALUE-SL_CR_RC_CH_MIN_VALUE;
-    const sl_cr_motor_driver_speed_t motor_range = motor->get_max_speed()-motor->get_min_speed();
+    const sl_cr_rpm_t input_range = SL_CR_RC_CH_MAX_VALUE-SL_CR_RC_CH_MIN_VALUE;
+    const sl_cr_rpm_t motor_range = motor->get_max_rpm()-motor->get_min_rpm();
 
-    new_speed = (((rc_value-SL_CR_RC_CH_MIN_VALUE)*motor_range)/input_range)+motor->get_min_speed();
+    new_speed = (((rc_value-SL_CR_RC_CH_MIN_VALUE)*motor_range)/input_range)+motor->get_min_rpm();
   }
 
   return new_speed;
@@ -79,16 +79,16 @@ void sl_cr_arcade_drive_c::set_motor_speeds()
   }
   else
   {
-    sl_cr_motor_driver_speed_t left_motor_speed  = get_motor_speed_from_rc_value(throttle_raw, left_motor)  + get_motor_speed_from_rc_value(steering_raw, left_motor);
-    sl_cr_motor_driver_speed_t right_motor_speed = get_motor_speed_from_rc_value(throttle_raw, right_motor) - get_motor_speed_from_rc_value(steering_raw, right_motor);
+    sl_cr_rpm_t left_motor_speed  = get_motor_speed_from_rc_value(throttle_raw, left_motor)  + get_motor_speed_from_rc_value(steering_raw, left_motor);
+    sl_cr_rpm_t right_motor_speed = get_motor_speed_from_rc_value(throttle_raw, right_motor) - get_motor_speed_from_rc_value(steering_raw, right_motor);
 
-    left_motor_speed = (left_motor_speed > left_motor->get_max_speed())?left_motor->get_max_speed():left_motor_speed;
-    left_motor_speed = (left_motor_speed < left_motor->get_min_speed())?left_motor->get_min_speed():left_motor_speed;
-    right_motor_speed = (right_motor_speed > right_motor->get_max_speed())?right_motor->get_max_speed():right_motor_speed;
-    right_motor_speed = (right_motor_speed < right_motor->get_min_speed())?right_motor->get_min_speed():right_motor_speed;
+    left_motor_speed = (left_motor_speed > left_motor->get_max_rpm())?left_motor->get_max_rpm():left_motor_speed;
+    left_motor_speed = (left_motor_speed < left_motor->get_min_rpm())?left_motor->get_min_rpm():left_motor_speed;
+    right_motor_speed = (right_motor_speed > right_motor->get_max_rpm())?right_motor->get_max_rpm():right_motor_speed;
+    right_motor_speed = (right_motor_speed < right_motor->get_min_rpm())?right_motor->get_min_rpm():right_motor_speed;
 
-    left_motor->set_speed(left_motor_speed);
-    right_motor->set_speed(right_motor_speed);
+    left_motor->change_set_rpm(left_motor_speed);
+    right_motor->change_set_rpm(right_motor_speed);
 
     /* Input is valid, enable motor */
     left_motor->enable(SL_CR_MOTOR_DISABLE_DRIVE_STRATEGY);

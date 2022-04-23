@@ -35,37 +35,37 @@ void sl_cr_motor_driver_virtual_c::command_motor()
   }
   active = true;
 
-  if(get_neutral_speed() == speed)
+  if(get_neutral_rpm() == rpm)
   {
     strlcpy(output_string, this->name, sizeof(output_string));
     strlcat(output_string, " braking.", sizeof(output_string));
   }
-  else if (speed > get_neutral_speed())
+  else if (rpm > get_neutral_rpm())
   {
     /* Positive direction */
-    const int positive_range = get_max_speed()-get_neutral_speed();
-    int scaled_speed = ((speed-get_neutral_speed())*100)/positive_range;
+    const int positive_range = get_max_rpm()-get_neutral_rpm();
+    int scaled_speed = ((rpm-get_neutral_rpm())*100)/positive_range;
 
     strlcpy(output_string, this->name, sizeof(output_string));
-    strlcat(output_string, " speed ", sizeof(output_string));
+    strlcat(output_string, " rpm ", sizeof(output_string));
     itoa(scaled_speed, int_string, 10);
     strlcat(output_string, int_string, sizeof(output_string));
-    strlcat(output_string, ". Raw speed ", sizeof(output_string));
-    itoa(speed, int_string, 10);
+    strlcat(output_string, ". Raw rpm ", sizeof(output_string));
+    itoa(rpm, int_string, 10);
     strlcat(output_string, int_string, sizeof(output_string));
     strlcat(output_string, ". ", sizeof(output_string));
   }
   else
   {
-    const int negative_range = get_neutral_speed()-get_min_speed();
-    int scaled_speed = ((get_neutral_speed()-speed)*100)/negative_range;
+    const int negative_range = get_neutral_rpm()-get_min_rpm();
+    int scaled_speed = ((get_neutral_rpm()-rpm)*100)/negative_range;
 
     strlcpy(output_string, this->name, sizeof(output_string));
-    strlcat(output_string, " speed -", sizeof(output_string));
+    strlcat(output_string, " rpm -", sizeof(output_string));
     itoa(scaled_speed, int_string, 10);
     strlcat(output_string, int_string, sizeof(output_string));
-    strlcat(output_string, ". Raw speed ", sizeof(output_string));
-    itoa(speed, int_string, 10);
+    strlcat(output_string, ". Raw rpm ", sizeof(output_string));
+    itoa(rpm, int_string, 10);
     strlcat(output_string, int_string, sizeof(output_string));
     strlcat(output_string, ". ", sizeof(output_string));
    }

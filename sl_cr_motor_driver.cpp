@@ -14,10 +14,10 @@ void sl_cr_motor_driver_c::init()
   failsafe_check   = nullptr;
   disable_mask     = 0x0;
   invert_direction = false;
-  speed            = 0;
-  target_speed     = 0;
-  min_speed = SL_CR_MOTOR_DRIVER_DEFAULT_MIN_SPEED;
-  max_speed = SL_CR_MOTOR_DRIVER_DEFAULT_MAX_SPEED;
+  rpm              = 0;
+  set_rpm          = 0;
+  min_rpm = SL_CR_MOTOR_DRIVER_DEFAULT_MIN_SPEED;
+  max_rpm = SL_CR_MOTOR_DRIVER_DEFAULT_MAX_SPEED;
 }
 
 sl_cr_motor_driver_c::sl_cr_motor_driver_c()
@@ -31,20 +31,20 @@ sl_cr_motor_driver_c::sl_cr_motor_driver_c(sl_cr_failsafe_f failsafe_check)
   this->failsafe_check = failsafe_check;
 }
 
-sl_cr_motor_driver_speed_t sl_cr_motor_driver_c::get_min_speed() const
+sl_cr_rpm_t sl_cr_motor_driver_c::get_min_rpm() const
 {
-  return min_speed;
+  return min_rpm;
 }
-sl_cr_motor_driver_speed_t sl_cr_motor_driver_c::get_neutral_speed() const
+sl_cr_rpm_t sl_cr_motor_driver_c::get_neutral_rpm() const
 {
-  return ((min_speed+max_speed)/2);
+  return ((min_rpm+max_rpm)/2);
 }
-sl_cr_motor_driver_speed_t sl_cr_motor_driver_c::get_max_speed() const
+sl_cr_rpm_t sl_cr_motor_driver_c::get_max_rpm() const
 {
-  return max_speed;
+  return max_rpm;
 }
 
-void sl_cr_motor_driver_c::set_speed(sl_cr_motor_driver_speed_t new_speed)
+void sl_cr_motor_driver_c::change_set_rpm(sl_cr_rpm_t new_speed)
 {
   if(new_speed > SL_CR_MOTOR_DRIVER_DEFAULT_MAX_SPEED)
   {
@@ -57,15 +57,15 @@ void sl_cr_motor_driver_c::set_speed(sl_cr_motor_driver_speed_t new_speed)
 
   if(invert_direction)
   {
-    new_speed = max_speed+min_speed-new_speed;
+    new_speed = max_rpm+min_rpm-new_speed;
   }
 
-  target_speed = new_speed;
+  set_rpm = new_speed;
 }
 
 void sl_cr_motor_driver_c::brake_motor()
 {
-  set_speed(get_neutral_speed());
+  change_set_rpm(get_neutral_rpm());
 }
 
 void sl_cr_motor_driver_c::disable(sl_cr_motor_disable_reason_e reason)
@@ -99,12 +99,12 @@ void sl_cr_motor_driver_c::loop()
 {
   if(disabled())
   {
-    speed = get_neutral_speed();
+    rpm = get_neutral_rpm();
     disable_motor();
   }
   else
   {
-    speed = target_speed;
+    rpm = set_rpm;
     command_motor();
   }
 }

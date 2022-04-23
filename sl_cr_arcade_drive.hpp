@@ -31,8 +31,8 @@ class sl_cr_arcade_drive_c
     /* Initializes class with default values */
     void init();
 
-    /* Gets speed value within motor range proportional to RC value */
-    sl_cr_motor_driver_speed_t get_motor_speed_from_rc_value(sl_cr_rc_channel_value_t rc_value, const sl_cr_motor_driver_c* motor);
+    /* Gets rpm value within motor range proportional to RC value */
+    sl_cr_rpm_t get_motor_speed_from_rc_value(sl_cr_rc_channel_value_t rc_value, const sl_cr_motor_driver_c* motor);
 
     /* Compute motor speeds */
     void set_motor_speeds();

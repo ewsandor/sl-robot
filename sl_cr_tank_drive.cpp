@@ -68,11 +68,11 @@ void sl_cr_tank_drive_c::set_motor_speed(sl_cr_rc_channel_value_t rc_value, sl_c
     else
     {
       /* Input is not within deadzone, scale motor to input */
-      const sl_cr_motor_driver_speed_t input_range = SL_CR_RC_CH_MAX_VALUE-SL_CR_RC_CH_MIN_VALUE;
-      const sl_cr_motor_driver_speed_t motor_range = motor->get_max_speed()-motor->get_min_speed();
+      const sl_cr_rpm_t input_range = SL_CR_RC_CH_MAX_VALUE-SL_CR_RC_CH_MIN_VALUE;
+      const sl_cr_rpm_t motor_range = motor->get_max_rpm()-motor->get_min_rpm();
 
-      const sl_cr_motor_driver_speed_t new_speed = (((rc_value-SL_CR_RC_CH_MIN_VALUE)*motor_range)/input_range)+motor->get_min_speed();
-      motor->set_speed(new_speed);
+      const sl_cr_rpm_t new_speed = (((rc_value-SL_CR_RC_CH_MIN_VALUE)*motor_range)/input_range)+motor->get_min_rpm();
+      motor->change_set_rpm(new_speed);
     }
 
     /* Input is valid, enable motor */
