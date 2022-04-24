@@ -185,18 +185,10 @@ static void serial_debug_task(void *)
   {
     vTaskDelayUntil(&xLastWakeTime, xPeriod);
 
-    Serial.print("encoder: rpm ");
-    Serial.print(left_encoder->get_rpm());
-    Serial.print(", raw ");
-    Serial.print(left_encoder->get_count_frequency());
-    Serial.print(", count ");
-    Serial.print(left_encoder->get_count());
-    Serial.print(", last_count ");
-    Serial.print(left_encoder->get_last_count());
-    Serial.print(", skipped_count ");
-    Serial.print(left_encoder->get_skipped_count());
-    Serial.print(", state ");
-    Serial.println(left_encoder->get_state());
+    Serial.print("motor set_rpm:");
+    Serial.print(left_motor->get_set_rpm());
+    Serial.print(" encoder rpm: ");
+    Serial.println(left_motor->get_real_rpm());
   }
 }
 #endif
@@ -244,6 +236,8 @@ void setup()
   sl_cr_motor_driver_config_s drive_motor_config;
   sl_cr_motor_driver_c::init_config(&drive_motor_config);
   drive_motor_config.failsafe_check = sl_cr_get_failsafe_set;
+  drive_motor_config.min_rpm = SL_CR_MOTOR_DRIVER_REAL_MIN_RPM;
+  drive_motor_config.max_rpm = SL_CR_MOTOR_DRIVER_REAL_MAX_RPM;
 
 #ifdef _VIRTUAL_MOTORS_
   left_motor = new sl_cr_motor_driver_virtual_c("Left Motor", drive_motor_config);
