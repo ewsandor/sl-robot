@@ -9,6 +9,7 @@
 
 #include "sl_cr_failsafe.hpp"
 #include "sl_cr_sbus.hpp"
+#include "sl_cr_utils.hpp"
 
 #define SL_CR_FAILSAFE_BIT(reason) (1 << reason)
 
@@ -29,7 +30,10 @@ bool         repeat_failsafe_rearm_required = false;
 void sl_cr_set_failsafe_mask(sl_cr_failsafe_reason_e reason)
 {
   sl_cr_failsafe_mask_t old_failsafe_mask = sl_cr_failsafe_mask;
+
+  sl_cr_critical_section_enter();
   sl_cr_failsafe_mask |= SL_CR_FAILSAFE_BIT(reason);
+  sl_cr_critical_section_exit();
   
   if(0 == (old_failsafe_mask & SL_CR_FAILSAFE_BIT(reason)))
   {
@@ -49,7 +53,9 @@ void sl_cr_set_failsafe_mask(sl_cr_failsafe_reason_e reason)
 void sl_cr_clear_failsafe_mask(sl_cr_failsafe_reason_e reason)
 {
   sl_cr_failsafe_mask_t old_failsafe_mask = sl_cr_failsafe_mask;
+  sl_cr_critical_section_enter();
   sl_cr_failsafe_mask &= ~(SL_CR_FAILSAFE_BIT(reason));
+  sl_cr_critical_section_exit();
   
   if(0 != (old_failsafe_mask & SL_CR_FAILSAFE_BIT(reason)))
   {
@@ -74,7 +80,13 @@ void sl_cr_set_failsafe_mask_value(sl_cr_failsafe_reason_e reason, bool value)
 }
 sl_cr_failsafe_mask_t sl_cr_get_failsafe_mask()
 {
-  return sl_cr_failsafe_mask;
+  sl_cr_failsafe_mask_t ret_val = SL_CR_FAILSAFE_INVALID_MASK;
+
+  sl_cr_critical_section_enter();
+  ret_val = sl_cr_failsafe_mask;
+  sl_cr_critical_section_exit();
+
+  return ret_val;
 }
 bool sl_cr_get_failsafe_set()
 {

@@ -82,8 +82,11 @@ class sl_cr_motor_driver_c
     sl_cr_rpm_t get_neutral_rpm() const;
     sl_cr_rpm_t get_max_rpm()     const;
 
-    sl_cr_rpm_t get_set_rpm()       const {return set_rpm;};
+    /* Get RPM set by drive logic */
+    sl_cr_rpm_t get_set_rpm()       const;
+    /* Get real RPM reported by motor */
     sl_cr_rpm_t get_real_rpm()      const;
+    /* Get raw RPM being commanded to the motor */
     sl_cr_rpm_t get_commanded_rpm() const {return commanded_rpm;};
     
     /* Disable motor for given reason */

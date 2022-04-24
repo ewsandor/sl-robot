@@ -9,6 +9,7 @@
 #include <util/atomic.h>
 
 #include "sl_cr_encoder.hpp"
+#include "sl_cr_utils.hpp"
 
 void sl_cr_encoder_c::init()
 {
@@ -157,11 +158,10 @@ void sl_cr_encoder_c::compute_rotation_frequency()
   if(snapshot_time > last_frequency_update)
   {
     /* Atomically take snapshot of count and reset counter */
-    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
-    {
-      last_count = count;
-      count = 0;
-    }
+    sl_cr_critical_section_enter();
+    last_count = count;
+    count = 0;
+    sl_cr_critical_section_exit();
 
     if(invert_direction)
     {
@@ -179,28 +179,30 @@ void sl_cr_encoder_c::compute_rotation_frequency()
 sl_cr_encoder_count_t sl_cr_encoder_c::get_count() const 
 {
   sl_cr_encoder_count_t saved_count;
-  ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
-  {
-    saved_count = count;
-  }
+  sl_cr_critical_section_enter();
+  saved_count = count;
+  sl_cr_critical_section_exit();
+
   return saved_count;
 };
 sl_cr_encoder_count_t sl_cr_encoder_c::get_skipped_count() const 
 {
   sl_cr_encoder_count_t saved_skipped_count;
-  ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
-  {
-    saved_skipped_count = skipped_count;
-  }
+
+  sl_cr_critical_section_enter();
+  saved_skipped_count = skipped_count;
+  sl_cr_critical_section_exit();
+
   return saved_skipped_count;
 };
 sl_cr_encoder_channel_state_t sl_cr_encoder_c::get_state() const
 {
   sl_cr_encoder_channel_state_t saved_channel_state;
-  ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
-  {
-    saved_channel_state = channel_state;
-  }
+
+  sl_cr_critical_section_enter();
+  saved_channel_state = channel_state;
+  sl_cr_critical_section_exit();
+  
   return saved_channel_state;
 };
 

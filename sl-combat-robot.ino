@@ -9,6 +9,8 @@
 #include <Watchdog_t4.h>
 #include <arduino_freertos.h>
 
+#include "sl_cr_utils.hpp"
+
 //////////////////// FEATURIZATION ////////////////////
 #define _SERIAL_DEBUG_MODE_
 //#define _VIRTUAL_MOTORS_
@@ -82,14 +84,18 @@ void interrupt_left_encoder_a()
 {
   if(left_encoder)
   {
+    sl_cr_critical_section_enter_interrupt();
     left_encoder->sample_channel_a();
+    sl_cr_critical_section_exit_interrupt();
   }
 }
 void interrupt_left_encoder_b()
 {
   if(left_encoder)
   {
+    sl_cr_critical_section_enter_interrupt();
     left_encoder->sample_channel_b();
+    sl_cr_critical_section_exit_interrupt();
   }
 }
 

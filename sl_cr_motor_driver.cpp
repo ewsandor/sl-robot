@@ -6,6 +6,7 @@
 */
 
 #include "sl_cr_motor_driver.hpp"
+#include "sl_cr_utils.hpp"
 
 #define SL_CR_DISABLE_BIT(reason) (1 << reason)
 
@@ -61,7 +62,9 @@ void sl_cr_motor_driver_c::change_set_rpm(sl_cr_rpm_t new_speed)
     new_speed = max_rpm+min_rpm-new_speed;
   }
 
+  sl_cr_critical_section_enter();
   set_rpm = new_speed;
+  sl_cr_critical_section_exit();
 }
 
 void sl_cr_motor_driver_c::brake_motor()
@@ -105,11 +108,21 @@ void sl_cr_motor_driver_c::loop()
   }
   else
   {
-    commanded_rpm = set_rpm;
+    commanded_rpm = get_set_rpm();
     command_motor();
   }
 }
 
+sl_cr_rpm_t sl_cr_motor_driver_c::get_set_rpm() const
+{
+  sl_cr_rpm_t ret_val;
+
+  sl_cr_critical_section_enter();
+  ret_val = set_rpm;
+  sl_cr_critical_section_exit();
+  
+  return ret_val;
+}
 
 sl_cr_rpm_t sl_cr_motor_driver_c::get_real_rpm() const
 {

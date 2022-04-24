@@ -21,8 +21,12 @@ typedef enum
   /* SBUS data is stale */
   SL_CR_FAILSAFE_SBUS_STALE,
   /* Max failsafe value */
-  SL_CR_FAILSAFE_SBUS_MAX
+  SL_CR_FAILSAFE_SBUS_MAX,
+  /* Invalid failsafe value */
+  SL_CR_FAILSAFE_SBUS_INVLAID
 } sl_cr_failsafe_reason_e;
+
+#define SL_CR_FAILSAFE_INVALID_MASK (SL_CR_FAILSAFE_SBUS_INVLAID-1)
 
 typedef unsigned int sl_cr_failsafe_mask_t;
 
