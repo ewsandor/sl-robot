@@ -70,7 +70,7 @@ bool sl_cr_control_loop_c<SETPOINT_T, OUTPUT_T>::set_output(OUTPUT_T new_output)
 template <typename SETPOINT_T, typename OUTPUT_T>
 OUTPUT_T sl_cr_control_loop_c<SETPOINT_T, OUTPUT_T>::loop(SETPOINT_T feedback) 
 {
-  error = set_setpoint - feedback;
+  error = this->get_setpoint() - feedback;
   update_output();
 
   return get_output();

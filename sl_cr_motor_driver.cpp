@@ -62,6 +62,19 @@ sl_cr_rpm_t sl_cr_motor_driver_c::get_max_rpm() const
 {
   return config.max_rpm;
 }
+sl_cr_rpm_t sl_cr_motor_driver_c::get_min_commanded_rpm() const
+{
+  return config.min_commanded_rpm;
+}
+sl_cr_rpm_t sl_cr_motor_driver_c::get_neutral_commanded_rpm() const
+{
+  return ((config.min_commanded_rpm+config.max_commanded_rpm)/2);
+}
+sl_cr_rpm_t sl_cr_motor_driver_c::get_max_commanded_rpm() const
+{
+  return config.max_commanded_rpm;
+}
+
 
 void sl_cr_motor_driver_c::change_set_rpm(sl_cr_rpm_t new_speed)
 {
@@ -120,12 +133,29 @@ void sl_cr_motor_driver_c::loop()
 {
   if(disabled())
   {
-    commanded_rpm = get_neutral_rpm();
+    if(config.control_loop)
+    {
+      config.control_loop->reset(get_neutral_rpm());
+      commanded_rpm = config.control_loop->get_output();
+    }
+    else
+    {
+      commanded_rpm = get_neutral_rpm();
+    }
     disable_motor();
   }
   else
   {
-    commanded_rpm = get_set_rpm();
+    if(config.control_loop)
+    {
+      config.control_loop->set_setpoint(get_set_rpm());
+      config.control_loop->loop(get_real_rpm());
+      commanded_rpm = config.control_loop->get_output();
+    }
+    else
+    {
+      commanded_rpm = get_set_rpm();
+    }
     command_motor();
   }
 }

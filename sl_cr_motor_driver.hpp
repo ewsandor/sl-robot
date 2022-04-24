@@ -67,20 +67,20 @@ typedef struct
 class sl_cr_motor_driver_c
 {
   private:
+
     /* Safety Parameters */
-    sl_cr_motor_disable_mask_t  disable_mask;
+    sl_cr_motor_disable_mask_t        disable_mask;
 
     /* Config Parameters */
     const sl_cr_motor_driver_config_s config;
 
     /* Active Parameters */
-    sl_cr_rpm_t                 set_rpm;
+    sl_cr_rpm_t                       set_rpm;
+    sl_cr_rpm_t                       commanded_rpm;
 
     void init();
 
   protected:
-    /* Active Parameters */
-    sl_cr_rpm_t commanded_rpm;
 
     virtual void disable_motor() = 0;
     virtual void command_motor() = 0;
@@ -91,9 +91,12 @@ class sl_cr_motor_driver_c
     sl_cr_motor_driver_c();
     sl_cr_motor_driver_c(sl_cr_motor_driver_config_s);
 
-    sl_cr_rpm_t get_min_rpm()     const;
-    sl_cr_rpm_t get_neutral_rpm() const;
-    sl_cr_rpm_t get_max_rpm()     const;
+    sl_cr_rpm_t get_min_rpm()               const;
+    sl_cr_rpm_t get_neutral_rpm()           const;
+    sl_cr_rpm_t get_max_rpm()               const;
+    sl_cr_rpm_t get_min_commanded_rpm()     const;
+    sl_cr_rpm_t get_neutral_commanded_rpm() const;
+    sl_cr_rpm_t get_max_commanded_rpm()     const;
 
     /* Get RPM set by drive logic */
     sl_cr_rpm_t get_set_rpm()       const;

@@ -8,8 +8,18 @@
 #ifndef __SL_CR_CONTROL_LOOP_HPP__
 #define __SL_CR_CONTROL_LOOP_HPP__
 
+#include "sl_cr_types.hpp"
+
+class sl_cr_control_loop_base_c
+{
+  protected:
+    /* Logic to update the output value */
+    virtual void update_output() {}
+  public:
+};
+
 template <typename SETPOINT_T, typename OUTPUT_T>
-class sl_cr_control_loop_c
+class sl_cr_control_loop_c : public sl_cr_control_loop_base_c
 {
   private:
     SETPOINT_T       sp;
@@ -31,8 +41,6 @@ class sl_cr_control_loop_c
 
     /* Sanitizes and sets output value, returns false if out of bounds */
     bool             set_output(OUTPUT_T new_output);
-    /* Logic to update the output value */
-    virtual void     update_output();
 
   public:
     /* Initialize control loop with Setpoint min, neutral, and max values */
@@ -58,5 +66,7 @@ class sl_cr_control_loop_c
        For example, this may be used to reset loop states after failsafe condition */
     virtual void     reset(SETPOINT_T new_setpoint=get_setpoint());
 };
+
+template class sl_cr_control_loop_c<sl_cr_rpm_t,sl_cr_rpm_t>;
 
 #endif // __SL_CR_CONTROL_LOOP_HPP__

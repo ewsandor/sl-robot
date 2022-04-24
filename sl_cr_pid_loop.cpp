@@ -1,3 +1,12 @@
+/*
+  sl_cr_pid_loop.cpp
+  Sandor Laboratories Combat Robot Software
+  Edward Sandor
+  April 2022
+*/
+
+#include <Arduino.h>
+
 #include "sl_cr_pid_loop.hpp"
 
 template <typename SETPOINT_T, typename OUTPUT_T>
@@ -19,9 +28,9 @@ void sl_cr_pid_loop_c<SETPOINT_T, OUTPUT_T>::update_output()
   const OUTPUT_T d_term = ((OUTPUT_T)((this->get_error()-error_prev) * pid_params.d_num))/((OUTPUT_T)pid_params.d_den);
   const OUTPUT_T new_output = p_term + i_term + d_term;
 
-  if(LIKELY(set_output(new_output)) || 
-     UNLIKELY((new_output >= this->get_output_max() && this->get_error() < 0) || 
-              (new_output <= this->get_output_min() && this->get_error() > 0)))
+  if((this->set_output(new_output)) || 
+     ((new_output >= this->get_output_max() && this->get_error() < 0) || 
+      (new_output <= this->get_output_min() && this->get_error() > 0)))
   {
     /* Output is not saturated, or output is saturated with unwinding error.  Do not clamp integrator */
     error_integrated = new_error_integrated;

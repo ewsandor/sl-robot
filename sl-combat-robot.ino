@@ -9,8 +9,6 @@
 #include <Watchdog_t4.h>
 #include <arduino_freertos.h>
 
-#include "sl_cr_utils.hpp"
-
 //////////////////// FEATURIZATION ////////////////////
 #define _SERIAL_DEBUG_MODE_
 //#define _VIRTUAL_MOTORS_
@@ -29,16 +27,20 @@
 #else
 #include "sl_cr_motor_driver_drv8256p.hpp"
 #endif
+#include "sl_cr_pid_loop.hpp"
 #include "sl_cr_sbus.hpp"
 #include "sl_cr_types.hpp"
+#include "sl_cr_utils.hpp"
 #include "sl_cr_version.h"
 
 /* Default stack size to use for FreeRTOS Tasks (in words) */
 #define SL_CR_DEFAULT_TASK_STACK_SIZE      128
 #define SL_CR_CONTROL_LOOP_TASK_STACK_SIZE SL_CR_DEFAULT_TASK_STACK_SIZE
 
-sl_cr_encoder_c      *left_encoder;
-sl_cr_encoder_c      *right_encoder;
+sl_cr_encoder_c      *left_encoder = nullptr;
+sl_cr_encoder_c      *right_encoder = nullptr;
+sl_cr_control_loop_c<sl_cr_rpm_t,sl_cr_rpm_t> *left_pid = nullptr;
+sl_cr_control_loop_c<sl_cr_rpm_t,sl_cr_rpm_t> *right_pid = nullptr;
 sl_cr_motor_driver_c *left_motor;
 sl_cr_motor_driver_c *right_motor;
 /* Drive loop period in ms */
@@ -98,6 +100,25 @@ void interrupt_left_encoder_b()
     sl_cr_critical_section_exit_interrupt();
   }
 }
+void interrupt_right_encoder_a()
+{
+  if(right_encoder)
+  {
+    sl_cr_critical_section_enter_interrupt();
+    right_encoder->sample_channel_a();
+    sl_cr_critical_section_exit_interrupt();
+  }
+}
+void interrupt_right_encoder_b()
+{
+  if(right_encoder)
+  {
+    sl_cr_critical_section_enter_interrupt();
+    right_encoder->sample_channel_b();
+    sl_cr_critical_section_exit_interrupt();
+  }
+}
+
 
 static void control_loop_task(void *)
 {
@@ -110,7 +131,7 @@ static void control_loop_task(void *)
     vTaskDelayUntil(&xLastWakeTime, xPeriod);
 
     /* Read Encoders */
-    left_encoder->loop();
+    right_encoder->loop();
     /* Command Motors */
     left_motor->loop();
     right_motor->loop();
@@ -186,9 +207,13 @@ static void serial_debug_task(void *)
     vTaskDelayUntil(&xLastWakeTime, xPeriod);
 
     Serial.print("motor set_rpm:");
-    Serial.print(left_motor->get_set_rpm());
+    Serial.print(right_motor->get_set_rpm());
+    Serial.print(" motor commanded_rpm:");
+    Serial.print(right_motor->get_commanded_rpm());
     Serial.print(" encoder rpm: ");
-    Serial.println(left_motor->get_real_rpm());
+    Serial.print(right_motor->get_real_rpm());
+    Serial.print(" error: ");
+    Serial.println(right_pid->get_error());
   }
 }
 #endif
@@ -239,14 +264,31 @@ void setup()
   drive_motor_config.min_rpm = SL_CR_MOTOR_DRIVER_REAL_MIN_RPM;
   drive_motor_config.max_rpm = SL_CR_MOTOR_DRIVER_REAL_MAX_RPM;
 
+  sl_cr_pid_loop_params_s pid_params = 
+  {
+    .p_num = 50,
+    .p_den = 100,
+    .i_num = 25,
+    .i_den = 100,
+    .d_num = 12,
+    .d_den = 100,
+  };
+
+
 #ifdef _VIRTUAL_MOTORS_
   left_motor = new sl_cr_motor_driver_virtual_c("Left Motor", drive_motor_config);
   right_motor = new sl_cr_motor_driver_virtual_c("Right Motor", drive_motor_config);
 #else
-  left_encoder = new sl_cr_encoder_c(SL_CR_PIN_DRIVE_ENCODER_1_A, SL_CR_PIN_DRIVE_ENCODER_1_B,false,12,1,30);
-  drive_motor_config.encoder = left_encoder;
-  left_motor  = new sl_cr_motor_driver_drv8256p_c(SL_CR_PIN_DRIVE_MOTOR_1_SLEEP, SL_CR_PIN_DRIVE_MOTOR_1_IN1, SL_CR_PIN_DRIVE_MOTOR_1_IN2, drive_motor_config);
+  right_pid = new sl_cr_pid_loop_c<sl_cr_rpm_t,sl_cr_rpm_t>(drive_motor_config.min_rpm,           drive_motor_config.max_rpm, 
+                                                            drive_motor_config.min_commanded_rpm, drive_motor_config.max_commanded_rpm,
+                                                            pid_params);
+
+  right_encoder = new sl_cr_encoder_c(SL_CR_PIN_DRIVE_ENCODER_1_A, SL_CR_PIN_DRIVE_ENCODER_1_B,false,12,1,30);
   drive_motor_config.encoder = nullptr;
+  drive_motor_config.control_loop = nullptr;
+  left_motor  = new sl_cr_motor_driver_drv8256p_c(SL_CR_PIN_DRIVE_MOTOR_1_SLEEP, SL_CR_PIN_DRIVE_MOTOR_1_IN1, SL_CR_PIN_DRIVE_MOTOR_1_IN2, drive_motor_config);
+  drive_motor_config.encoder = right_encoder;
+  drive_motor_config.control_loop = right_pid;
   right_motor = new sl_cr_motor_driver_drv8256p_c(SL_CR_PIN_DRIVE_MOTOR_2_SLEEP, SL_CR_PIN_DRIVE_MOTOR_2_IN1, SL_CR_PIN_DRIVE_MOTOR_2_IN2, drive_motor_config);
 #endif
 #ifdef _ARCADE_DRIVE_
@@ -275,9 +317,9 @@ void setup()
 
   Serial.println("Attaching Pin Interrupts.");
   attachInterrupt(SL_CR_PIN_DRIVE_ENCODER_1_A, 
-                  interrupt_left_encoder_a, arduino::CHANGE);
+                  interrupt_right_encoder_a, arduino::CHANGE);
   attachInterrupt(SL_CR_PIN_DRIVE_ENCODER_1_B, 
-                  interrupt_left_encoder_b, arduino::CHANGE);
+                  interrupt_right_encoder_b, arduino::CHANGE);
 
   Serial.println("Starting FreeRTOS scheduler.");
   Serial.flush();
