@@ -24,7 +24,7 @@ class sl_cr_motor_driver_virtual_c : public sl_cr_motor_driver_c
     virtual void command_motor();
 
   public:
-    sl_cr_motor_driver_virtual_c(const char*, sl_cr_failsafe_f);
+    sl_cr_motor_driver_virtual_c(const char*, sl_cr_motor_driver_config_s);
 };
 
 #endif /* __SL_CR_MOTOR_DRIVER_VIRTUAL_HPP__ */

@@ -10,40 +10,57 @@
 
 #define SL_CR_DISABLE_BIT(reason) (1 << reason)
 
+const sl_cr_motor_driver_config_s default_motor_driver_config = 
+{
+  .failsafe_check    = nullptr,
+  .invert_direction  = false,
+  .min_rpm           = SL_CR_MOTOR_DRIVER_DEFAULT_MIN_SPEED,
+  .max_rpm           = SL_CR_MOTOR_DRIVER_DEFAULT_MAX_SPEED,
+  .min_commanded_rpm = SL_CR_MOTOR_DRIVER_DEFAULT_MIN_SPEED,
+  .max_commanded_rpm = SL_CR_MOTOR_DRIVER_DEFAULT_MAX_SPEED,
+  .encoder           = nullptr,
+  .control_loop      = nullptr,
+};
+
+
+void sl_cr_motor_driver_c::init_config(sl_cr_motor_driver_config_s* config)
+{
+  if(config)
+  {
+    *config = default_motor_driver_config;
+  }
+}
+
 void sl_cr_motor_driver_c::init()
 {
-  failsafe_check   = nullptr;
-  disable_mask     = 0x0;
-  invert_direction = false;
-  commanded_rpm    = 0;
-  set_rpm          = 0;
-  min_rpm          = SL_CR_MOTOR_DRIVER_DEFAULT_MIN_SPEED;
-  max_rpm          = SL_CR_MOTOR_DRIVER_DEFAULT_MAX_SPEED;
-  encoder          = nullptr;
+  disable_mask            = 0x0;
+  commanded_rpm           = 0;
+  set_rpm                 = 0;
 }
 
 sl_cr_motor_driver_c::sl_cr_motor_driver_c()
+  : config(default_motor_driver_config)
 {
   init();
 }
 
-sl_cr_motor_driver_c::sl_cr_motor_driver_c(sl_cr_failsafe_f failsafe_check)
+sl_cr_motor_driver_c::sl_cr_motor_driver_c(sl_cr_motor_driver_config_s constructor_config)
+  : config(constructor_config)
 {
   init();
-  this->failsafe_check = failsafe_check;
 }
 
 sl_cr_rpm_t sl_cr_motor_driver_c::get_min_rpm() const
 {
-  return min_rpm;
+  return config.min_rpm;
 }
 sl_cr_rpm_t sl_cr_motor_driver_c::get_neutral_rpm() const
 {
-  return ((min_rpm+max_rpm)/2);
+  return ((config.min_rpm+config.max_rpm)/2);
 }
 sl_cr_rpm_t sl_cr_motor_driver_c::get_max_rpm() const
 {
-  return max_rpm;
+  return config.max_rpm;
 }
 
 void sl_cr_motor_driver_c::change_set_rpm(sl_cr_rpm_t new_speed)
@@ -57,9 +74,9 @@ void sl_cr_motor_driver_c::change_set_rpm(sl_cr_rpm_t new_speed)
     new_speed = SL_CR_MOTOR_DRIVER_DEFAULT_MIN_SPEED;
   }
 
-  if(invert_direction)
+  if(config.invert_direction)
   {
-    new_speed = max_rpm+min_rpm-new_speed;
+    new_speed = config.max_rpm+config.min_rpm-new_speed;
   }
 
   sl_cr_critical_section_enter();
@@ -86,7 +103,7 @@ bool sl_cr_motor_driver_c::disabled() const
   bool ret_val = false;
 
   if((disable_mask != 0) ||
-     (failsafe_check != nullptr && failsafe_check() == true))
+     (config.failsafe_check != nullptr && config.failsafe_check() == true))
   {
     ret_val = true;
   }
@@ -128,9 +145,9 @@ sl_cr_rpm_t sl_cr_motor_driver_c::get_real_rpm() const
 {
   sl_cr_rpm_t real_rpm = get_set_rpm();
 
-  if(encoder)
+  if(config.encoder)
   {
-    real_rpm = encoder->get_rpm();
+    real_rpm = config.encoder->get_rpm();
   }
 
   return real_rpm;

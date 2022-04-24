@@ -50,8 +50,8 @@ void sl_cr_motor_driver_drv8256p_c::command_motor()
   digitalWrite(sleep_bar, HIGH);
 }
 
-sl_cr_motor_driver_drv8256p_c::sl_cr_motor_driver_drv8256p_c(sl_cr_pin_t sleep_bar, sl_cr_pin_t in1, sl_cr_pin_t in2, sl_cr_pin_t fault_bar, sl_cr_failsafe_f failsafe)
-  : sl_cr_motor_driver_c(failsafe)
+sl_cr_motor_driver_drv8256p_c::sl_cr_motor_driver_drv8256p_c(sl_cr_pin_t sleep_bar, sl_cr_pin_t in1, sl_cr_pin_t in2, sl_cr_pin_t fault_bar, sl_cr_motor_driver_config_s constructor_config)
+  : sl_cr_motor_driver_c(constructor_config)
 {
   /* Store pin assignments */
   this->sleep_bar = sleep_bar;
@@ -74,8 +74,8 @@ sl_cr_motor_driver_drv8256p_c::sl_cr_motor_driver_drv8256p_c(sl_cr_pin_t sleep_b
   }
 }
 
-sl_cr_motor_driver_drv8256p_c::sl_cr_motor_driver_drv8256p_c(sl_cr_pin_t sleep_bar, sl_cr_pin_t in1, sl_cr_pin_t in2, sl_cr_failsafe_f failsafe)
-  : sl_cr_motor_driver_drv8256p_c(sleep_bar, in1, in2, SL_CR_PIN_INVALID, failsafe)
+sl_cr_motor_driver_drv8256p_c::sl_cr_motor_driver_drv8256p_c(sl_cr_pin_t sleep_bar, sl_cr_pin_t in1, sl_cr_pin_t in2, sl_cr_motor_driver_config_s constructor_config)
+  : sl_cr_motor_driver_drv8256p_c(sleep_bar, in1, in2, SL_CR_PIN_INVALID, constructor_config)
 {
 }
 

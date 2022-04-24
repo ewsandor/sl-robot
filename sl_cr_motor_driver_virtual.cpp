@@ -75,8 +75,8 @@ void sl_cr_motor_driver_virtual_c::command_motor()
   delay(20);
 }
 
-sl_cr_motor_driver_virtual_c::sl_cr_motor_driver_virtual_c(const char* name, sl_cr_failsafe_f failsafe)
-  : sl_cr_motor_driver_c(failsafe)
+sl_cr_motor_driver_virtual_c::sl_cr_motor_driver_virtual_c(const char* name, sl_cr_motor_driver_config_s constructor_config)
+  : sl_cr_motor_driver_c(constructor_config)
 {
   char output_string[SL_CR_MOTOR_DRIVER_VIRTUAL_MAX_CHARS] = {0};
 
