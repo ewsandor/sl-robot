@@ -13,10 +13,17 @@ sl_cr_pid_loop_c<SETPOINT_T, OUTPUT_T>::sl_cr_pid_loop_c(SETPOINT_T sp_min, SETP
 template <typename SETPOINT_T, typename OUTPUT_T>
 void sl_cr_pid_loop_c<SETPOINT_T, OUTPUT_T>::update_output()
 {
-  error_integrated += this->get_error();
+  const SETPOINT_T error_integrated_temp = error_integrated + this->get_error();
+  const OUTPUT_T p_term = ((OUTPUT_T)(this->get_error()              * pid_params.p_num))/((OUTPUT_T)pid_params.p_den);
+  const OUTPUT_T i_term = ((OUTPUT_T)(error_integrated               * pid_params.i_num))/((OUTPUT_T)pid_params.i_den);
+  const OUTPUT_T d_term = ((OUTPUT_T)((this->get_error()-error_prev) * pid_params.d_num))/((OUTPUT_T)pid_params.d_den);
+  const OUTPUT_T new_output = p_term + i_term + d_term;
 
-  /* TODO - PID logic */
-  set_output(set_setpoint);
+  if(set_output(new_output))
+  {
+    /* Only update integral if output is inbounds, otherwise integral can grow unbounded if output is being capped */
+    error_integrated = error_integrated_temp;
+  }
 
   error_prev = this->get_error();
 }

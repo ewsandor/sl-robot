@@ -29,8 +29,8 @@ class sl_cr_control_loop_c
     SETPOINT_T       get_output_min() const {return output_min;}
     SETPOINT_T       get_output_max() const {return output_max;}
 
-    /* Sanitizes and sets output value */
-    void             set_output(OUTPUT_T new_output);
+    /* Sanitizes and sets output value, returns false if out of bounds */
+    bool             set_output(OUTPUT_T new_output);
     /* Logic to update the output value */
     virtual void     update_output();
 
@@ -46,8 +46,8 @@ class sl_cr_control_loop_c
     OUTPUT_T         get_output()   const {return output;}
     /* Get current error */
     SETPOINT_T       get_error()    const {return error;}
-    /* Set new setpoint without running main loop */
-    void             set_setpoint(SETPOINT_T new_setpoint);
+    /* Sanitizes and sets new setpoint without running main loop, returns false if out of bounds */
+    bool             set_setpoint(SETPOINT_T new_setpoint);
 
     /* Main control loop function.  Returns new output value */
     OUTPUT_T         loop(SETPOINT_T feedback);

@@ -8,23 +8,6 @@
 #include "sl_cr_control_loop.hpp"
 
 template <typename SETPOINT_T, typename OUTPUT_T>
-void sl_cr_control_loop_c<SETPOINT_T, OUTPUT_T>::set_output(OUTPUT_T new_output)
-{
-  if(new_output > get_output_max())
-  {
-    output = get_output_max();
-  }
-  else if(new_output < get_output_min())
-  {
-    output = get_output_min();
-  }
-  else
-  {
-    output = new_output;
-  }
-}
-
-template <typename SETPOINT_T, typename OUTPUT_T>
 void sl_cr_control_loop_c<SETPOINT_T, OUTPUT_T>::set_initial_state()
 {
   sp     = (sp_min+sp_max)/2;
@@ -44,21 +27,46 @@ sl_cr_control_loop_c<SETPOINT_T, OUTPUT_T>::sl_cr_control_loop_c(SETPOINT_T sp_m
   : sl_cr_control_loop_c(sp_min, sp_max, sp_min, sp_max) {}
 
 template <typename SETPOINT_T, typename OUTPUT_T>
-void sl_cr_control_loop_c<SETPOINT_T, OUTPUT_T>::set_setpoint(SETPOINT_T new_setpoint) 
+bool sl_cr_control_loop_c<SETPOINT_T, OUTPUT_T>::set_setpoint(SETPOINT_T new_setpoint) 
 {
+  bool ret_val = true;
   if(new_setpoint > get_sp_max())
   {
     sp = get_sp_max();
+    ret_val = false;
   }
   else if(new_setpoint < get_sp_min())
   {
     sp = get_sp_min();
+    ret_val = false;
   }
   else
   {
     sp = new_setpoint;
   }
+  return ret_val;
 }
+template <typename SETPOINT_T, typename OUTPUT_T>
+bool sl_cr_control_loop_c<SETPOINT_T, OUTPUT_T>::set_output(OUTPUT_T new_output)
+{
+  bool ret_val = true;
+  if(new_output > get_output_max())
+  {
+    output = get_output_max();
+    ret_val = false;
+  }
+  else if(new_output < get_output_min())
+  {
+    output = get_output_min();
+    ret_val = false;
+  }
+  else
+  {
+    output = new_output;
+  }
+  return ret_val;
+}
+
 
 template <typename SETPOINT_T, typename OUTPUT_T>
 OUTPUT_T sl_cr_control_loop_c<SETPOINT_T, OUTPUT_T>::loop(SETPOINT_T feedback) 
