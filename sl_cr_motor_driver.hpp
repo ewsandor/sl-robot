@@ -9,6 +9,7 @@
 #define __SL_CR_MOTOR_DRIVER_HPP__
 
 #include "sl_cr_types.hpp"
+#include "sl_cr_encoder.hpp"
 
 #define SL_CR_MOTOR_DRIVER_DEFAULT_MAX_SPEED 1024
 #define SL_CR_MOTOR_DRIVER_DEFAULT_MIN_SPEED (-SL_CR_MOTOR_DRIVER_DEFAULT_MAX_SPEED)
@@ -56,17 +57,19 @@ class sl_cr_motor_driver_c
 
     /* Config Parameters */
     bool                       invert_direction;
-    sl_cr_rpm_t min_rpm;
-    sl_cr_rpm_t max_rpm;
+    sl_cr_rpm_t                min_rpm;
+    sl_cr_rpm_t                max_rpm;
 
     /* Active Parameters */
-    sl_cr_rpm_t set_rpm;
+    sl_cr_rpm_t                set_rpm;
+
+    sl_cr_encoder_c           *encoder;
 
     void init();
 
   protected:
     /* Active Parameters */
-    sl_cr_rpm_t rpm;
+    sl_cr_rpm_t commanded_rpm;
 
     virtual void disable_motor() = 0;
     virtual void command_motor() = 0;
@@ -75,10 +78,14 @@ class sl_cr_motor_driver_c
     sl_cr_motor_driver_c();
     sl_cr_motor_driver_c(sl_cr_failsafe_f);
 
-    sl_cr_rpm_t get_min_rpm() const;
+    sl_cr_rpm_t get_min_rpm()     const;
     sl_cr_rpm_t get_neutral_rpm() const;
-    sl_cr_rpm_t get_max_rpm() const;
+    sl_cr_rpm_t get_max_rpm()     const;
 
+    sl_cr_rpm_t get_set_rpm()       const {return set_rpm;};
+    sl_cr_rpm_t get_real_rpm()      const;
+    sl_cr_rpm_t get_commanded_rpm() const {return commanded_rpm;};
+    
     /* Disable motor for given reason */
     void disable(sl_cr_motor_disable_reason_e);
     /* Enable motor for given reason */

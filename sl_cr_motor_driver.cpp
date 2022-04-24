@@ -14,10 +14,11 @@ void sl_cr_motor_driver_c::init()
   failsafe_check   = nullptr;
   disable_mask     = 0x0;
   invert_direction = false;
-  rpm              = 0;
+  commanded_rpm    = 0;
   set_rpm          = 0;
-  min_rpm = SL_CR_MOTOR_DRIVER_DEFAULT_MIN_SPEED;
-  max_rpm = SL_CR_MOTOR_DRIVER_DEFAULT_MAX_SPEED;
+  min_rpm          = SL_CR_MOTOR_DRIVER_DEFAULT_MIN_SPEED;
+  max_rpm          = SL_CR_MOTOR_DRIVER_DEFAULT_MAX_SPEED;
+  encoder          = nullptr;
 }
 
 sl_cr_motor_driver_c::sl_cr_motor_driver_c()
@@ -99,12 +100,25 @@ void sl_cr_motor_driver_c::loop()
 {
   if(disabled())
   {
-    rpm = get_neutral_rpm();
+    commanded_rpm = get_neutral_rpm();
     disable_motor();
   }
   else
   {
-    rpm = set_rpm;
+    commanded_rpm = set_rpm;
     command_motor();
   }
 }
+
+
+sl_cr_rpm_t sl_cr_motor_driver_c::get_real_rpm() const
+{
+  sl_cr_rpm_t real_rpm = get_set_rpm();
+
+  if(encoder)
+  {
+    real_rpm = encoder->get_rpm();
+  }
+
+  return real_rpm;
+};
