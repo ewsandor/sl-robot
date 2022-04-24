@@ -57,7 +57,7 @@ typedef struct
   sl_cr_rpm_t                                     max_rpm;
   sl_cr_rpm_t                                     min_commanded_rpm;
   sl_cr_rpm_t                                     max_commanded_rpm;
-  sl_cr_encoder_c                                *encoder;
+  const sl_cr_encoder_c                          *encoder;
   sl_cr_control_loop_c<sl_cr_rpm_t, sl_cr_rpm_t> *control_loop;
 } sl_cr_motor_driver_config_s;
 

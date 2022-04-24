@@ -249,7 +249,8 @@ void setup()
   left_motor = new sl_cr_motor_driver_virtual_c("Left Motor", drive_motor_config);
   right_motor = new sl_cr_motor_driver_virtual_c("Right Motor", drive_motor_config);
 #else
-  drive_motor_config.encoder = new sl_cr_encoder_c(SL_CR_PIN_DRIVE_ENCODER_1_A, SL_CR_PIN_DRIVE_ENCODER_1_B,false,12,1,30);
+  left_encoder = new sl_cr_encoder_c(SL_CR_PIN_DRIVE_ENCODER_1_A, SL_CR_PIN_DRIVE_ENCODER_1_B,false,12,1,30);
+  drive_motor_config.encoder = left_encoder;
   left_motor  = new sl_cr_motor_driver_drv8256p_c(SL_CR_PIN_DRIVE_MOTOR_1_SLEEP, SL_CR_PIN_DRIVE_MOTOR_1_IN1, SL_CR_PIN_DRIVE_MOTOR_1_IN2, drive_motor_config);
   drive_motor_config.encoder = nullptr;
   right_motor = new sl_cr_motor_driver_drv8256p_c(SL_CR_PIN_DRIVE_MOTOR_2_SLEEP, SL_CR_PIN_DRIVE_MOTOR_2_IN1, SL_CR_PIN_DRIVE_MOTOR_2_IN2, drive_motor_config);
