@@ -46,6 +46,8 @@ class sl_cr_pid_loop_c : public sl_cr_control_loop_c<SETPOINT_T, OUTPUT_T>
     sl_cr_pid_loop_c(SETPOINT_T sp_min,     SETPOINT_T sp_max,
                      OUTPUT_T   output_min, OUTPUT_T   output_max,
                      sl_cr_pid_loop_params_s pid_params);
+
+    virtual void reset(SETPOINT_T new_setpoint=sl_cr_control_loop_c<SETPOINT_T, OUTPUT_T>::get_setpoint());
 };
 
 #endif // __SL_CR_PID_LOOP_HPP__

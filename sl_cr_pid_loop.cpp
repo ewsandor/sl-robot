@@ -30,3 +30,11 @@ void sl_cr_pid_loop_c<SETPOINT_T, OUTPUT_T>::update_output()
   /* Save error as previous error for D term */
   error_prev = this->get_error();
 }
+
+template <typename SETPOINT_T, typename OUTPUT_T>
+void sl_cr_pid_loop_c<SETPOINT_T, OUTPUT_T>::reset(SETPOINT_T new_setpoint)
+{
+  sl_cr_control_loop_c<SETPOINT_T, OUTPUT_T>::reset(new_setpoint);
+  error_integrated = 0;
+  error_prev = this->get_error();
+}

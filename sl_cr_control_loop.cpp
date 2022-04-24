@@ -67,7 +67,6 @@ bool sl_cr_control_loop_c<SETPOINT_T, OUTPUT_T>::set_output(OUTPUT_T new_output)
   return ret_val;
 }
 
-
 template <typename SETPOINT_T, typename OUTPUT_T>
 OUTPUT_T sl_cr_control_loop_c<SETPOINT_T, OUTPUT_T>::loop(SETPOINT_T feedback) 
 {
@@ -75,4 +74,12 @@ OUTPUT_T sl_cr_control_loop_c<SETPOINT_T, OUTPUT_T>::loop(SETPOINT_T feedback)
   update_output();
 
   return get_output();
+}
+
+
+template <typename SETPOINT_T, typename OUTPUT_T>
+void sl_cr_control_loop_c<SETPOINT_T, OUTPUT_T>::reset(SETPOINT_T new_setpoint)
+{
+  set_initial_state();
+  set_setpoint(new_setpoint);
 }

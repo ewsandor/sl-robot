@@ -53,6 +53,10 @@ class sl_cr_control_loop_c
     OUTPUT_T         loop(SETPOINT_T feedback);
     /* Sets new target output and runs main control loop.  Returns new output value */
     OUTPUT_T         loop(SETPOINT_T feedback, SETPOINT_T new_setpoint) {set_setpoint(new_setpoint); return loop(feedback);}
+
+    /* Resets control loop memory and apply new setpoint.  
+       For example, this may be used to reset loop states after failsafe condition */
+    virtual void     reset(SETPOINT_T new_setpoint=get_setpoint());
 };
 
 #endif // __SL_CR_CONTROL_LOOP_HPP__
