@@ -78,18 +78,18 @@ sl_cr_rpm_t sl_cr_motor_driver_c::get_max_commanded_rpm() const
 
 void sl_cr_motor_driver_c::change_set_rpm(sl_cr_rpm_t new_speed)
 {
-  if(new_speed > SL_CR_MOTOR_DRIVER_DEFAULT_MAX_SPEED)
+  if(new_speed > config.max_rpm)
   {
-    new_speed = SL_CR_MOTOR_DRIVER_DEFAULT_MAX_SPEED;
+    new_speed = config.max_rpm;
   }
-  if(new_speed < SL_CR_MOTOR_DRIVER_DEFAULT_MIN_SPEED)
+  if(new_speed < config.min_rpm)
   {
-    new_speed = SL_CR_MOTOR_DRIVER_DEFAULT_MIN_SPEED;
+    new_speed = config.min_rpm;
   }
 
   if(config.invert_direction)
   {
-    new_speed = config.max_rpm+config.min_rpm-new_speed;
+    new_speed = (config.max_rpm+config.min_rpm)-new_speed;
   }
 
   sl_cr_critical_section_enter();
