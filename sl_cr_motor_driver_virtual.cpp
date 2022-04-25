@@ -6,6 +6,7 @@
 */
 
 #include <Arduino.h>
+#include <stdio.h>
 #include <string.h>
 
 #include "sl_cr_motor_driver_virtual.hpp"
@@ -15,8 +16,9 @@ void sl_cr_motor_driver_virtual_c::disable_motor()
   if(active)
   {
     char output_string[SL_CR_MOTOR_DRIVER_VIRTUAL_MAX_CHARS] = {0};
-    strlcpy(output_string, this->name, sizeof(output_string));
-    strlcat(output_string, " deactivated.", sizeof(output_string));
+    snprintf(output_string, SL_CR_MOTOR_DRIVER_VIRTUAL_MAX_CHARS,
+      "%s deactivated.", this->name);
+
     Serial.println(output_string);
   }
   active = false;
@@ -25,54 +27,30 @@ void sl_cr_motor_driver_virtual_c::disable_motor()
 void sl_cr_motor_driver_virtual_c::command_motor()
 {
   char output_string[SL_CR_MOTOR_DRIVER_VIRTUAL_MAX_CHARS] = {0};
-  char int_string[SL_CR_MOTOR_DRIVER_VIRTUAL_MAX_CHARS] = {0};
 
   if(!active)
   {
-    strlcpy(output_string, this->name, sizeof(output_string));
-    strlcat(output_string, " activated.", sizeof(output_string));
+    snprintf(output_string, SL_CR_MOTOR_DRIVER_VIRTUAL_MAX_CHARS,
+      "%s activated.", this->name);
+
     Serial.println(output_string);
   }
   active = true;
 
-  if(get_neutral_rpm() == get_commanded_rpm())
+  if(get_neutral_commanded_rpm() == get_commanded_rpm())
   {
-    strlcpy(output_string, this->name, sizeof(output_string));
-    strlcat(output_string, " braking.", sizeof(output_string));
-  }
-  else if (get_commanded_rpm() > get_neutral_rpm())
-  {
-    /* Positive direction */
-    const int positive_range = get_max_rpm()-get_neutral_rpm();
-    int scaled_speed = ((get_commanded_rpm()-get_neutral_rpm())*100)/positive_range;
-
-    strlcpy(output_string, this->name, sizeof(output_string));
-    strlcat(output_string, " rpm ", sizeof(output_string));
-    itoa(scaled_speed, int_string, 10);
-    strlcat(output_string, int_string, sizeof(output_string));
-    strlcat(output_string, ". Raw rpm ", sizeof(output_string));
-    itoa(get_commanded_rpm(), int_string, 10);
-    strlcat(output_string, int_string, sizeof(output_string));
-    strlcat(output_string, ". ", sizeof(output_string));
+    snprintf(output_string, SL_CR_MOTOR_DRIVER_VIRTUAL_MAX_CHARS,
+      "%s braking.", this->name);
   }
   else
   {
-    const int negative_range = get_neutral_rpm()-get_min_rpm();
-    int scaled_speed = ((get_neutral_rpm()-get_commanded_rpm())*100)/negative_range;
-
-    strlcpy(output_string, this->name, sizeof(output_string));
-    strlcat(output_string, " rpm -", sizeof(output_string));
-    itoa(scaled_speed, int_string, 10);
-    strlcat(output_string, int_string, sizeof(output_string));
-    strlcat(output_string, ". Raw rpm ", sizeof(output_string));
-    itoa(get_commanded_rpm(), int_string, 10);
-    strlcat(output_string, int_string, sizeof(output_string));
-    strlcat(output_string, ". ", sizeof(output_string));
-   }
-  
+    snprintf(output_string, SL_CR_MOTOR_DRIVER_VIRTUAL_MAX_CHARS,
+      "%s set_rpm: %d, commanded_rpm: %d.", 
+      this->name, get_set_rpm(), get_commanded_rpm());
+  }
+ 
   /* Output and short delay */
   Serial.println(output_string);
-  delay(20);
 }
 
 sl_cr_motor_driver_virtual_c::sl_cr_motor_driver_virtual_c(const char* name, sl_cr_motor_driver_config_s constructor_config)
@@ -84,8 +62,9 @@ sl_cr_motor_driver_virtual_c::sl_cr_motor_driver_virtual_c(const char* name, sl_
 
   memset(this->name, '\0',  sizeof(this->name));
   strlcpy(this->name, name, sizeof(this->name));
+  
+  snprintf(output_string, SL_CR_MOTOR_DRIVER_VIRTUAL_MAX_CHARS,
+    "%s initialized.", this->name);
 
-  strlcpy(output_string, this->name, sizeof(output_string));
-  strlcat(output_string, " initialized.", sizeof(output_string));
   Serial.println(output_string);
 }

@@ -29,12 +29,15 @@
 #define SL_CR_CONTROL_LOOP_PERIOD 10
 #define SL_CR_DRIVE_PERIOD 10
 
+#define SL_CR_MOTOR_DRIVER_REAL_MAX_RPM 1000
+#define SL_CR_MOTOR_DRIVER_REAL_MIN_RPM (-SL_CR_MOTOR_DRIVER_REAL_MAX_RPM)
+
 #ifdef _VIRTUAL_MOTORS_
 /* Larger stack required for strings */
-#undef SL_CR_CONTROL_LOOP_TASK_STACK_SIZE
-#defineSL_CR_CONTROL_LOOP_TASK_STACK_SIZE 1024
+#undef  SL_CR_CONTROL_LOOP_TASK_STACK_SIZE
+#define SL_CR_CONTROL_LOOP_TASK_STACK_SIZE 1024
 /* Decrease drive period as serial prints may be slow */
-#undef SL_CR_DRIVE_PERIOD
+#undef  SL_CR_DRIVE_PERIOD
 #define SL_CR_DRIVE_PERIOD 50
 #endif
 
