@@ -10,24 +10,12 @@
 #include <arduino_freertos.h>
 
 //////////////////// FEATURIZATION ////////////////////
-#define _SERIAL_DEBUG_MODE_
-//#define _VIRTUAL_MOTORS_
-#define _ARCADE_DRIVE_
+//#define _SERIAL_DEBUG_MODE_
 ///////////////////////////////////////////////////////
 
-#include "sl_cr_encoder.hpp"
+#include "sl_cr_drive.hpp"
+
 #include "sl_cr_failsafe.hpp"
-#ifdef _ARCADE_DRIVE_
-#include "sl_cr_arcade_drive.hpp"
-#else
-#include "sl_cr_tank_drive.hpp"
-#endif
-#ifdef _VIRTUAL_MOTORS_
-#include "sl_cr_motor_driver_virtual.hpp"
-#else
-#include "sl_cr_motor_driver_drv8256p.hpp"
-#endif
-#include "sl_cr_pid_loop.hpp"
 #include "sl_cr_sbus.hpp"
 #include "sl_cr_types.hpp"
 #include "sl_cr_utils.hpp"
@@ -35,30 +23,8 @@
 
 /* Default stack size to use for FreeRTOS Tasks (in words) */
 #define SL_CR_DEFAULT_TASK_STACK_SIZE      128
-#define SL_CR_CONTROL_LOOP_TASK_STACK_SIZE SL_CR_DEFAULT_TASK_STACK_SIZE
 
-sl_cr_encoder_c      *left_encoder = nullptr;
-sl_cr_encoder_c      *right_encoder = nullptr;
-sl_cr_control_loop_c<sl_cr_rpm_t,sl_cr_rpm_t> *left_pid = nullptr;
-sl_cr_control_loop_c<sl_cr_rpm_t,sl_cr_rpm_t> *right_pid = nullptr;
-sl_cr_motor_driver_c *left_motor;
-sl_cr_motor_driver_c *right_motor;
-/* Drive loop period in ms */
-#define SL_CR_CONTROL_LOOP_PERIOD 10
-#define SL_CR_DRIVE_PERIOD 10
-#ifdef _ARCADE_DRIVE_
-sl_cr_arcade_drive_c *arcade_drive;
-#else
-sl_cr_tank_drive_c *tank_drive;
-#endif
-#ifdef _VIRTUAL_MOTORS_
-/* Larger stack required for strings */
-#undef SL_CR_CONTROL_LOOP_TASK_STACK_SIZE
-#defineSL_CR_CONTROL_LOOP_TASK_STACK_SIZE 1024
-/* Decrease drive period as serial prints may be slow */
-#undef SL_CR_DRIVE_PERIOD
-#define SL_CR_DRIVE_PERIOD 50
-#endif
+const sl_cr_drive_data_s *drive_data_ptr = nullptr;
 
 sl_cr_time_t watchdog_fed;
 /* Watchdog Timeout in ms, 32ms to 522.232s */
@@ -79,47 +45,6 @@ void wdt_callback()
 /* SBUS read frequency in ms */
 #define SL_CR_SBUS_PERIOD SL_CR_SBUS_UPDATE_PERIOD
 
-
-
-/* Encoder interrupts */
-void interrupt_left_encoder_a()
-{
-  if(left_encoder)
-  {
-    sl_cr_critical_section_enter_interrupt();
-    left_encoder->sample_channel_a();
-    sl_cr_critical_section_exit_interrupt();
-  }
-}
-void interrupt_left_encoder_b()
-{
-  if(left_encoder)
-  {
-    sl_cr_critical_section_enter_interrupt();
-    left_encoder->sample_channel_b();
-    sl_cr_critical_section_exit_interrupt();
-  }
-}
-void interrupt_right_encoder_a()
-{
-  if(right_encoder)
-  {
-    sl_cr_critical_section_enter_interrupt();
-    right_encoder->sample_channel_a();
-    sl_cr_critical_section_exit_interrupt();
-  }
-}
-void interrupt_right_encoder_b()
-{
-  if(right_encoder)
-  {
-    sl_cr_critical_section_enter_interrupt();
-    right_encoder->sample_channel_b();
-    sl_cr_critical_section_exit_interrupt();
-  }
-}
-
-
 static void control_loop_task(void *)
 {
   TickType_t xLastWakeTime;
@@ -129,12 +54,7 @@ static void control_loop_task(void *)
   for (;;)
   {
     vTaskDelayUntil(&xLastWakeTime, xPeriod);
-
-    /* Read Encoders */
-    right_encoder->loop();
-    /* Command Motors */
-    left_motor->loop();
-    right_motor->loop();
+    sl_cr_drive_control_loop();
   }
 }
 
@@ -147,36 +67,21 @@ static void drive_task(void *)
   for (;;)
   {
     vTaskDelayUntil(&xLastWakeTime, xPeriod);
-
-#ifdef _ARCADE_DRIVE_
-    /* Arcade Drive loop */
-    arcade_drive->loop();
-#else
-    /* Tank Drive loop */
-    tank_drive->loop();
-#endif
+    sl_cr_drive_strategy_loop();
   }
 }
 
 static void watchdog_task(void *)
 {
   const TickType_t xPeriod = pdMS_TO_TICKS(SL_CR_WATCHDOG_FEEDING_SCHEDULE);
-  sl_cr_time_t new_wdt_loop_time;
 
   for (;;)
   {
     vTaskDelay(xPeriod);
-    new_wdt_loop_time = millis();
-    if ((new_wdt_loop_time - watchdog_fed) > SL_CR_WATCHDOG_FEEDING_SCHEDULE)
-    {
-      Serial.print("Slow WDT Update: ");
-      Serial.print(new_wdt_loop_time - watchdog_fed);
-      Serial.println("ms");
-    }
 
     /* Feed watchdog */
     wdt.feed();
-    watchdog_fed = new_wdt_loop_time;
+    watchdog_fed = millis();
   }
 }
 
@@ -207,13 +112,13 @@ static void serial_debug_task(void *)
     vTaskDelayUntil(&xLastWakeTime, xPeriod);
 
     Serial.print("motor set_rpm:");
-    Serial.print(right_motor->get_set_rpm());
+    Serial.print(drive_data_ptr->right_motor_stack.driver->get_set_rpm());
     Serial.print(" motor commanded_rpm:");
-    Serial.print(right_motor->get_commanded_rpm());
+    Serial.print(drive_data_ptr->right_motor_stack.driver->get_commanded_rpm());
     Serial.print(" encoder rpm: ");
-    Serial.print(right_motor->get_real_rpm());
+    Serial.print(drive_data_ptr->right_motor_stack.driver->get_real_rpm());
     Serial.print(" error: ");
-    Serial.println(right_pid->get_error());
+    Serial.println(drive_data_ptr->right_motor_stack.control_loop->get_error());
   }
 }
 #endif
@@ -257,45 +162,7 @@ void setup()
   sl_cr_sbus_init();
   Serial.println("SBUS Configured.");
 
-  /* Configure Drive Motors, Encoders, and Drive Strategy */
-  sl_cr_motor_driver_config_s drive_motor_config;
-  sl_cr_motor_driver_c::init_config(&drive_motor_config);
-  drive_motor_config.failsafe_check = sl_cr_get_failsafe_set;
-  drive_motor_config.min_rpm = SL_CR_MOTOR_DRIVER_REAL_MIN_RPM;
-  drive_motor_config.max_rpm = SL_CR_MOTOR_DRIVER_REAL_MAX_RPM;
-
-  sl_cr_pid_loop_params_s pid_params = 
-  {
-    .p_num = 50,
-    .p_den = 100,
-    .i_num = 25,
-    .i_den = 100,
-    .d_num = 12,
-    .d_den = 100,
-  };
-
-
-#ifdef _VIRTUAL_MOTORS_
-  left_motor = new sl_cr_motor_driver_virtual_c("Left Motor", drive_motor_config);
-  right_motor = new sl_cr_motor_driver_virtual_c("Right Motor", drive_motor_config);
-#else
-  right_pid = new sl_cr_pid_loop_c<sl_cr_rpm_t,sl_cr_rpm_t>(drive_motor_config.min_rpm,           drive_motor_config.max_rpm, 
-                                                            drive_motor_config.min_commanded_rpm, drive_motor_config.max_commanded_rpm,
-                                                            pid_params);
-
-  right_encoder = new sl_cr_encoder_c(SL_CR_PIN_DRIVE_ENCODER_1_A, SL_CR_PIN_DRIVE_ENCODER_1_B,false,12,1,30);
-  drive_motor_config.encoder = nullptr;
-  drive_motor_config.control_loop = nullptr;
-  left_motor  = new sl_cr_motor_driver_drv8256p_c(SL_CR_PIN_DRIVE_MOTOR_1_SLEEP, SL_CR_PIN_DRIVE_MOTOR_1_IN1, SL_CR_PIN_DRIVE_MOTOR_1_IN2, drive_motor_config);
-  drive_motor_config.encoder = right_encoder;
-  drive_motor_config.control_loop = right_pid;
-  right_motor = new sl_cr_motor_driver_drv8256p_c(SL_CR_PIN_DRIVE_MOTOR_2_SLEEP, SL_CR_PIN_DRIVE_MOTOR_2_IN1, SL_CR_PIN_DRIVE_MOTOR_2_IN2, drive_motor_config);
-#endif
-#ifdef _ARCADE_DRIVE_
-  arcade_drive = new sl_cr_arcade_drive_c(left_motor, right_motor, SL_CR_ARCADE_DRIVE_THROTTLE_CH, SL_CR_ARCADE_DRIVE_STEERING_CH);
-#else
-  tank_drive = new sl_cr_tank_drive_c(left_motor, right_motor, SL_CR_TANK_DRIVE_LEFT_CH, SL_CR_TANK_DRIVE_RIGHT_CH);
-#endif
+  drive_data_ptr = sl_cr_drive_init();
   Serial.println("Drive Configured.");
 
   /* Configure FreeRTOS */
@@ -316,11 +183,7 @@ void setup()
   sl_cr_clear_failsafe_mask(SL_CR_FAILSAFE_BOOT);
 
   Serial.println("Attaching Pin Interrupts.");
-  attachInterrupt(SL_CR_PIN_DRIVE_ENCODER_1_A, 
-                  interrupt_right_encoder_a, arduino::CHANGE);
-  attachInterrupt(SL_CR_PIN_DRIVE_ENCODER_1_B, 
-                  interrupt_right_encoder_b, arduino::CHANGE);
-
+  sl_cr_drive_register_interrupts();
   Serial.println("Starting FreeRTOS scheduler.");
   Serial.flush();
   vTaskStartScheduler();
