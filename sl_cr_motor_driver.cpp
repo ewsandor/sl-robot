@@ -14,10 +14,10 @@ const sl_cr_motor_driver_config_s default_motor_driver_config =
 {
   .failsafe_check    = nullptr,
   .invert_direction  = false,
-  .min_rpm           = SL_CR_MOTOR_DRIVER_DEFAULT_MIN_SPEED,
-  .max_rpm           = SL_CR_MOTOR_DRIVER_DEFAULT_MAX_SPEED,
-  .min_commanded_rpm = SL_CR_MOTOR_DRIVER_DEFAULT_MIN_SPEED,
-  .max_commanded_rpm = SL_CR_MOTOR_DRIVER_DEFAULT_MAX_SPEED,
+  .min_rpm           = SL_CR_MOTOR_DRIVER_DEFAULT_MIN_RPM,
+  .max_rpm           = SL_CR_MOTOR_DRIVER_DEFAULT_MAX_RPM,
+  .min_commanded_rpm = SL_CR_MOTOR_DRIVER_DEFAULT_MIN_RPM,
+  .max_commanded_rpm = SL_CR_MOTOR_DRIVER_DEFAULT_MAX_RPM,
   .encoder           = nullptr,
   .control_loop      = nullptr,
 };
