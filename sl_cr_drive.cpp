@@ -105,6 +105,10 @@ void sl_cr_drive_init_motor_stacks()
   drive_data.right_motor_stack.driver = new sl_cr_motor_driver_drv8256p_c(SL_CR_PIN_DRIVE_MOTOR_2_SLEEP, SL_CR_PIN_DRIVE_MOTOR_2_IN1, SL_CR_PIN_DRIVE_MOTOR_2_IN2, drive_motor_config);
 #endif
 
+  #ifdef _FORCE_LIMP_MODE_
+  drive_data.left_motor_stack.driver->set_limp_mode(true);
+  drive_data.right_motor_stack.driver->set_limp_mode(true);
+  #endif
 }
 
 const sl_cr_drive_data_s *sl_cr_drive_init()

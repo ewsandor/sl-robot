@@ -20,13 +20,7 @@ void sl_cr_motor_driver_drv8256p_c::disable_motor()
 
 void sl_cr_motor_driver_drv8256p_c::command_motor()
 {
-  if(get_neutral_rpm() == get_commanded_rpm())
-  {
-    // in1: 0 in2: 0;  out1: L out2: L;  effect: brake low (outputs shorted to ground)
-    analogWrite(in1, 0);
-    analogWrite(in2, 0);
-  }
-  else if (get_commanded_rpm() > get_neutral_rpm())
+  if (get_commanded_rpm() > get_neutral_commanded_rpm())
   {
     /* Positive direction */
     const int positive_range = get_max_commanded_rpm()-get_neutral_commanded_rpm();
@@ -36,7 +30,7 @@ void sl_cr_motor_driver_drv8256p_c::command_motor()
     analogWrite(in1, pwm_value);
     analogWrite(in2, 0);
   }
-  else
+  else if (get_commanded_rpm() < get_neutral_commanded_rpm())
   {
     const int negative_range = get_neutral_commanded_rpm()-get_min_commanded_rpm();
     const int pwm_value = ((get_neutral_commanded_rpm()-get_commanded_rpm())*SL_CR_PWM_MAX_VALUE)/negative_range;
@@ -44,6 +38,12 @@ void sl_cr_motor_driver_drv8256p_c::command_motor()
     // in1: 0 in2: PWM;  out1: L out2: PWM (H/L);  effect: reverse/brake at rpm PWM %
     analogWrite(in1, 0);
     analogWrite(in2, pwm_value);
+  }
+  else
+  {
+    // in1: 0 in2: 0;  out1: L out2: L;  effect: brake low (outputs shorted to ground)
+    analogWrite(in1, 0);
+    analogWrite(in2, 0);
   }
 
   /* Wakeup driver (active low) */
@@ -75,9 +75,7 @@ sl_cr_motor_driver_drv8256p_c::sl_cr_motor_driver_drv8256p_c(sl_cr_pin_t sleep_b
 }
 
 sl_cr_motor_driver_drv8256p_c::sl_cr_motor_driver_drv8256p_c(sl_cr_pin_t sleep_bar, sl_cr_pin_t in1, sl_cr_pin_t in2, sl_cr_motor_driver_config_s constructor_config)
-  : sl_cr_motor_driver_drv8256p_c(sleep_bar, in1, in2, SL_CR_PIN_INVALID, constructor_config)
-{
-}
+  : sl_cr_motor_driver_drv8256p_c(sleep_bar, in1, in2, SL_CR_PIN_INVALID, constructor_config) {}
 
 sl_cr_motor_driver_fault_status_e sl_cr_motor_driver_drv8256p_c::get_fault_status() const
 {

@@ -77,13 +77,18 @@ class sl_cr_motor_driver_c
     /* Active Parameters */
     sl_cr_rpm_t                       set_rpm;
     sl_cr_rpm_t                       commanded_rpm;
+    bool                              limp;
+
+    /* Sets motor to a given rpm */
+    void change_commanded_rpm(sl_cr_rpm_t);
 
     void init();
 
   protected:
-
     virtual void disable_motor() = 0;
     virtual void command_motor() = 0;
+
+    sl_cr_rpm_t commanded_from_set_rpm(sl_cr_rpm_t) const;
 
   public:
     static void init_config(sl_cr_motor_driver_config_s*);
@@ -116,6 +121,9 @@ class sl_cr_motor_driver_c
     void change_set_rpm(sl_cr_rpm_t);
     /* Sets motor to brake */
     void brake_motor();
+    
+    /* Configure limp mode - in limp mode, control loops and other advance control are disabled */
+    void set_limp_mode(bool);
 
     virtual sl_cr_motor_driver_fault_status_e get_fault_status() const;
 
