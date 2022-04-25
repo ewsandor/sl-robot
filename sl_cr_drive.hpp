@@ -35,10 +35,10 @@
 #ifdef _VIRTUAL_MOTORS_
 /* Larger stack required for strings */
 #undef  SL_CR_CONTROL_LOOP_TASK_STACK_SIZE
-#define SL_CR_CONTROL_LOOP_TASK_STACK_SIZE 1024
+#define SL_CR_CONTROL_LOOP_TASK_STACK_SIZE 2048
 /* Decrease drive period as serial prints may be slow */
 #undef  SL_CR_DRIVE_PERIOD
-#define SL_CR_DRIVE_PERIOD 50
+#define SL_CR_DRIVE_PERIOD 20
 #endif
 
 typedef struct
