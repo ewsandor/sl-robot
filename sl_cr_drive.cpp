@@ -128,14 +128,19 @@ void sl_cr_drive_register_interrupts()
   attachInterrupt(SL_CR_PIN_DRIVE_ENCODER_2_B, interrupt_right_encoder_b, CHANGE);
 }
 
+void sl_cr_drive_motor_stack_control_loop(sl_cr_drive_motor_stack_s *motor_stack)
+{
+  if(motor_stack->encoder)
+  {
+    motor_stack->encoder->loop();
+  }
+  motor_stack->driver->loop();
+}
 
 void sl_cr_drive_control_loop()
 {
-  /* Read Encoders */
-  drive_data.right_motor_stack.encoder->loop();
-  /* Command Motors */
-  drive_data.left_motor_stack.driver->loop();
-  drive_data.right_motor_stack.driver->loop();
+  sl_cr_drive_motor_stack_control_loop(&drive_data.left_motor_stack);
+  sl_cr_drive_motor_stack_control_loop(&drive_data.right_motor_stack);
 }
 
 void sl_cr_drive_strategy_loop()
