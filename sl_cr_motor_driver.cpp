@@ -185,7 +185,14 @@ void sl_cr_motor_driver_c::loop()
     {
       config.control_loop->set_setpoint(get_set_rpm());
       config.control_loop->loop(get_real_rpm());
-      change_commanded_rpm(config.control_loop->get_output());
+      if(get_set_rpm() == get_neutral_rpm())
+      {
+        change_commanded_rpm(get_neutral_commanded_rpm());
+      }
+      else
+      {
+        change_commanded_rpm(config.control_loop->get_output());
+      }
     }
     else
     {

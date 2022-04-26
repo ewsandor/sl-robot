@@ -111,7 +111,20 @@ static void serial_debug_task(void *)
   {
     vTaskDelayUntil(&xLastWakeTime, xPeriod);
 
-    Serial.print("motor set_rpm:");
+    Serial.print("Left motor set_rpm:");
+    Serial.print(drive_data_ptr->left_motor_stack.driver->get_set_rpm());
+    Serial.print(" motor commanded_rpm:");
+    Serial.print(drive_data_ptr->left_motor_stack.driver->get_commanded_rpm());
+    Serial.print(" encoder rpm: ");
+    Serial.print(drive_data_ptr->left_motor_stack.driver->get_real_rpm());
+    if(drive_data_ptr->left_motor_stack.control_loop)
+    {
+      Serial.print(" error: ");
+      Serial.print(drive_data_ptr->left_motor_stack.control_loop->get_error());
+    }
+    Serial.println(".");
+  
+    Serial.print("Right motor set_rpm:");
     Serial.print(drive_data_ptr->right_motor_stack.driver->get_set_rpm());
     Serial.print(" motor commanded_rpm:");
     Serial.print(drive_data_ptr->right_motor_stack.driver->get_commanded_rpm());
@@ -123,6 +136,7 @@ static void serial_debug_task(void *)
       Serial.print(drive_data_ptr->right_motor_stack.control_loop->get_error());
     }
     Serial.println(".");
+ 
   }
 }
 #endif
