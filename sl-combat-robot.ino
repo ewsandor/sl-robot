@@ -136,7 +136,8 @@ static void serial_debug_task(void *)
       Serial.print(drive_data_ptr->right_motor_stack.control_loop->get_error());
     }
     Serial.println(".");
- 
+
+    Serial.flush();
   }
 }
 #endif

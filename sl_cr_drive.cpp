@@ -134,10 +134,17 @@ const sl_cr_drive_data_s *sl_cr_drive_init()
 
 void sl_cr_drive_register_interrupts()
 {
-  attachInterrupt(SL_CR_PIN_DRIVE_ENCODER_2_A, interrupt_left_encoder_a, CHANGE);
-  attachInterrupt(SL_CR_PIN_DRIVE_ENCODER_2_B, interrupt_left_encoder_b, CHANGE);
-  attachInterrupt(SL_CR_PIN_DRIVE_ENCODER_1_A, interrupt_right_encoder_a, CHANGE);
-  attachInterrupt(SL_CR_PIN_DRIVE_ENCODER_1_B, interrupt_right_encoder_b, CHANGE);
+  if(drive_data.left_motor_stack.encoder)
+  {
+    attachInterrupt(SL_CR_PIN_DRIVE_ENCODER_2_A, interrupt_left_encoder_a, CHANGE);
+    attachInterrupt(SL_CR_PIN_DRIVE_ENCODER_2_B, interrupt_left_encoder_b, CHANGE);
+  }
+
+  if(drive_data.right_motor_stack.encoder)
+  {
+    attachInterrupt(SL_CR_PIN_DRIVE_ENCODER_1_A, interrupt_right_encoder_a, CHANGE);
+    attachInterrupt(SL_CR_PIN_DRIVE_ENCODER_1_B, interrupt_right_encoder_b, CHANGE);
+  }
 }
 
 void sl_cr_drive_motor_stack_control_loop(sl_cr_drive_motor_stack_s *motor_stack)
