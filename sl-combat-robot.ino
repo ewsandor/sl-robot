@@ -9,20 +9,13 @@
 #include <Watchdog_t4.h>
 #include <arduino_freertos.h>
 
-//////////////////// FEATURIZATION ////////////////////
-//#define _SERIAL_DEBUG_MODE_
-///////////////////////////////////////////////////////
-
+#include "sl_cr_config.h"
 #include "sl_cr_drive.hpp"
-
 #include "sl_cr_failsafe.hpp"
 #include "sl_cr_sbus.hpp"
 #include "sl_cr_types.hpp"
 #include "sl_cr_utils.hpp"
 #include "sl_cr_version.h"
-
-/* Default stack size to use for FreeRTOS Tasks (in words) */
-#define SL_CR_DEFAULT_TASK_STACK_SIZE 128
 
 const sl_cr_drive_data_s *drive_data_ptr = nullptr;
 

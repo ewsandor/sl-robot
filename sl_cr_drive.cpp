@@ -7,6 +7,7 @@
 
 #include <Arduino.h>
 
+#include "sl_cr_config.h"
 #include "sl_cr_drive.hpp"
 
 #ifdef _VIRTUAL_MOTORS_
@@ -25,6 +26,13 @@ const sl_cr_pid_loop_params_s pid_params =
   .i_den = 100,
   .d_num = 12,
   .d_den = 100,
+};
+
+const sl_cr_pwm_config_s pwm_config
+{
+  .frequency  = SL_CR_DEFAULT_PWM_FREQ,
+  .resolution = SL_CR_PWM_RESOLUTION,
+  .max_value  = SL_CR_PWM_MAX_VALUE
 };
 
 /* Drive Data */
@@ -102,13 +110,13 @@ void sl_cr_drive_init_motor_stacks()
   drive_data.left_motor_stack.encoder = new sl_cr_encoder_c(SL_CR_PIN_DRIVE_ENCODER_2_A, SL_CR_PIN_DRIVE_ENCODER_2_B,false,12,1,30);
   drive_motor_config.encoder      = drive_data.left_motor_stack.encoder;
   drive_motor_config.control_loop = drive_data.left_motor_stack.control_loop;
-  drive_data.left_motor_stack.driver  = new sl_cr_motor_driver_drv8256p_c(SL_CR_PIN_DRIVE_MOTOR_2_SLEEP, SL_CR_PIN_DRIVE_MOTOR_2_IN1, SL_CR_PIN_DRIVE_MOTOR_2_IN2, drive_motor_config);
+  drive_data.left_motor_stack.driver  = new sl_cr_motor_driver_drv8256p_c(SL_CR_PIN_DRIVE_MOTOR_2_SLEEP, SL_CR_PIN_DRIVE_MOTOR_2_IN1, SL_CR_PIN_DRIVE_MOTOR_2_IN2, pwm_config, drive_motor_config);
 
   /* Right Motor */
   drive_data.right_motor_stack.encoder = new sl_cr_encoder_c(SL_CR_PIN_DRIVE_ENCODER_1_A, SL_CR_PIN_DRIVE_ENCODER_1_B,true,12,1,30);
   drive_motor_config.encoder      = drive_data.right_motor_stack.encoder;
   drive_motor_config.control_loop = drive_data.right_motor_stack.control_loop;
-  drive_data.right_motor_stack.driver = new sl_cr_motor_driver_drv8256p_c(SL_CR_PIN_DRIVE_MOTOR_1_SLEEP, SL_CR_PIN_DRIVE_MOTOR_1_IN1, SL_CR_PIN_DRIVE_MOTOR_1_IN2, drive_motor_config);
+  drive_data.right_motor_stack.driver = new sl_cr_motor_driver_drv8256p_c(SL_CR_PIN_DRIVE_MOTOR_1_SLEEP, SL_CR_PIN_DRIVE_MOTOR_1_IN1, SL_CR_PIN_DRIVE_MOTOR_1_IN2, pwm_config, drive_motor_config);
 #endif
 
   #ifdef _FORCE_LIMP_MODE_

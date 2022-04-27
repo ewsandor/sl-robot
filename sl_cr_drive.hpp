@@ -8,12 +8,6 @@
 #ifndef __SL_CR_DRIVE_HPP__
 #define __SL_CR_DRIVE_HPP__
 
-//////////////////// FEATURIZATION ////////////////////
-//#define _VIRTUAL_MOTORS_
-#define _ARCADE_DRIVE_
-//#define _FORCE_LIMP_MODE_
-///////////////////////////////////////////////////////
-
 #ifdef _ARCADE_DRIVE_
 #include "sl_cr_arcade_drive.hpp"
 #else
@@ -23,20 +17,12 @@
 #include "sl_cr_motor_driver.hpp"
 #include "sl_cr_pid_loop.hpp"
 
-/* Loop Task stack sizes */
-#define SL_CR_CONTROL_LOOP_TASK_STACK_SIZE SL_CR_DEFAULT_TASK_STACK_SIZE
 /* Loop Task periods in ms */
 #define SL_CR_CONTROL_LOOP_PERIOD 10
 #define SL_CR_DRIVE_PERIOD 10
 
 #define SL_CR_MOTOR_DRIVER_REAL_MAX_RPM 1000
 #define SL_CR_MOTOR_DRIVER_REAL_MIN_RPM (-SL_CR_MOTOR_DRIVER_REAL_MAX_RPM)
-
-#ifdef _VIRTUAL_MOTORS_
-/* Larger stack required for strings */
-#undef  SL_CR_CONTROL_LOOP_TASK_STACK_SIZE
-#define SL_CR_CONTROL_LOOP_TASK_STACK_SIZE 2048
-#endif
 
 typedef struct
 {

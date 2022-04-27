@@ -23,8 +23,8 @@ void sl_cr_motor_driver_drv8256p_c::command_motor()
   if (get_commanded_rpm() > get_neutral_commanded_rpm())
   {
     /* Positive direction */
-    const int positive_range = get_max_commanded_rpm()-get_neutral_commanded_rpm();
-    const int pwm_value = ((get_commanded_rpm()-get_neutral_commanded_rpm())*SL_CR_PWM_MAX_VALUE)/positive_range;
+    const sl_cr_pwm_value_t positive_range = get_max_commanded_rpm()-get_neutral_commanded_rpm();
+    const sl_cr_pwm_value_t pwm_value = ((get_commanded_rpm()-get_neutral_commanded_rpm())*pwm_config.max_value)/positive_range;
 
     // in1: PWM in2: 0;  out1: PWM (H/L) out2: L;  effect: forward/brake at rpm PWM %
     analogWrite(in1, pwm_value);
@@ -32,8 +32,8 @@ void sl_cr_motor_driver_drv8256p_c::command_motor()
   }
   else if (get_commanded_rpm() < get_neutral_commanded_rpm())
   {
-    const int negative_range = get_neutral_commanded_rpm()-get_min_commanded_rpm();
-    const int pwm_value = ((get_neutral_commanded_rpm()-get_commanded_rpm())*SL_CR_PWM_MAX_VALUE)/negative_range;
+    const sl_cr_pwm_value_t negative_range = get_neutral_commanded_rpm()-get_min_commanded_rpm();
+    const sl_cr_pwm_value_t pwm_value = ((get_neutral_commanded_rpm()-get_commanded_rpm())*pwm_config.max_value)/negative_range;
 
     // in1: 0 in2: PWM;  out1: L out2: PWM (H/L);  effect: reverse/brake at rpm PWM %
     analogWrite(in1, 0);
@@ -50,8 +50,8 @@ void sl_cr_motor_driver_drv8256p_c::command_motor()
   digitalWrite(sleep_bar, HIGH);
 }
 
-sl_cr_motor_driver_drv8256p_c::sl_cr_motor_driver_drv8256p_c(sl_cr_pin_t sleep_bar, sl_cr_pin_t in1, sl_cr_pin_t in2, sl_cr_pin_t fault_bar, sl_cr_motor_driver_config_s constructor_config)
-  : sl_cr_motor_driver_c(constructor_config)
+sl_cr_motor_driver_drv8256p_c::sl_cr_motor_driver_drv8256p_c(sl_cr_pin_t sleep_bar, sl_cr_pin_t in1, sl_cr_pin_t in2, sl_cr_pin_t fault_bar, const sl_cr_pwm_config_s pwm_cfg, const sl_cr_motor_driver_config_s constructor_config)
+  : sl_cr_motor_driver_c(constructor_config), pwm_config(pwm_cfg)
 {
   /* Store pin assignments */
   this->sleep_bar = sleep_bar;
@@ -64,8 +64,8 @@ sl_cr_motor_driver_drv8256p_c::sl_cr_motor_driver_drv8256p_c(sl_cr_pin_t sleep_b
   pinMode(this->sleep_bar, OUTPUT);
   pinMode(this->in1, OUTPUT);
   pinMode(this->in2, OUTPUT);
-  analogWriteFrequency(this->in1, SL_CR_DEFAULT_PWM_FREQ);
-  analogWriteFrequency(this->in2, SL_CR_DEFAULT_PWM_FREQ);
+  analogWriteFrequency(this->in1, pwm_config.frequency);
+  analogWriteFrequency(this->in2, pwm_config.frequency);
   disable_motor();
 
   if(this->fault_bar != SL_CR_PIN_INVALID)
@@ -74,8 +74,8 @@ sl_cr_motor_driver_drv8256p_c::sl_cr_motor_driver_drv8256p_c(sl_cr_pin_t sleep_b
   }
 }
 
-sl_cr_motor_driver_drv8256p_c::sl_cr_motor_driver_drv8256p_c(sl_cr_pin_t sleep_bar, sl_cr_pin_t in1, sl_cr_pin_t in2, sl_cr_motor_driver_config_s constructor_config)
-  : sl_cr_motor_driver_drv8256p_c(sleep_bar, in1, in2, SL_CR_PIN_INVALID, constructor_config) {}
+sl_cr_motor_driver_drv8256p_c::sl_cr_motor_driver_drv8256p_c(sl_cr_pin_t sleep_bar, sl_cr_pin_t in1, sl_cr_pin_t in2, const sl_cr_pwm_config_s pwm_cfg, const sl_cr_motor_driver_config_s constructor_config)
+  : sl_cr_motor_driver_drv8256p_c(sleep_bar, in1, in2, SL_CR_PIN_INVALID, pwm_cfg, constructor_config) {}
 
 sl_cr_motor_driver_fault_status_e sl_cr_motor_driver_drv8256p_c::get_fault_status() const
 {

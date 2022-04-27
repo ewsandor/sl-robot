@@ -21,28 +21,22 @@ typedef int sl_cr_rpm_t;
 /* Failsafe function pointer */
 typedef bool (*sl_cr_failsafe_f)(void);
 
-/* Pin assignments */
+/* Hardware Pin Type */
 typedef uint8_t sl_cr_pin_t;
-#define SL_CR_PIN_INVALID             0xFF
-#define SL_CR_PIN_DRIVE_MOTOR_1_IN1   2
-#define SL_CR_PIN_DRIVE_MOTOR_1_IN2   3
-#define SL_CR_PIN_DRIVE_MOTOR_1_FAULT SL_CR_PIN_INVALID
-#define SL_CR_PIN_DRIVE_MOTOR_1_SLEEP 5
-#define SL_CR_PIN_DRIVE_MOTOR_2_IN1   6
-#define SL_CR_PIN_DRIVE_MOTOR_2_IN2   7
-#define SL_CR_PIN_DRIVE_MOTOR_2_FAULT SL_CR_PIN_INVALID
-#define SL_CR_PIN_DRIVE_MOTOR_2_SLEEP 9
-#define SL_CR_PIN_ONBOARD_LED         13
-#define SL_CR_PIN_DRIVE_ENCODER_1_A   20
-#define SL_CR_PIN_DRIVE_ENCODER_1_B   21
-#define SL_CR_PIN_DRIVE_ENCODER_2_A   22
-#define SL_CR_PIN_DRIVE_ENCODER_2_B   23
+#define SL_CR_PIN_INVALID 0xFF
+/* PWM Frequency in Hz */
+typedef float        sl_cr_pwm_freq_t;
+/* PWM Resolution in Bits */
+typedef unsigned int sl_cr_pwm_resolution_t;
+/* PWM Value */
+typedef unsigned int sl_cr_pwm_value_t;
+typedef struct
+{
+  sl_cr_pwm_freq_t       frequency;
+  sl_cr_pwm_resolution_t resolution;
+  sl_cr_pwm_value_t      max_value;
+} sl_cr_pwm_config_s;
 
-/* PWM Resolution */
-#define SL_CR_PWM_RESOLUTION 10
-#define SL_CR_PWM_MAX_VALUE  ((1<<SL_CR_PWM_RESOLUTION)-1)
-/* Default frequency to use for PWM pins (hz) */
-#define SL_CR_DEFAULT_PWM_FREQ 23437.5
 
 /* RC Channel Index, starts from 1 */
 typedef unsigned int sl_cr_rc_channel_t;
