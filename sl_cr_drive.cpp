@@ -35,6 +35,17 @@ const sl_cr_pwm_config_s pwm_config
   .max_value  = SL_CR_PWM_MAX_VALUE
 };
 
+const sl_cr_pin_t right_motor_in1_pin   = SL_CR_PIN_DRIVE_MOTOR_1_IN1;
+const sl_cr_pin_t right_motor_in2_pin   = SL_CR_PIN_DRIVE_MOTOR_1_IN2;
+const sl_cr_pin_t right_motor_sleep_pin = SL_CR_PIN_DRIVE_MOTOR_1_SLEEP;
+const sl_cr_pin_t right_encoder_a_pin   = SL_CR_PIN_DRIVE_ENCODER_1_A;
+const sl_cr_pin_t right_encoder_b_pin   = SL_CR_PIN_DRIVE_ENCODER_1_B;
+const sl_cr_pin_t left_motor_in1_pin    = SL_CR_PIN_DRIVE_MOTOR_2_IN1;
+const sl_cr_pin_t left_motor_in2_pin    = SL_CR_PIN_DRIVE_MOTOR_2_IN2;
+const sl_cr_pin_t left_motor_sleep_pin  = SL_CR_PIN_DRIVE_MOTOR_2_SLEEP;
+const sl_cr_pin_t left_encoder_a_pin    = SL_CR_PIN_DRIVE_ENCODER_2_A;
+const sl_cr_pin_t left_encoder_b_pin    = SL_CR_PIN_DRIVE_ENCODER_2_B;
+
 /* Drive Data */
 sl_cr_drive_data_s drive_data = {0};
 
@@ -107,16 +118,16 @@ void sl_cr_drive_init_motor_stacks()
   );
 
   /* Left Motor */
-  drive_data.left_motor_stack.encoder = new sl_cr_encoder_c(SL_CR_PIN_DRIVE_ENCODER_2_A, SL_CR_PIN_DRIVE_ENCODER_2_B,false,12,1,30);
+  drive_data.left_motor_stack.encoder = new sl_cr_encoder_c(left_encoder_a_pin, left_encoder_b_pin,false,12,1,30);
   drive_motor_config.encoder      = drive_data.left_motor_stack.encoder;
   drive_motor_config.control_loop = drive_data.left_motor_stack.control_loop;
-  drive_data.left_motor_stack.driver  = new sl_cr_motor_driver_drv8256p_c(SL_CR_PIN_DRIVE_MOTOR_2_SLEEP, SL_CR_PIN_DRIVE_MOTOR_2_IN1, SL_CR_PIN_DRIVE_MOTOR_2_IN2, pwm_config, drive_motor_config);
+  drive_data.left_motor_stack.driver  = new sl_cr_motor_driver_drv8256p_c(left_motor_sleep_pin, left_motor_in1_pin, left_motor_in2_pin, pwm_config, drive_motor_config);
 
   /* Right Motor */
-  drive_data.right_motor_stack.encoder = new sl_cr_encoder_c(SL_CR_PIN_DRIVE_ENCODER_1_A, SL_CR_PIN_DRIVE_ENCODER_1_B,true,12,1,30);
+  drive_data.right_motor_stack.encoder = new sl_cr_encoder_c(right_encoder_a_pin, right_encoder_b_pin,true,12,1,30);
   drive_motor_config.encoder      = drive_data.right_motor_stack.encoder;
   drive_motor_config.control_loop = drive_data.right_motor_stack.control_loop;
-  drive_data.right_motor_stack.driver = new sl_cr_motor_driver_drv8256p_c(SL_CR_PIN_DRIVE_MOTOR_1_SLEEP, SL_CR_PIN_DRIVE_MOTOR_1_IN1, SL_CR_PIN_DRIVE_MOTOR_1_IN2, pwm_config, drive_motor_config);
+  drive_data.right_motor_stack.driver = new sl_cr_motor_driver_drv8256p_c(right_motor_sleep_pin, right_motor_in1_pin, right_motor_in2_pin, pwm_config, drive_motor_config);
 #endif
 
   #ifdef _FORCE_LIMP_MODE_
@@ -144,14 +155,14 @@ void sl_cr_drive_register_interrupts()
 {
   if(drive_data.left_motor_stack.encoder)
   {
-    attachInterrupt(SL_CR_PIN_DRIVE_ENCODER_2_A, interrupt_left_encoder_a, CHANGE);
-    attachInterrupt(SL_CR_PIN_DRIVE_ENCODER_2_B, interrupt_left_encoder_b, CHANGE);
+    attachInterrupt(left_encoder_a_pin, interrupt_left_encoder_a, CHANGE);
+    attachInterrupt(left_encoder_b_pin, interrupt_left_encoder_b, CHANGE);
   }
 
   if(drive_data.right_motor_stack.encoder)
   {
-    attachInterrupt(SL_CR_PIN_DRIVE_ENCODER_1_A, interrupt_right_encoder_a, CHANGE);
-    attachInterrupt(SL_CR_PIN_DRIVE_ENCODER_1_B, interrupt_right_encoder_b, CHANGE);
+    attachInterrupt(right_encoder_a_pin, interrupt_right_encoder_a, CHANGE);
+    attachInterrupt(right_encoder_b_pin, interrupt_right_encoder_b, CHANGE);
   }
 }
 
