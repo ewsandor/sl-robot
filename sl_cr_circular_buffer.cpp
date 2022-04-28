@@ -9,27 +9,29 @@
 
 #include "sl_cr_utils.hpp"
 
+using namespace sandor_laboratories::combat_robot;
+
 template <typename T>
-sl_cr_circular_buffer_c<T>::sl_cr_circular_buffer_c(sl_cr_circular_buffer_index_t constructor_size)
+circular_buffer_c<T>::circular_buffer_c(circular_buffer_index_t constructor_size)
   : buffer_size(constructor_size)
 {
-  circular_buffer = (sl_cr_buffer_entry_s*) sl_cr_malloc(buffer_size*sizeof(sl_cr_buffer_entry_s));
+  circular_buffer = (buffer_entry_s*) heap_malloc(buffer_size*sizeof(buffer_entry_s));
   write_index = 0;
   read_index  = 0;
 }
 template <typename T>
-sl_cr_circular_buffer_c<T>::~sl_cr_circular_buffer_c()
+circular_buffer_c<T>::~circular_buffer_c()
 {
-  sl_cr_free((void*)circular_buffer);
+  heap_free((void*)circular_buffer);
 }
 
 /* Push item into buffer (by copy), returns 'true' if successful.  
     Data will only be overwritten if force is set,  */
 template <typename T>
-bool sl_cr_circular_buffer_c<T>::push(const T* input, bool force)
+bool circular_buffer_c<T>::push(const T* input, bool force)
 {
   bool ret_val = false;
-  sl_cr_buffer_entry_s *write_entry = &circular_buffer[write_index];
+  buffer_entry_s *write_entry = &circular_buffer[write_index];
 
   if((SL_CR_BUFFER_ENTRY_AVAILABLE == write_entry->hdr.state) ||
      (true == force))
@@ -43,10 +45,10 @@ bool sl_cr_circular_buffer_c<T>::push(const T* input, bool force)
 }
 /* Returns pointer to next available entry or 'nullpointer' if no free entries.  Pointer remains writable and cannot be read until commited.  */
 template <typename T>
-T* sl_cr_circular_buffer_c<T>::allocate()
+T* circular_buffer_c<T>::allocate()
 {
   T* ret_ptr = nullptr;
-  sl_cr_buffer_entry_s *write_entry = &circular_buffer[write_index];
+  buffer_entry_s *write_entry = &circular_buffer[write_index];
 
   if(SL_CR_BUFFER_ENTRY_AVAILABLE == write_entry->hdr.state)
   {
@@ -59,10 +61,10 @@ T* sl_cr_circular_buffer_c<T>::allocate()
 }
 /* Commits allocated entry for reading.  Returns 'true' if successful */
 template <typename T>
-bool sl_cr_circular_buffer_c<T>::commit(const T* commit_data)
+bool circular_buffer_c<T>::commit(const T* commit_data)
 {
   bool ret_val = false;
-  sl_cr_circular_buffer_index_t i;
+  circular_buffer_index_t i;
 
   for(i = 0; i < buffer_size; i++)
   {
@@ -80,13 +82,13 @@ bool sl_cr_circular_buffer_c<T>::commit(const T* commit_data)
 
 /* Returns 'true' if data is available */
 template <typename T>
-bool sl_cr_circular_buffer_c<T>::available()
+bool circular_buffer_c<T>::available()
 {
   return (SL_CR_BUFFER_ENTRY_COMMITED == circular_buffer[read_index].hdr.state);
 }
 /* Reads and frees next buffer entry. Returns 0-memset data and nothing is freed if nothing to pop*/
 template <typename T>
-T sl_cr_circular_buffer_c<T>::pop()
+T circular_buffer_c<T>::pop()
 {
   if(SL_CR_BUFFER_ENTRY_COMMITED == circular_buffer[read_index].hdr.state)
   {
@@ -102,7 +104,7 @@ T sl_cr_circular_buffer_c<T>::pop()
 }
 /* Frees next buffer entry without returning data.  Does nothing if nothing to pop */
 template <typename T>
-void sl_cr_circular_buffer_c<T>::pop_void()
+void circular_buffer_c<T>::pop_void()
 {
   if(SL_CR_BUFFER_ENTRY_COMMITED == circular_buffer[read_index].hdr.state)
   {
@@ -113,7 +115,7 @@ void sl_cr_circular_buffer_c<T>::pop_void()
 }
 /* Returns next buffer entry without freeing. Returns nullptr if no data is available.  Data remains valid until pop is called */
 template <typename T>
-const T* sl_cr_circular_buffer_c<T>::peek_ptr()
+const T* circular_buffer_c<T>::peek_ptr()
 {
   const T* ret_ptr = nullptr;
 
@@ -126,7 +128,7 @@ const T* sl_cr_circular_buffer_c<T>::peek_ptr()
 }
 /* Returns next buffer entry without freeing, returns 0-memset data if no data is available  */
 template <typename T>
-T sl_cr_circular_buffer_c<T>::peek()
+T circular_buffer_c<T>::peek()
 {
   if(SL_CR_BUFFER_ENTRY_COMMITED == circular_buffer[read_index].hdr.state)
   {

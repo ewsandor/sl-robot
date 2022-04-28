@@ -11,6 +11,8 @@
 #include "sl_cr_sbus.hpp"
 #include "sl_cr_utils.hpp"
 
+using namespace sandor_laboratories::combat_robot;
+
 #define SL_CR_FAILSAFE_BIT(reason) (1 << reason)
 
 #define SL_CR_ARM_SWITCH_THRESHOLD ((SL_CR_RC_CH_MAX_VALUE*90)/100)
@@ -31,14 +33,14 @@ void sl_cr_set_failsafe_mask(sl_cr_failsafe_reason_e reason)
 {
   sl_cr_failsafe_mask_t old_failsafe_mask = sl_cr_failsafe_mask;
 
-  sl_cr_critical_section_enter();
+  critical_section_enter();
   sl_cr_failsafe_mask |= SL_CR_FAILSAFE_BIT(reason);
-  sl_cr_critical_section_exit();
+  critical_section_exit();
   
   if(0 == (old_failsafe_mask & SL_CR_FAILSAFE_BIT(reason)))
   {
     Serial.print("New failsafe mask: 0x");
-    Serial.println(sl_cr_failsafe_mask, HEX);
+    Serial.println(sl_cr_failsafe_mask, arduino::HEX);
     if(0 == old_failsafe_mask)
     {
       Serial.println("FAILSAFE SET!");
@@ -53,14 +55,14 @@ void sl_cr_set_failsafe_mask(sl_cr_failsafe_reason_e reason)
 void sl_cr_clear_failsafe_mask(sl_cr_failsafe_reason_e reason)
 {
   sl_cr_failsafe_mask_t old_failsafe_mask = sl_cr_failsafe_mask;
-  sl_cr_critical_section_enter();
+  critical_section_enter();
   sl_cr_failsafe_mask &= ~(SL_CR_FAILSAFE_BIT(reason));
-  sl_cr_critical_section_exit();
+  critical_section_exit();
   
   if(0 != (old_failsafe_mask & SL_CR_FAILSAFE_BIT(reason)))
   {
     Serial.print("New failsafe mask: 0x");
-    Serial.println(sl_cr_failsafe_mask, HEX);
+    Serial.println(sl_cr_failsafe_mask, arduino::HEX);
     if(0 == sl_cr_failsafe_mask)
     {
       Serial.println("ARMED!");
@@ -82,9 +84,9 @@ sl_cr_failsafe_mask_t sl_cr_get_failsafe_mask()
 {
   sl_cr_failsafe_mask_t ret_val = SL_CR_FAILSAFE_INVALID_MASK;
 
-  sl_cr_critical_section_enter();
+  critical_section_enter();
   ret_val = sl_cr_failsafe_mask;
-  sl_cr_critical_section_exit();
+  critical_section_exit();
 
   return ret_val;
 }

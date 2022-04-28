@@ -18,6 +18,8 @@
 #include "sl_cr_failsafe.hpp"
 #include "sl_cr_utils.hpp"
 
+using namespace sandor_laboratories::combat_robot;
+
 const sl_cr_pid_loop_params_s pid_params = 
 {
   .p_num = 50,
@@ -54,36 +56,36 @@ void interrupt_left_encoder_a()
 {
   if(drive_data.left_motor_stack.encoder)
   {
-    sl_cr_critical_section_enter_interrupt();
+    critical_section_enter_interrupt();
     drive_data.left_motor_stack.encoder->sample_channel_a();
-    sl_cr_critical_section_exit_interrupt();
+    critical_section_exit_interrupt();
   }
 }
 void interrupt_left_encoder_b()
 {
   if(drive_data.left_motor_stack.encoder)
   {
-    sl_cr_critical_section_enter_interrupt();
+    critical_section_enter_interrupt();
     drive_data.left_motor_stack.encoder->sample_channel_b();
-    sl_cr_critical_section_exit_interrupt();
+    critical_section_exit_interrupt();
   }
 }
 void interrupt_right_encoder_a()
 {
   if(drive_data.right_motor_stack.encoder)
   {
-    sl_cr_critical_section_enter_interrupt();
+    critical_section_enter_interrupt();
     drive_data.right_motor_stack.encoder->sample_channel_a();
-    sl_cr_critical_section_exit_interrupt();
+    critical_section_exit_interrupt();
   }
 }
 void interrupt_right_encoder_b()
 {
   if(drive_data.right_motor_stack.encoder)
   {
-    sl_cr_critical_section_enter_interrupt();
+    critical_section_enter_interrupt();
     drive_data.right_motor_stack.encoder->sample_channel_b();
-    sl_cr_critical_section_exit_interrupt();
+    critical_section_exit_interrupt();
   }
 }
 
@@ -155,14 +157,14 @@ void sl_cr_drive_register_interrupts()
 {
   if(drive_data.left_motor_stack.encoder)
   {
-    attachInterrupt(left_encoder_a_pin, interrupt_left_encoder_a, CHANGE);
-    attachInterrupt(left_encoder_b_pin, interrupt_left_encoder_b, CHANGE);
+    attachInterrupt(left_encoder_a_pin, interrupt_left_encoder_a, arduino::CHANGE);
+    attachInterrupt(left_encoder_b_pin, interrupt_left_encoder_b, arduino::CHANGE);
   }
 
   if(drive_data.right_motor_stack.encoder)
   {
-    attachInterrupt(right_encoder_a_pin, interrupt_right_encoder_a, CHANGE);
-    attachInterrupt(right_encoder_b_pin, interrupt_right_encoder_b, CHANGE);
+    attachInterrupt(right_encoder_a_pin, interrupt_right_encoder_a, arduino::CHANGE);
+    attachInterrupt(right_encoder_b_pin, interrupt_right_encoder_b, arduino::CHANGE);
   }
 }
 

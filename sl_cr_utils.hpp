@@ -8,18 +8,35 @@
 #ifndef __SL_CR_UTILS_HPP__
 #define __SL_CR_UTILS_HPP__
 
-#include "stddef.h"
+/* FreeRTOS Includes */
+#include <arduino_freertos.h>
+#include <semphr.h>
+#include <cassert>
 
-/* Utility functions to enter and exit critical sections */
-void sl_cr_critical_section_enter();
-void sl_cr_critical_section_exit();
+namespace sandor_laboratories
+{
+  namespace combat_robot
+  { 
+    #define ASSERT(condition) assert(condition)
 
-/* Utility functions to enter and exit critical sections from interrupts specifically */
-void sl_cr_critical_section_enter_interrupt();
-void sl_cr_critical_section_exit_interrupt();
+    /* Heap Malloc and Free */
+    void* heap_malloc(size_t);
+    void  heap_free(void *);
 
-/* Heap Malloc and Free */
-void* sl_cr_malloc(size_t);
-void  sl_cr_free(void *);
+    /* Utility functions to enter and exit critical sections */
+    void critical_section_enter();
+    void critical_section_exit();
+    /* Utility functions to enter and exit critical sections from interrupts specifically */
+    void critical_section_enter_interrupt();
+    void critical_section_exit_interrupt();
+
+    /* Utility functions to init, lock, and unlock, mutexes */
+    typedef QueueHandle_t mutex_handle_t;
+    void mutex_init(mutex_handle_t*);
+    void mutex_lock(mutex_handle_t*);
+    void mutex_unlock(mutex_handle_t*);
+
+  }
+}
 
 #endif /* __SL_CR_UTILS_HPP__ */

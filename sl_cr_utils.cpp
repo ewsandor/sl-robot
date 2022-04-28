@@ -5,27 +5,31 @@
   April 2022
 */
 
-#include <arduino_freertos.h>
+/* Standard Includes */
+#include <stddef.h>
 
+/* Project Includes */
 #include "sl_cr_utils.hpp"
 
+using namespace sandor_laboratories::combat_robot;
+
 /* Utility functions to enter and exit critical sections */
-void sl_cr_critical_section_enter()
+void sandor_laboratories::combat_robot::critical_section_enter()
 {
   if(xPortIsInsideInterrupt() == pdTRUE)
   {
-    sl_cr_critical_section_enter_interrupt();
+    critical_section_enter_interrupt();
   }
   else
   {
     taskENTER_CRITICAL();
   }
 }
-void sl_cr_critical_section_exit()
+void sandor_laboratories::combat_robot::critical_section_exit()
 {
   if(xPortIsInsideInterrupt() == pdTRUE)
   {
-    sl_cr_critical_section_exit_interrupt();
+    critical_section_exit_interrupt();
   }
   else
   {
@@ -35,20 +39,38 @@ void sl_cr_critical_section_exit()
 
 /* Utility functions to enter and exit critical sections from interrupts specifically */
 static UBaseType_t uxSavedInterruptStatus;
-void sl_cr_critical_section_enter_interrupt()
+void sandor_laboratories::combat_robot::critical_section_enter_interrupt()
 {
   uxSavedInterruptStatus = taskENTER_CRITICAL_FROM_ISR();
 }
-void sl_cr_critical_section_exit_interrupt()
+void sandor_laboratories::combat_robot::critical_section_exit_interrupt()
 {
   taskEXIT_CRITICAL_FROM_ISR(uxSavedInterruptStatus);
 }
 
-void* sl_cr_malloc(size_t size)
+void sandor_laboratories::combat_robot::mutex_init(mutex_handle_t* mutex_handle)
+{
+  ASSERT(mutex_handle);
+  *mutex_handle = xSemaphoreCreateMutex();
+  ASSERT(*mutex_handle);
+}
+void sandor_laboratories::combat_robot::mutex_lock(mutex_handle_t* mutex_handle)
+{
+  ASSERT(mutex_handle);
+  ASSERT(pdTRUE == xSemaphoreTake(*mutex_handle, portMAX_DELAY));
+}
+void sandor_laboratories::combat_robot::mutex_unlock(mutex_handle_t* mutex_handle)
+{
+  ASSERT(mutex_handle);
+  ASSERT(pdTRUE == xSemaphoreGive(*mutex_handle));
+}
+
+
+void* sandor_laboratories::combat_robot::heap_malloc(size_t size)
 {
   return malloc(size);
 }
-void  sl_cr_free(void * ptr)
+void  sandor_laboratories::combat_robot::heap_free(void * ptr)
 {
   free(ptr);
 }

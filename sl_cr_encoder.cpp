@@ -11,6 +11,8 @@
 #include "sl_cr_encoder.hpp"
 #include "sl_cr_utils.hpp"
 
+using namespace sandor_laboratories::combat_robot;
+
 void sl_cr_encoder_c::init()
 {
   count                       = 0;
@@ -29,8 +31,8 @@ sl_cr_encoder_c::sl_cr_encoder_c(sl_cr_pin_t ch_a, sl_cr_pin_t ch_b) :
 {
   init();
 
-  pinMode(ch_a_pin, INPUT);
-  pinMode(ch_b_pin, INPUT);
+  pinMode(ch_a_pin, arduino::INPUT);
+  pinMode(ch_b_pin, arduino::INPUT);
 
   channel_state = ((digitalReadFast(ch_a_pin) << 1) | digitalReadFast(ch_b_pin));
 }
@@ -158,10 +160,10 @@ void sl_cr_encoder_c::compute_rotation_frequency()
   if(snapshot_time > last_frequency_update)
   {
     /* Atomically take snapshot of count and reset counter */
-    sl_cr_critical_section_enter();
+    critical_section_enter();
     last_count = count;
     count = 0;
-    sl_cr_critical_section_exit();
+    critical_section_exit();
 
     if(invert_direction)
     {
@@ -179,9 +181,9 @@ void sl_cr_encoder_c::compute_rotation_frequency()
 sl_cr_encoder_count_t sl_cr_encoder_c::get_count() const 
 {
   sl_cr_encoder_count_t saved_count;
-  sl_cr_critical_section_enter();
+  critical_section_enter();
   saved_count = count;
-  sl_cr_critical_section_exit();
+  critical_section_exit();
 
   return saved_count;
 };
@@ -189,9 +191,9 @@ sl_cr_encoder_count_t sl_cr_encoder_c::get_skipped_count() const
 {
   sl_cr_encoder_count_t saved_skipped_count;
 
-  sl_cr_critical_section_enter();
+  critical_section_enter();
   saved_skipped_count = skipped_count;
-  sl_cr_critical_section_exit();
+  critical_section_exit();
 
   return saved_skipped_count;
 };
@@ -199,9 +201,9 @@ sl_cr_encoder_channel_state_t sl_cr_encoder_c::get_state() const
 {
   sl_cr_encoder_channel_state_t saved_channel_state;
 
-  sl_cr_critical_section_enter();
+  critical_section_enter();
   saved_channel_state = channel_state;
-  sl_cr_critical_section_exit();
+  critical_section_exit();
   
   return saved_channel_state;
 };

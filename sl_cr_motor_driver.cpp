@@ -10,6 +10,8 @@
 
 #define SL_CR_DISABLE_BIT(reason) (1 << reason)
 
+using namespace sandor_laboratories::combat_robot;
+
 const sl_cr_motor_driver_config_s default_motor_driver_config = 
 {
   .failsafe_check    = nullptr,
@@ -116,9 +118,9 @@ void sl_cr_motor_driver_c::change_set_rpm(sl_cr_rpm_t new_rpm)
     new_rpm = (config.max_rpm+config.min_rpm)-new_rpm;
   }
 
-  sl_cr_critical_section_enter();
+  critical_section_enter();
   set_rpm = new_rpm;
-  sl_cr_critical_section_exit();
+  critical_section_exit();
 }
 
 void sl_cr_motor_driver_c::change_commanded_rpm(sl_cr_rpm_t new_rpm)
@@ -207,9 +209,9 @@ sl_cr_rpm_t sl_cr_motor_driver_c::get_set_rpm() const
 {
   sl_cr_rpm_t ret_val;
 
-  sl_cr_critical_section_enter();
+  critical_section_enter();
   ret_val = set_rpm;
-  sl_cr_critical_section_exit();
+  critical_section_exit();
   
   return ret_val;
 }
