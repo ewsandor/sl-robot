@@ -44,3 +44,11 @@ void sl_cr_critical_section_exit_interrupt()
   taskEXIT_CRITICAL_FROM_ISR(uxSavedInterruptStatus);
 }
 
+void* sl_cr_malloc(size_t size)
+{
+  return malloc(size);
+}
+void  sl_cr_free(void * ptr)
+{
+  free(ptr);
+}

@@ -37,6 +37,10 @@ typedef struct
   sl_cr_pwm_value_t      max_value;
 } sl_cr_pwm_config_s;
 
+typedef struct __attribute__((packed))
+{
+  char string[64];
+} sl_cr_log_entry_s;
 
 /* RC Channel Index, starts from 1 */
 typedef unsigned int sl_cr_rc_channel_t;
