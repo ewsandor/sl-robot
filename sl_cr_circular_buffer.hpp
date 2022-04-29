@@ -9,6 +9,7 @@
 #define __SL_CR_CIRCULAR_BUFFER_HPP__
 
 #include "sl_cr_types.hpp"
+#include "sl_cr_utils.hpp"
 
 namespace sandor_laboratories
 {
@@ -20,6 +21,8 @@ namespace sandor_laboratories
     class circular_buffer_c
     {
       private:
+        mutex_handle_t* mutex;
+
         typedef enum
         {
           SL_CR_BUFFER_ENTRY_AVAILABLE,
@@ -53,7 +56,7 @@ namespace sandor_laboratories
 
 
       public:
-        circular_buffer_c(circular_buffer_index_t size);
+        circular_buffer_c(circular_buffer_index_t size, bool mutexed=false);
         ~circular_buffer_c();
 
         /* Push item into buffer (by copy), returns 'true' if successful.  
