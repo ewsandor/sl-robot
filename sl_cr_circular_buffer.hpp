@@ -21,7 +21,11 @@ namespace sandor_laboratories
     class circular_buffer_c
     {
       private:
-        mutex_handle_t* mutex;
+        /* Config Data */
+        const circular_buffer_index_t buffer_size;
+
+        /* Mutex Handle */
+        mutex_handle_t* const mutex;
 
         typedef enum
         {
@@ -44,8 +48,6 @@ namespace sandor_laboratories
           T data;
         } buffer_entry_s;
 
-        /* Config Data */
-        const circular_buffer_index_t buffer_size;
 
         /* Buffer */
         buffer_entry_s* circular_buffer;

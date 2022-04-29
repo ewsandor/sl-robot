@@ -32,8 +32,9 @@ namespace sandor_laboratories
 
     /* Utility functions to init, lock, and unlock, mutexes */
     typedef QueueHandle_t mutex_handle_t;
-    void mutex_init(mutex_handle_t*);
-    void mutex_lock(mutex_handle_t*);
+    void mutex_init  (mutex_handle_t*);
+    void mutex_deinit(mutex_handle_t*);
+    void mutex_lock  (mutex_handle_t*);
     void mutex_unlock(mutex_handle_t*);
 
   }

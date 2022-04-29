@@ -14,21 +14,20 @@ using namespace sandor_laboratories::combat_robot;
 
 template <typename T>
 circular_buffer_c<T>::circular_buffer_c(circular_buffer_index_t constructor_size, bool mutexed)
-  : buffer_size(constructor_size)
+  : buffer_size(constructor_size),
+    mutex(mutexed?((mutex_handle_t*) heap_malloc(sizeof(mutex_handle_t))):nullptr)
 {
-  circular_buffer = (buffer_entry_s*) heap_malloc(buffer_size*sizeof(buffer_entry_s));
-  write_index = 0;
-  read_index  = 0;
-
-  if(mutexed)
+  if(mutex)
   {
-    mutex = (mutex_handle_t*) heap_malloc(sizeof(mutex_handle_t));
     mutex_init(mutex);
   }
-  else
-  {
-    mutex = nullptr;
-  }
+
+  MUTEX_LOCK
+  circular_buffer = (buffer_entry_s*) heap_malloc(buffer_size*sizeof(buffer_entry_s));
+  memset(&circular_buffer, 0, sizeof(circular_buffer));
+  write_index = 0;
+  read_index  = 0;
+  MUTEX_UNLOCK
 }
 template <typename T>
 circular_buffer_c<T>::~circular_buffer_c()
@@ -36,6 +35,7 @@ circular_buffer_c<T>::~circular_buffer_c()
   heap_free((void*)circular_buffer);
   if(mutex)
   {
+    mutex_deinit(mutex);
     heap_free(mutex);
   }
 }

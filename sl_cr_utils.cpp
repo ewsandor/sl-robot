@@ -54,6 +54,12 @@ void sandor_laboratories::combat_robot::mutex_init(mutex_handle_t* mutex_handle)
   *mutex_handle = xSemaphoreCreateMutex();
   ASSERT(*mutex_handle);
 }
+void sandor_laboratories::combat_robot::mutex_deinit(mutex_handle_t* mutex_handle)
+{
+  ASSERT(mutex_handle);
+  vSemaphoreDelete(*mutex_handle);
+  ASSERT(nullptr==*mutex_handle);
+}
 void sandor_laboratories::combat_robot::mutex_lock(mutex_handle_t* mutex_handle)
 {
   ASSERT(mutex_handle);
