@@ -12,10 +12,13 @@
 #include "sl_cr_config.h"
 #include "sl_cr_drive.hpp"
 #include "sl_cr_failsafe.hpp"
+#include "sl_cr_log_task.hpp"
 #include "sl_cr_sbus.hpp"
 #include "sl_cr_types.hpp"
 #include "sl_cr_utils.hpp"
 #include "sl_cr_version.h"
+
+using namespace sandor_laboratories::combat_robot;
 
 const sl_cr_drive_data_s *drive_data_ptr = nullptr;
 
@@ -91,6 +94,16 @@ static void sbus_task(void *)
     sl_cr_sbus_loop();
     /* Check if ARM switch is set */
     sl_cr_failsafe_armswitch_loop();
+  }
+}
+
+TaskHandle_t log_task_handle;
+static void log_task(void *)
+{
+  for(;;)
+  {
+    ulTaskNotifyTake(pdTRUE,portMAX_DELAY);
+    log_flush();
   }
 }
 
@@ -177,10 +190,14 @@ void setup()
   drive_data_ptr = sl_cr_drive_init();
   Serial.println("Drive Configured.");
 
+  log_init(&log_task_handle);
+  Serial.println("Log Initialized.");
+
   /* Configure FreeRTOS */
   #ifdef _SERIAL_DEBUG_MODE_
   xTaskCreate(serial_debug_task, "Serial Debug Task", SL_CR_DEFAULT_TASK_STACK_SIZE,      nullptr, 1, nullptr);
   #endif
+  xTaskCreate(log_task,          "Log Task",          SL_CR_DEFAULT_TASK_STACK_SIZE,      nullptr, 0, &log_task_handle);
   xTaskCreate(watchdog_task,     "Watchdog Task",     SL_CR_DEFAULT_TASK_STACK_SIZE,      nullptr, 2, nullptr);
   xTaskCreate(drive_task,        "Drive Task",        SL_CR_DEFAULT_TASK_STACK_SIZE,      nullptr, 5, nullptr);
   xTaskCreate(sbus_task,         "SBUS Task",         SL_CR_DEFAULT_TASK_STACK_SIZE,      nullptr, 6, nullptr);

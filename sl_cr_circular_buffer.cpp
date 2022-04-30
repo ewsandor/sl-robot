@@ -99,6 +99,7 @@ bool circular_buffer_c<T>::commit(const T* commit_data)
     }
   }
   MUTEX_UNLOCK
+  ASSERT(i < buffer_size);
 
   return ret_val;
 }
@@ -117,7 +118,8 @@ bool circular_buffer_c<T>::available()
 template <typename T>
 T circular_buffer_c<T>::pop()
 {
-  T ret_val = {0};
+  T ret_val;
+  memset(&ret_val, 0, sizeof(T));
 
   MUTEX_LOCK  
   if(SL_CR_BUFFER_ENTRY_COMMITED == circular_buffer[read_index].hdr.state)
@@ -161,7 +163,8 @@ const T* circular_buffer_c<T>::peek_ptr()
 template <typename T>
 T circular_buffer_c<T>::peek()
 {
-  T ret_val = {0};
+  T ret_val;
+  memset(&ret_val, 0, sizeof(T));
 
   MUTEX_LOCK  
   if(SL_CR_BUFFER_ENTRY_COMMITED == circular_buffer[read_index].hdr.state)

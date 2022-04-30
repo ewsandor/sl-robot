@@ -8,6 +8,7 @@
 #ifndef __SL_CR_CIRCULAR_BUFFER_HPP__
 #define __SL_CR_CIRCULAR_BUFFER_HPP__
 
+#include "sl_cr_log.hpp"
 #include "sl_cr_types.hpp"
 #include "sl_cr_utils.hpp"
 
@@ -38,7 +39,7 @@ namespace sandor_laboratories
         typedef struct __attribute__((packed))
         {
           buffer_entry_state_e state:2;
-          int pad:30;
+          uint8_t pad:6;
         }
         buffer_entry_header_s;
 
@@ -81,7 +82,7 @@ namespace sandor_laboratories
         T        peek();
     };
 
-    template class circular_buffer_c<sl_cr_log_entry_s>;
+    template class circular_buffer_c<log_entry_s>;
   }
 }
 
