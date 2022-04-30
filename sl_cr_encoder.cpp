@@ -13,7 +13,7 @@
 
 using namespace sandor_laboratories::combat_robot;
 
-void sl_cr_encoder_c::init()
+inline void sl_cr_encoder_c::init()
 {
   count                       = 0;
   last_count                  = 0;
@@ -51,7 +51,7 @@ sl_cr_encoder_c::sl_cr_encoder_c( sl_cr_pin_t ch_a, sl_cr_pin_t ch_b,
 }
 
 
-void sl_cr_encoder_c::apply_new_state(sl_cr_encoder_channel_state_t new_channel_state)
+inline void sl_cr_encoder_c::apply_new_state(sl_cr_encoder_channel_state_t new_channel_state)
 {
   if(channel_state != new_channel_state)
   {
@@ -152,7 +152,7 @@ void sl_cr_encoder_c::sample_channels()
   apply_new_state(new_channel_state);
 }
 
-void sl_cr_encoder_c::compute_rotation_frequency()
+inline void sl_cr_encoder_c::compute_rotation_frequency()
 {
   const sl_cr_time_t    snapshot_time = millis();
 
