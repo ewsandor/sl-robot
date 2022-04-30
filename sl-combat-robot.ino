@@ -97,9 +97,10 @@ static void sbus_task(void *)
   }
 }
 
-TaskHandle_t log_task_handle;
+TaskHandle_t log_task_handle = nullptr;
 static void log_task(void *)
 {
+  log_cstring(LOG_KEY_BOOT, LOG_LEVEL_INFO, "######### BOOTUP END #########");
   for(;;)
   {
     ulTaskNotifyTake(pdTRUE,portMAX_DELAY);
@@ -162,16 +163,18 @@ void setup()
   while (!Serial)
   {
   }
-  Serial.println("Serial Connected.");
 #endif
+  log_init(&log_task_handle);
+  log_cstring(LOG_KEY_BOOT, LOG_LEVEL_INFO, "Log Initialized.");
+
   /* Start of Bootup */
-  Serial.println("######## BOOTUP START ########");
+  log_cstring(LOG_KEY_BOOT, LOG_LEVEL_INFO,"######## BOOTUP START ########");
 
   /* Log software details */
-  Serial.println(SL_CR_SOFTWARE_INTRO);
+  log_cstring(LOG_KEY_BOOT, LOG_LEVEL_INFO, SL_CR_SOFTWARE_INTRO);
 
   /* Configure Watchdog Timer before anything else */
-  Serial.println("Activating Watchdog.");
+  log_cstring(LOG_KEY_BOOT, LOG_LEVEL_INFO, "Activating Watchdog.");
   WDT_timings_t wdt_config;
   wdt_config.window = SL_CR_WATCHDOG_WINDOW;
   wdt_config.timeout = SL_CR_WATCHDOG_TIMEOUT;
@@ -179,21 +182,17 @@ void setup()
   watchdog_fed = millis();
   wdt.begin(wdt_config);
 
-  Serial.print("Failsafe mask: 0x");
-  Serial.println(sl_cr_get_failsafe_mask(), arduino::HEX);
+  SL_CR_LOG_SNPRINTF(LOG_KEY_BOOT, LOG_LEVEL_INFO, "Failsafe mask: 0x%x", sl_cr_get_failsafe_mask());
 
   /* Configure PWM resolution */
   analogWriteResolution(SL_CR_PWM_RESOLUTION);
 
   /* Begin the SBUS communication */
   sl_cr_sbus_init();
-  Serial.println("SBUS Configured.");
+  log_cstring(LOG_KEY_BOOT, LOG_LEVEL_INFO, "SBUS Configured.");
 
   drive_data_ptr = sl_cr_drive_init();
-  Serial.println("Drive Configured.");
-
-  log_init(&log_task_handle);
-  Serial.println("Log Initialized.");
+  log_cstring(LOG_KEY_BOOT, LOG_LEVEL_INFO, "Drive Configured.");
 
   /* Configure FreeRTOS */
   #ifdef _SERIAL_DEBUG_MODE_
@@ -204,19 +203,17 @@ void setup()
   xTaskCreate(drive_task,        "Drive Task",        SL_CR_DEFAULT_TASK_STACK_SIZE,      nullptr, 5, nullptr);
   xTaskCreate(sbus_task,         "SBUS Task",         SL_CR_DEFAULT_TASK_STACK_SIZE,      nullptr, 6, nullptr);
   xTaskCreate(control_loop_task, "Control Loop Task", SL_CR_CONTROL_LOOP_TASK_STACK_SIZE, nullptr, 7, nullptr);
-  Serial.println("FreeRTOS Configured.");
+  log_cstring(LOG_KEY_BOOT, LOG_LEVEL_INFO, "FreeRTOS Configured.");
 
   /* Bootup Complete */
-  Serial.println("######### BOOTUP END #########");
   /* Clear Bootup LED */
   digitalWrite(SL_CR_PIN_ONBOARD_LED, arduino::LOW);
   /* Clear Bootup failsafe */
   sl_cr_clear_failsafe_mask(SL_CR_FAILSAFE_BOOT);
 
-  Serial.println("Attaching Pin Interrupts.");
+  log_cstring(LOG_KEY_BOOT, LOG_LEVEL_INFO, "Attaching Pin Interrupts.");
   sl_cr_drive_register_interrupts();
-  Serial.println("Starting FreeRTOS scheduler.");
-  Serial.flush();
+  log_cstring(LOG_KEY_BOOT, LOG_LEVEL_INFO, "Starting FreeRTOS scheduler.");
   vTaskStartScheduler();
 }
 

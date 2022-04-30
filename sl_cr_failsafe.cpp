@@ -8,6 +8,7 @@
 #include <Arduino.h>
 
 #include "sl_cr_failsafe.hpp"
+#include "sl_cr_log.hpp"
 #include "sl_cr_sbus.hpp"
 #include "sl_cr_utils.hpp"
 
@@ -39,11 +40,11 @@ void sl_cr_set_failsafe_mask(sl_cr_failsafe_reason_e reason)
   
   if(0 == (old_failsafe_mask & SL_CR_FAILSAFE_BIT(reason)))
   {
-    Serial.print("New failsafe mask: 0x");
-    Serial.println(sl_cr_failsafe_mask, arduino::HEX);
+    SL_CR_LOG_SNPRINTF(LOG_KEY_FAILSAFE, LOG_LEVEL_INFO, "New failsafe mask: 0x%x", sl_cr_failsafe_mask);
+
     if(0 == old_failsafe_mask)
     {
-      Serial.println("FAILSAFE SET!");
+      log_cstring(LOG_KEY_FAILSAFE, LOG_LEVEL_INFO, "FAILSAFE SET!");
       /* Entered failsafe state, start rearm timer */
       armswitch_rearm_timeout_start = millis();
       rearm_timeout_expired = false;
@@ -61,11 +62,10 @@ void sl_cr_clear_failsafe_mask(sl_cr_failsafe_reason_e reason)
   
   if(0 != (old_failsafe_mask & SL_CR_FAILSAFE_BIT(reason)))
   {
-    Serial.print("New failsafe mask: 0x");
-    Serial.println(sl_cr_failsafe_mask, arduino::HEX);
+    SL_CR_LOG_SNPRINTF(LOG_KEY_FAILSAFE, LOG_LEVEL_INFO, "New failsafe mask: 0x%x", sl_cr_failsafe_mask);
     if(0 == sl_cr_failsafe_mask)
     {
-      Serial.println("ARMED!");
+      log_cstring(LOG_KEY_FAILSAFE, LOG_LEVEL_INFO, "ARMED!");
     }
   }
 }

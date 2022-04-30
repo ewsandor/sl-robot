@@ -16,13 +16,25 @@ namespace sandor_laboratories
   {
     #define SL_CR_LOG_PAYLOAD_SIZE 59
 
+    #define SL_CR_LOG_SNPRINTF(key, level, string, ...)                                \
+    {                                                                                  \
+      log_entry_s * log_entry = log_entry_allocate(key, level);                        \
+      if(log_entry)                                                                    \
+      {                                                                                \
+        snprintf(log_entry->payload, sizeof(log_entry->payload), string, __VA_ARGS__); \
+        log_entry_commit(log_entry);                                                   \
+      }                                                                                \
+    }
+
     typedef uint32_t log_timestamp_t;
 
     typedef enum
     {
       LOG_KEY_UNKNOWN,
+      LOG_KEY_BOOT,
       LOG_KEY_DEBUG_TASK,
       LOG_KEY_FAILSAFE,
+      LOG_KEY_MOTOR_DRIVER_VIRTUAL,
       /* Internal Log Keys */
       LOG_KEY_LOG_DROP,
       LOG_KEY_MAX,

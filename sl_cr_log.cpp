@@ -94,7 +94,10 @@ void sandor_laboratories::combat_robot::log_entry_commit(const log_entry_s * log
   if(log_entry)
   {
     log_buffer->commit(log_entry);
-    xTaskNotifyGive(*log_task_h_ptr);
+    if(*log_task_h_ptr)
+    {
+      xTaskNotifyGive(*log_task_h_ptr);
+    }
   }
 }
 
