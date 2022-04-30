@@ -52,6 +52,7 @@ namespace sandor_laboratories
       LOG_LEVEL_DEBUG_2,
       LOG_LEVEL_DEBUG_3,
       LOG_LEVEL_DEBUG_4,
+      LOG_LEVEL_ALL = LOG_LEVEL_DEBUG_4,
     } log_level_e;
 
     typedef struct __attribute__((packed))

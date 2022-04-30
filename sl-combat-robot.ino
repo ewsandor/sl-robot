@@ -118,35 +118,41 @@ static void serial_debug_task(void *)
   {
     vTaskDelayUntil(&xLastWakeTime, xPeriod);
 
-    log_cstring(LOG_KEY_DEBUG_TASK, LOG_LEVEL_DEBUG, "Test.");
-
-/*
-    Serial.print("Left motor set_rpm:");
-    Serial.print(drive_data_ptr->left_motor_stack.driver->get_set_rpm());
-    Serial.print(" motor commanded_rpm:");
-    Serial.print(drive_data_ptr->left_motor_stack.driver->get_commanded_rpm());
-    Serial.print(" encoder rpm: ");
-    Serial.print(drive_data_ptr->left_motor_stack.driver->get_real_rpm());
     if(drive_data_ptr->left_motor_stack.control_loop)
     {
-      Serial.print(" error: ");
-      Serial.print(drive_data_ptr->left_motor_stack.control_loop->get_error());
+      SL_CR_LOG_SNPRINTF(LOG_KEY_DEBUG_TASK, LOG_LEVEL_DEBUG, 
+        "Left motor set_rpm: %u motor commanded_rpm: %u encoder rpm: %u error: %u.", 
+        drive_data_ptr->left_motor_stack.driver->get_set_rpm(),
+        drive_data_ptr->left_motor_stack.driver->get_commanded_rpm(),
+        drive_data_ptr->left_motor_stack.driver->get_real_rpm(),
+        drive_data_ptr->left_motor_stack.control_loop->get_error());
     }
-    Serial.println(".");
-  
-    Serial.print("Right motor set_rpm:");
-    Serial.print(drive_data_ptr->right_motor_stack.driver->get_set_rpm());
-    Serial.print(" motor commanded_rpm:");
-    Serial.print(drive_data_ptr->right_motor_stack.driver->get_commanded_rpm());
-    Serial.print(" encoder rpm: ");
-    Serial.print(drive_data_ptr->right_motor_stack.driver->get_real_rpm());
+    else
+    {
+      SL_CR_LOG_SNPRINTF(LOG_KEY_DEBUG_TASK, LOG_LEVEL_DEBUG, 
+        "Left motor set_rpm: %u motor commanded_rpm: %u encoder rpm: %u", 
+        drive_data_ptr->left_motor_stack.driver->get_set_rpm(),
+        drive_data_ptr->left_motor_stack.driver->get_commanded_rpm(),
+        drive_data_ptr->left_motor_stack.driver->get_real_rpm());
+    }
+
     if(drive_data_ptr->right_motor_stack.control_loop)
     {
-      Serial.print(" error: ");
-      Serial.print(drive_data_ptr->right_motor_stack.control_loop->get_error());
+      SL_CR_LOG_SNPRINTF(LOG_KEY_DEBUG_TASK, LOG_LEVEL_DEBUG, 
+        "Reft motor set_rpm: %u motor commanded_rpm: %u encoder rpm: %u error: %u.", 
+        drive_data_ptr->right_motor_stack.driver->get_set_rpm(),
+        drive_data_ptr->right_motor_stack.driver->get_commanded_rpm(),
+        drive_data_ptr->right_motor_stack.driver->get_real_rpm(),
+        drive_data_ptr->right_motor_stack.control_loop->get_error());
     }
-    Serial.println(".");
-    */
+    else
+    {
+      SL_CR_LOG_SNPRINTF(LOG_KEY_DEBUG_TASK, LOG_LEVEL_DEBUG, 
+        "Reft motor set_rpm: %u motor commanded_rpm: %u encoder rpm: %u", 
+        drive_data_ptr->right_motor_stack.driver->get_set_rpm(),
+        drive_data_ptr->right_motor_stack.driver->get_commanded_rpm(),
+        drive_data_ptr->right_motor_stack.driver->get_real_rpm());
+    }
   }
 }
 #endif

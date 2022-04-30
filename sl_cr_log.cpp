@@ -8,6 +8,7 @@
 
 #include <Arduino.h>
 
+#include "sl_cr_config.h"
 #include "sl_cr_circular_buffer.hpp"
 #include "sl_cr_log.hpp"
 #include "sl_cr_log_task.hpp"
@@ -56,6 +57,7 @@ void sandor_laboratories::combat_robot::log_flush()
   while(log_buffer->available())
   {
     const log_entry_s * log_entry = log_buffer->peek_ptr();
+    ASSERT(log_entry);
     snprintf(output_buffer, sizeof(output_buffer), LOG_HDR_STRING_FORMAT "%s", 
       log_entry->hdr.key, log_entry->hdr.level, log_entry->hdr.timestamp, log_entry->payload);
     log_buffer->pop_void();
@@ -64,7 +66,7 @@ void sandor_laboratories::combat_robot::log_flush()
 
   /* Log warning if log entries were dropped */
   failed_log_allocations_t failed_allocations = get_and_clear_failed_log_allocations();
-  if(failed_allocations)
+  if(failed_allocations && (LOG_LEVEL_WARNING <= SL_CR_ACTIVE_LOG_LEVEL))
   {
     snprintf(output_buffer, sizeof(output_buffer), LOG_HDR_STRING_FORMAT "WARNING - %u log entries dropped!", 
       LOG_KEY_LOG_DROP, LOG_LEVEL_WARNING, get_timestamp(), failed_allocations);
@@ -76,19 +78,23 @@ void sandor_laboratories::combat_robot::log_flush()
 
 log_entry_s * sandor_laboratories::combat_robot::log_entry_allocate(log_key_e key, log_level_e level)
 {
-  log_entry_s * ret_value = log_buffer->allocate();
+  log_entry_s * ret_value = nullptr;
 
-  if(ret_value)
+  if(level <= SL_CR_ACTIVE_LOG_LEVEL)
   {
-    ret_value->hdr.level     = level;
-    ret_value->hdr.key       = key;
-    ret_value->hdr.timestamp = get_timestamp();
-  }
-  else
-  {
-    critical_section_enter();
-    failed_log_allocations++;
-    critical_section_exit();
+    ret_value = log_buffer->allocate();
+    if(ret_value)
+    {
+      ret_value->hdr.level     = level;
+      ret_value->hdr.key       = key;
+      ret_value->hdr.timestamp = get_timestamp();
+    }
+    else
+    {
+      critical_section_enter();
+      failed_log_allocations++;
+      critical_section_exit();
+    }
   }
 
   return ret_value;
