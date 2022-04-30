@@ -22,9 +22,9 @@ const TaskHandle_t * log_task_h_ptr;
 circular_buffer_c<log_entry_s> *log_buffer;
 
 typedef unsigned int failed_log_allocations_t;
-failed_log_allocations_t failed_log_allocations;
+volatile failed_log_allocations_t failed_log_allocations;
 
-failed_log_allocations_t get_and_clear_failed_log_allocations()
+inline failed_log_allocations_t get_and_clear_failed_log_allocations()
 {
   failed_log_allocations_t ret_val;
 
@@ -34,6 +34,11 @@ failed_log_allocations_t get_and_clear_failed_log_allocations()
   critical_section_exit();
 
   return ret_val;
+}
+
+inline log_timestamp_t get_timestamp()
+{
+  return millis();
 }
 
 void sandor_laboratories::combat_robot::log_init(const TaskHandle_t * log_task_handle)
@@ -61,8 +66,8 @@ void sandor_laboratories::combat_robot::log_flush()
   failed_log_allocations_t failed_allocations = get_and_clear_failed_log_allocations();
   if(failed_allocations)
   {
-    snprintf(output_buffer, sizeof(output_buffer), LOG_HDR_STRING_FORMAT " %u log entries dropped.", 
-      LOG_KEY_LOG_DROP, LOG_LEVEL_WARNING, millis(), failed_allocations);
+    snprintf(output_buffer, sizeof(output_buffer), LOG_HDR_STRING_FORMAT "WARNING - %u log entries dropped!", 
+      LOG_KEY_LOG_DROP, LOG_LEVEL_WARNING, get_timestamp(), failed_allocations);
     Serial.println(output_buffer);
   }
 
@@ -77,7 +82,7 @@ log_entry_s * sandor_laboratories::combat_robot::log_entry_allocate(log_key_e ke
   {
     ret_value->hdr.level     = level;
     ret_value->hdr.key       = key;
-    ret_value->hdr.timestamp = millis();
+    ret_value->hdr.timestamp = get_timestamp();
   }
   else
   {

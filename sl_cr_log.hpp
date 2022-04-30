@@ -14,7 +14,8 @@ namespace sandor_laboratories
 {
   namespace combat_robot
   {
-    #define SL_CR_LOG_PAYLOAD_SIZE 59
+    /* Log size minus 5 bytes for packing (1 byte circular buffer header + 4 bytes log header*/
+    #define SL_CR_LOG_PAYLOAD_SIZE (128-5)
 
     #define SL_CR_LOG_SNPRINTF(key, level, string, ...)                                \
     {                                                                                  \

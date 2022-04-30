@@ -103,8 +103,8 @@ static void log_task(void *)
   log_cstring(LOG_KEY_BOOT, LOG_LEVEL_INFO, "######### BOOTUP END #########");
   for(;;)
   {
-    ulTaskNotifyTake(pdTRUE,portMAX_DELAY);
     log_flush();
+    ulTaskNotifyTake(pdTRUE,portMAX_DELAY);
   }
 }
 
@@ -214,6 +214,7 @@ void setup()
   log_cstring(LOG_KEY_BOOT, LOG_LEVEL_INFO, "Attaching Pin Interrupts.");
   sl_cr_drive_register_interrupts();
   log_cstring(LOG_KEY_BOOT, LOG_LEVEL_INFO, "Starting FreeRTOS scheduler.");
+
   vTaskStartScheduler();
 }
 
