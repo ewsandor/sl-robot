@@ -17,6 +17,8 @@ namespace sandor_laboratories
 {
   namespace combat_robot
   {
+    #define SL_CR_LOG_TASK_STACK_SIZE 256
+
     void log_init(const TaskHandle_t * log_task_handle);
     void log_flush();
   }

@@ -21,7 +21,9 @@ namespace sandor_laboratories
     typedef enum
     {
       LOG_KEY_UNKNOWN,
+      LOG_KEY_DEBUG_TASK,
       LOG_KEY_FAILSAFE,
+      /* Internal Log Keys */
       LOG_KEY_LOG_DROP,
       LOG_KEY_MAX,
     } log_key_e;
@@ -55,9 +57,9 @@ namespace sandor_laboratories
 
     } log_entry_s;
     
-    log_entry_s * log_entry_allocate(log_level_e, log_key_e);
+    log_entry_s * log_entry_allocate(log_key_e, log_level_e);
     void          log_entry_commit(const log_entry_s *);
-    void          log_cstring(log_level_e, log_key_e, const char *);
+    void          log_cstring(log_key_e, log_level_e, const char *);
   }
 }
 

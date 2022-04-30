@@ -24,7 +24,7 @@ circular_buffer_c<T>::circular_buffer_c(circular_buffer_index_t constructor_size
 
   MUTEX_LOCK
   circular_buffer = (buffer_entry_s*) heap_malloc(buffer_size*sizeof(buffer_entry_s));
-  memset(&circular_buffer, 0, sizeof(circular_buffer));
+  memset(circular_buffer, 0, (buffer_size*sizeof(buffer_entry_s)));
   write_index = 0;
   read_index  = 0;
   MUTEX_UNLOCK
