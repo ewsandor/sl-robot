@@ -204,7 +204,7 @@ void setup()
   #ifdef _SERIAL_DEBUG_MODE_
   xTaskCreate(serial_debug_task, "Serial Debug Task", SL_CR_DEFAULT_TASK_STACK_SIZE,      nullptr, 1, nullptr);
   #endif
-  xTaskCreate(log_task,          "Log Task",          SL_CR_LOG_TASK_STACK_SIZE,          nullptr, 1, &log_task_handle);
+  xTaskCreate(log_task,          "Log Task",          SL_CR_LOG_TASK_STACK_SIZE,          nullptr, 0, &log_task_handle);
   xTaskCreate(watchdog_task,     "Watchdog Task",     SL_CR_DEFAULT_TASK_STACK_SIZE,      nullptr, 2, nullptr);
   xTaskCreate(drive_task,        "Drive Task",        SL_CR_DEFAULT_TASK_STACK_SIZE,      nullptr, 5, nullptr);
   xTaskCreate(sbus_task,         "SBUS Task",         SL_CR_DEFAULT_TASK_STACK_SIZE,      nullptr, 6, nullptr);
