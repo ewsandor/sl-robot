@@ -9,6 +9,7 @@
 #define __SL_CR_LOG_HPP__
 
 #include <stdint.h>
+#include <stdio.h>
 
 namespace sandor_laboratories
 {

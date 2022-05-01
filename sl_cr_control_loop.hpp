@@ -40,11 +40,10 @@ class sl_cr_control_loop_c : public sl_cr_control_loop_base_c
     inline SETPOINT_T get_sp_max()     const {return sp_max;}
     inline SETPOINT_T get_output_min() const {return output_min;}
     inline SETPOINT_T get_output_max() const {return output_max;}
+    inline sandor_laboratories::combat_robot::log_key_e get_log_key() const {return log_key;}
 
     /* Sanitizes and sets output value, returns false if out of bounds */
     bool              set_output(OUTPUT_T new_output);
-
-    inline sandor_laboratories::combat_robot::log_key_e get_log_key() const {return log_key;}
 
   public:
     /* Initialize control loop with Setpoint min, neutral, and max values */

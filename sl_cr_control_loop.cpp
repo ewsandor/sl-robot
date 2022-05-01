@@ -10,7 +10,7 @@
 using namespace sandor_laboratories::combat_robot;
 
 template <typename SETPOINT_T, typename OUTPUT_T>
-void sl_cr_control_loop_c<SETPOINT_T, OUTPUT_T>::set_initial_state()
+inline void sl_cr_control_loop_c<SETPOINT_T, OUTPUT_T>::set_initial_state()
 {
   sp     = (sp_min+sp_max)/2;
   output = (output_min+output_max)/2;
@@ -74,8 +74,10 @@ bool sl_cr_control_loop_c<SETPOINT_T, OUTPUT_T>::set_output(OUTPUT_T new_output)
 template <typename SETPOINT_T, typename OUTPUT_T>
 OUTPUT_T sl_cr_control_loop_c<SETPOINT_T, OUTPUT_T>::loop(SETPOINT_T feedback) 
 {
-  error = this->get_setpoint() - feedback;
+  error = (this->get_setpoint() - feedback);
   update_output();
+
+  SL_CR_LOG_SNPRINTF(get_log_key(), LOG_LEVEL_DEBUG_4, "%d|%d|%d", this->get_setpoint(), get_output(), get_error());
 
   return get_output();
 }
