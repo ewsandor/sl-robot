@@ -100,7 +100,9 @@ void sl_cr_drive_init_motor_stacks()
 #ifdef _VIRTUAL_MOTORS_
   drive_motor_config.min_commanded_rpm = -100;
   drive_motor_config.max_commanded_rpm =  100;
+  drive_motor_config.log_key      = LOG_KEY_MOTOR_DRIVER_LEFT;
   drive_data.left_motor_stack.driver = new sl_cr_motor_driver_virtual_c("Left Motor", drive_motor_config);
+  drive_motor_config.log_key      = LOG_KEY_MOTOR_DRIVER_RIGHT;
   drive_data.right_motor_stack.driver = new sl_cr_motor_driver_virtual_c("Right Motor", drive_motor_config);
 #else
   drive_motor_config.min_commanded_rpm = -SL_CR_PWM_MAX_VALUE;
@@ -121,12 +123,14 @@ void sl_cr_drive_init_motor_stacks()
 
   /* Left Motor */
   drive_data.left_motor_stack.encoder = new sl_cr_encoder_c(left_encoder_a_pin, left_encoder_b_pin,false,12,1,30);
+  drive_motor_config.log_key      = LOG_KEY_MOTOR_DRIVER_LEFT;
   drive_motor_config.encoder      = drive_data.left_motor_stack.encoder;
   drive_motor_config.control_loop = drive_data.left_motor_stack.control_loop;
   drive_data.left_motor_stack.driver  = new sl_cr_motor_driver_drv8256p_c(left_motor_sleep_pin, left_motor_in1_pin, left_motor_in2_pin, pwm_config, drive_motor_config);
 
   /* Right Motor */
   drive_data.right_motor_stack.encoder = new sl_cr_encoder_c(right_encoder_a_pin, right_encoder_b_pin,true,12,1,30);
+  drive_motor_config.log_key      = LOG_KEY_MOTOR_DRIVER_RIGHT;
   drive_motor_config.encoder      = drive_data.right_motor_stack.encoder;
   drive_motor_config.control_loop = drive_data.right_motor_stack.control_loop;
   drive_data.right_motor_stack.driver = new sl_cr_motor_driver_drv8256p_c(right_motor_sleep_pin, right_motor_in1_pin, right_motor_in2_pin, pwm_config, drive_motor_config);

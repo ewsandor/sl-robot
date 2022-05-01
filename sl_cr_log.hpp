@@ -35,7 +35,9 @@ namespace sandor_laboratories
       LOG_KEY_BOOT,
       LOG_KEY_DEBUG_TASK,
       LOG_KEY_FAILSAFE,
-      LOG_KEY_MOTOR_DRIVER_VIRTUAL,
+      LOG_KEY_MOTOR_DRIVER,
+      LOG_KEY_MOTOR_DRIVER_LEFT,
+      LOG_KEY_MOTOR_DRIVER_RIGHT,
       /* Internal Log Keys */
       LOG_KEY_LOG_DROP,
       LOG_KEY_MAX,

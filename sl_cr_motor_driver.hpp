@@ -10,6 +10,7 @@
 
 #include "sl_cr_control_loop.hpp"
 #include "sl_cr_encoder.hpp"
+#include "sl_cr_log.hpp"
 #include "sl_cr_types.hpp"
 
 #define SL_CR_MOTOR_DRIVER_DEFAULT_MAX_RPM 1024
@@ -52,6 +53,7 @@ typedef unsigned int sl_cr_motor_disable_mask_t;
 typedef struct
 {
   sl_cr_failsafe_f                                failsafe_check;
+  sandor_laboratories::combat_robot::log_key_e    log_key;
   bool                                            invert_direction;
   sl_cr_rpm_t                                     min_rpm;
   sl_cr_rpm_t                                     max_rpm;
@@ -86,6 +88,7 @@ class sl_cr_motor_driver_c
     virtual void command_motor() = 0;
 
     sl_cr_rpm_t commanded_from_set_rpm(sl_cr_rpm_t) const;
+    inline sandor_laboratories::combat_robot::log_key_e get_log_key() const { return config.log_key; }
 
   public:
     static void init_config(sl_cr_motor_driver_config_s*);
@@ -93,19 +96,19 @@ class sl_cr_motor_driver_c
     sl_cr_motor_driver_c();
     sl_cr_motor_driver_c(sl_cr_motor_driver_config_s);
 
-    sl_cr_rpm_t get_min_rpm()               const;
-    sl_cr_rpm_t get_neutral_rpm()           const;
-    sl_cr_rpm_t get_max_rpm()               const;
-    sl_cr_rpm_t get_min_commanded_rpm()     const;
-    sl_cr_rpm_t get_neutral_commanded_rpm() const;
-    sl_cr_rpm_t get_max_commanded_rpm()     const;
+    inline sl_cr_rpm_t get_min_rpm()               const { return config.min_rpm; }
+    inline sl_cr_rpm_t get_neutral_rpm()           const { return ((config.min_rpm+config.max_rpm)/2); }
+    inline sl_cr_rpm_t get_max_rpm()               const { return config.max_rpm; }
+    inline sl_cr_rpm_t get_min_commanded_rpm()     const { return config.min_commanded_rpm; }
+    inline sl_cr_rpm_t get_neutral_commanded_rpm() const { return ((config.min_commanded_rpm+config.max_commanded_rpm)/2); }
+    inline sl_cr_rpm_t get_max_commanded_rpm()     const { return config.max_commanded_rpm; }
 
     /* Get RPM set by drive logic */
     sl_cr_rpm_t get_set_rpm()       const;
     /* Get real RPM reported by motor */
     sl_cr_rpm_t get_real_rpm()      const;
     /* Get raw RPM being commanded to the motor */
-    sl_cr_rpm_t get_commanded_rpm() const {return commanded_rpm;};
+    inline sl_cr_rpm_t get_commanded_rpm() const {return commanded_rpm;};
     
     /* Disable motor for given reason */
     void disable(sl_cr_motor_disable_reason_e);

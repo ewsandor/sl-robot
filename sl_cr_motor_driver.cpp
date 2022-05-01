@@ -15,6 +15,7 @@ using namespace sandor_laboratories::combat_robot;
 const sl_cr_motor_driver_config_s default_motor_driver_config = 
 {
   .failsafe_check    = nullptr,
+  .log_key           = LOG_KEY_MOTOR_DRIVER,
   .invert_direction  = false,
   .min_rpm           = SL_CR_MOTOR_DRIVER_DEFAULT_MIN_RPM,
   .max_rpm           = SL_CR_MOTOR_DRIVER_DEFAULT_MAX_RPM,
@@ -51,31 +52,6 @@ sl_cr_motor_driver_c::sl_cr_motor_driver_c(sl_cr_motor_driver_config_s construct
   : config(constructor_config)
 {
   init();
-}
-
-sl_cr_rpm_t sl_cr_motor_driver_c::get_min_rpm() const
-{
-  return config.min_rpm;
-}
-sl_cr_rpm_t sl_cr_motor_driver_c::get_neutral_rpm() const
-{
-  return ((config.min_rpm+config.max_rpm)/2);
-}
-sl_cr_rpm_t sl_cr_motor_driver_c::get_max_rpm() const
-{
-  return config.max_rpm;
-}
-sl_cr_rpm_t sl_cr_motor_driver_c::get_min_commanded_rpm() const
-{
-  return config.min_commanded_rpm;
-}
-sl_cr_rpm_t sl_cr_motor_driver_c::get_neutral_commanded_rpm() const
-{
-  return ((config.min_commanded_rpm+config.max_commanded_rpm)/2);
-}
-sl_cr_rpm_t sl_cr_motor_driver_c::get_max_commanded_rpm() const
-{
-  return config.max_commanded_rpm;
 }
 
 sl_cr_rpm_t sl_cr_motor_driver_c::commanded_from_set_rpm(sl_cr_rpm_t ref_set_rpm) const
@@ -123,7 +99,7 @@ void sl_cr_motor_driver_c::change_set_rpm(sl_cr_rpm_t new_rpm)
   critical_section_exit();
 }
 
-void sl_cr_motor_driver_c::change_commanded_rpm(sl_cr_rpm_t new_rpm)
+inline void sl_cr_motor_driver_c::change_commanded_rpm(sl_cr_rpm_t new_rpm)
 {
   if(new_rpm > config.max_commanded_rpm)
   {
