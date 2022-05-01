@@ -112,13 +112,13 @@ void sl_cr_drive_init_motor_stacks()
   (
     drive_motor_config.min_rpm, drive_motor_config.max_rpm, 
     drive_motor_config.min_commanded_rpm, drive_motor_config.max_commanded_rpm,
-    pid_params
+    pid_params, LOG_KEY_MOTOR_CONTROL_LOOP_LEFT
   );
   drive_data.right_motor_stack.control_loop = new sl_cr_pid_loop_c<sl_cr_rpm_t,sl_cr_rpm_t>
   (
     drive_motor_config.min_rpm, drive_motor_config.max_rpm, 
     drive_motor_config.min_commanded_rpm, drive_motor_config.max_commanded_rpm,
-    pid_params
+    pid_params, LOG_KEY_MOTOR_CONTROL_LOOP_RIGHT
   );
 
   /* Left Motor */

@@ -7,6 +7,8 @@
 
 #include "sl_cr_control_loop.hpp"
 
+using namespace sandor_laboratories::combat_robot;
+
 template <typename SETPOINT_T, typename OUTPUT_T>
 void sl_cr_control_loop_c<SETPOINT_T, OUTPUT_T>::set_initial_state()
 {
@@ -17,14 +19,16 @@ void sl_cr_control_loop_c<SETPOINT_T, OUTPUT_T>::set_initial_state()
 
 template <typename SETPOINT_T, typename OUTPUT_T>
 sl_cr_control_loop_c<SETPOINT_T, OUTPUT_T>::sl_cr_control_loop_c(SETPOINT_T sp_min,     SETPOINT_T sp_max,
-                                                                 OUTPUT_T output_min,   OUTPUT_T output_max)
-  : sp_min(sp_min), sp_max(sp_max), output_min(output_min), output_max(output_max)
+                                                                 OUTPUT_T output_min,   OUTPUT_T output_max, 
+                                                                 log_key_e log_key)
+  : sp_min(sp_min), sp_max(sp_max), output_min(output_min), output_max(output_max), log_key(log_key)
 {
   set_initial_state();
 }
 template <typename SETPOINT_T, typename OUTPUT_T>
-sl_cr_control_loop_c<SETPOINT_T, OUTPUT_T>::sl_cr_control_loop_c(SETPOINT_T sp_min, SETPOINT_T sp_max)
-  : sl_cr_control_loop_c(sp_min, sp_max, sp_min, sp_max) {}
+sl_cr_control_loop_c<SETPOINT_T, OUTPUT_T>::sl_cr_control_loop_c(SETPOINT_T sp_min, SETPOINT_T sp_max, 
+                                                                 log_key_e log_key)
+  : sl_cr_control_loop_c(sp_min, sp_max, sp_min, sp_max, log_key) {}
 
 template <typename SETPOINT_T, typename OUTPUT_T>
 bool sl_cr_control_loop_c<SETPOINT_T, OUTPUT_T>::set_setpoint(SETPOINT_T new_setpoint) 

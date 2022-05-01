@@ -42,10 +42,12 @@ class sl_cr_pid_loop_c : public sl_cr_control_loop_c<SETPOINT_T, OUTPUT_T>
   public:
     /* Initialize control loop with Setpoint min, neutral, and max values */
     sl_cr_pid_loop_c(SETPOINT_T sp_min,     SETPOINT_T sp_max,
-                     sl_cr_pid_loop_params_s pid_params);
+                     sl_cr_pid_loop_params_s pid_params, 
+                     sandor_laboratories::combat_robot::log_key_e log_key=sandor_laboratories::combat_robot::LOG_KEY_MOTOR_CONTROL_LOOP);
     sl_cr_pid_loop_c(SETPOINT_T sp_min,     SETPOINT_T sp_max,
                      OUTPUT_T   output_min, OUTPUT_T   output_max,
-                     sl_cr_pid_loop_params_s pid_params);
+                     sl_cr_pid_loop_params_s pid_params, 
+                     sandor_laboratories::combat_robot::log_key_e log_key=sandor_laboratories::combat_robot::LOG_KEY_MOTOR_CONTROL_LOOP);
 
     virtual void reset(SETPOINT_T new_setpoint=sl_cr_control_loop_c<SETPOINT_T, OUTPUT_T>::get_setpoint());
 };

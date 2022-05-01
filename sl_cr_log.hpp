@@ -38,6 +38,9 @@ namespace sandor_laboratories
       LOG_KEY_MOTOR_DRIVER,
       LOG_KEY_MOTOR_DRIVER_LEFT,
       LOG_KEY_MOTOR_DRIVER_RIGHT,
+      LOG_KEY_MOTOR_CONTROL_LOOP,
+      LOG_KEY_MOTOR_CONTROL_LOOP_LEFT,
+      LOG_KEY_MOTOR_CONTROL_LOOP_RIGHT,
       /* Internal Log Keys */
       LOG_KEY_LOG_DROP,
       LOG_KEY_MAX,
