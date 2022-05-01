@@ -48,9 +48,7 @@
 //////////////////// Logging Config /////////////////////////////
 /* Debug Level (see log_level_e for levels) */
 //#define SL_CR_ACTIVE_LOG_LEVEL LOG_LEVEL_ALL
-#ifndef SL_CR_ACTIVE_LOG_LEVEL
 #define SL_CR_ACTIVE_LOG_LEVEL LOG_LEVEL_INFO
-#endif
 /////////////////////////////////////////////////////////////////
 
 

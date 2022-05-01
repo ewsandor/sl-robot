@@ -77,7 +77,7 @@ OUTPUT_T sl_cr_control_loop_c<SETPOINT_T, OUTPUT_T>::loop(SETPOINT_T feedback)
   error = (this->get_setpoint() - feedback);
   update_output();
 
-  SL_CR_LOG_SNPRINTF(get_log_key(), LOG_LEVEL_DEBUG_4, "%d|%d|%d", this->get_setpoint(), get_output(), get_error());
+  SL_CR_LOG_SNPRINTF(get_log_key(), LOG_LEVEL_DEBUG_4, "|%+05d|%+05d|%+05d|", this->get_setpoint(), get_output(), get_error());
 
   return get_output();
 }
