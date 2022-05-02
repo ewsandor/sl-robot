@@ -93,7 +93,7 @@ static void sbus_task(void *)
     /* Read any new SBUS data */
     sl_cr_sbus_loop();
     /* Check if ARM switch is set */
-    sl_cr_failsafe_armswitch_loop();
+    failsafe_armswitch_loop();
   }
 }
 
@@ -188,7 +188,7 @@ void setup()
   watchdog_fed = millis();
   wdt.begin(wdt_config);
 
-  SL_CR_LOG_SNPRINTF(LOG_KEY_BOOT, LOG_LEVEL_INFO, "Failsafe mask: 0x%x", sl_cr_get_failsafe_mask());
+  SL_CR_LOG_SNPRINTF(LOG_KEY_BOOT, LOG_LEVEL_INFO, "Failsafe mask: 0x%x", get_failsafe_mask());
 
   /* Configure PWM resolution */
   analogWriteResolution(SL_CR_PWM_RESOLUTION);
@@ -215,7 +215,7 @@ void setup()
   /* Clear Bootup LED */
   digitalWrite(SL_CR_PIN_ONBOARD_LED, arduino::LOW);
   /* Clear Bootup failsafe */
-  sl_cr_clear_failsafe_mask(SL_CR_FAILSAFE_BOOT);
+  clear_failsafe_mask(FAILSAFE_BOOT);
 
   log_cstring(LOG_KEY_BOOT, LOG_LEVEL_INFO, "Attaching Pin Interrupts.");
   sl_cr_drive_register_interrupts();

@@ -20,10 +20,10 @@ using namespace sandor_laboratories::combat_robot;
 
 #define SL_CR_ARM_SWITCH_THRESHOLD ((SL_CR_RC_CH_MAX_VALUE*90)/100)
 
-/* Master failsafe mask. Each bit corresponds to a reason from sl_cr_failsafe_mask_t.  
+/* Master failsafe mask. Each bit corresponds to a reason from failsafe_mask_t.  
    Motors are to be powered if and only if mask is 0x0.
    Initialize with BOOT bit and ARM_SWITCH_DISARM bit such that nothing can activate until bootup is complete and the arm switch is cleared to avoid unexpected arming */
-volatile sl_cr_failsafe_mask_t sl_cr_failsafe_mask = SL_CR_FAILSAFE_BIT(SL_CR_FAILSAFE_BOOT) | SL_CR_FAILSAFE_BIT(SR_CR_FAILSAFE_ARM_SWITCH_DISARM);
+volatile failsafe_mask_t sl_cr_failsafe_mask = SL_CR_FAILSAFE_BIT(FAILSAFE_BOOT) | SL_CR_FAILSAFE_BIT(FAILSAFE_ARM_SWITCH_DISARM);
 
 /* Timeout timer reference time (last failsafe entry) to force rearming */
 sl_cr_time_t armswitch_rearm_timeout_start = 0; //millis() starts from 0 at bootup
@@ -32,12 +32,12 @@ bool         rearm_timeout_expired = false;
 unsigned int repeat_failsafe_rearm_counter = 0;
 bool         repeat_failsafe_rearm_required = false;
 
-void sandor_laboratories::combat_robot::sl_cr_set_failsafe_mask(sl_cr_failsafe_reason_e reason)
+void sandor_laboratories::combat_robot::set_failsafe_mask(failsafe_reason_e reason)
 {
   critical_section_enter();
-  sl_cr_failsafe_mask_t old_failsafe_mask = sl_cr_failsafe_mask;
+  failsafe_mask_t old_failsafe_mask = sl_cr_failsafe_mask;
   sl_cr_failsafe_mask |= SL_CR_FAILSAFE_BIT(reason);
-  sl_cr_failsafe_mask_t new_failsafe_mask = sl_cr_failsafe_mask;
+  failsafe_mask_t new_failsafe_mask = sl_cr_failsafe_mask;
   critical_section_exit();
   
   if(0 == (old_failsafe_mask & SL_CR_FAILSAFE_BIT(reason)))
@@ -55,12 +55,12 @@ void sandor_laboratories::combat_robot::sl_cr_set_failsafe_mask(sl_cr_failsafe_r
     }
   }
 }
-void sandor_laboratories::combat_robot::sl_cr_clear_failsafe_mask(sl_cr_failsafe_reason_e reason)
+void sandor_laboratories::combat_robot::clear_failsafe_mask(failsafe_reason_e reason)
 {
   critical_section_enter();
-  sl_cr_failsafe_mask_t old_failsafe_mask = sl_cr_failsafe_mask;
+  failsafe_mask_t old_failsafe_mask = sl_cr_failsafe_mask;
   sl_cr_failsafe_mask &= ~(SL_CR_FAILSAFE_BIT(reason));
-  sl_cr_failsafe_mask_t new_failsafe_mask = sl_cr_failsafe_mask;
+  failsafe_mask_t new_failsafe_mask = sl_cr_failsafe_mask;
   critical_section_exit();
   
   if(0 != (old_failsafe_mask & SL_CR_FAILSAFE_BIT(reason)))
@@ -72,20 +72,20 @@ void sandor_laboratories::combat_robot::sl_cr_clear_failsafe_mask(sl_cr_failsafe
     }
   }
 }
-void sandor_laboratories::combat_robot::sl_cr_set_failsafe_mask_value(sl_cr_failsafe_reason_e reason, bool value)
+void sandor_laboratories::combat_robot::set_failsafe_mask_value(failsafe_reason_e reason, bool value)
 {
   if(value)
   {
-    sl_cr_set_failsafe_mask(reason);
+    set_failsafe_mask(reason);
   }
   else
   {
-    sl_cr_clear_failsafe_mask(reason);
+    clear_failsafe_mask(reason);
   }
 }
-sl_cr_failsafe_mask_t sandor_laboratories::combat_robot::sl_cr_get_failsafe_mask()
+failsafe_mask_t sandor_laboratories::combat_robot::get_failsafe_mask()
 {
-  sl_cr_failsafe_mask_t ret_val = SL_CR_FAILSAFE_INVALID_MASK;
+  failsafe_mask_t ret_val = SL_CR_FAILSAFE_INVALID_MASK;
 
   critical_section_enter();
   ret_val = sl_cr_failsafe_mask;
@@ -93,13 +93,13 @@ sl_cr_failsafe_mask_t sandor_laboratories::combat_robot::sl_cr_get_failsafe_mask
 
   return ret_val;
 }
-bool sandor_laboratories::combat_robot::sl_cr_get_failsafe_set()
+bool sandor_laboratories::combat_robot::get_failsafe_set()
 {
-  return (0 != sl_cr_get_failsafe_mask());
+  return (0 != get_failsafe_mask());
 }
-bool sandor_laboratories::combat_robot::sl_cr_get_failsafe_set(sl_cr_failsafe_reason_e reason)
+bool sandor_laboratories::combat_robot::get_failsafe_set(failsafe_reason_e reason)
 {
-  return (0 != (sl_cr_get_failsafe_mask() & SL_CR_FAILSAFE_BIT(reason)));
+  return (0 != (get_failsafe_mask() & SL_CR_FAILSAFE_BIT(reason)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -109,7 +109,7 @@ bool sandor_laboratories::combat_robot::sl_cr_get_failsafe_set(sl_cr_failsafe_re
 bool prearmswitch_first = false;
 /* Only arm if both arm switches are first released */
 bool armswitches_released_first = false;
-void sandor_laboratories::combat_robot::sl_cr_failsafe_armswitch_loop()
+void sandor_laboratories::combat_robot::failsafe_armswitch_loop()
 {
   /* Check if arm switch is requsting robot to be armed */
   const sl_cr_rc_channel_value_t armswitch_raw = sl_cr_sbus_get_ch_value(SL_CR_ARM_SWITCH_CH);
@@ -122,35 +122,35 @@ void sandor_laboratories::combat_robot::sl_cr_failsafe_armswitch_loop()
   if(armswitches_released_first && prearmswitch_first && prearmswitch_armed && armswitch_armed)
   {
     /* Clear arm switch failsafe if pre-arm was set first and both pre-arm and arm switch are requesting arming */
-    sl_cr_clear_failsafe_mask(SR_CR_FAILSAFE_ARM_SWITCH);
+    clear_failsafe_mask(FAILSAFE_ARM_SWITCH);
     /* Do not rearm until both switches are released */
     armswitches_released_first = false;
   }
   else if(!armswitch_armed)
   {
     /* If arm switch is not requesting arming, set failsafe */
-    sl_cr_set_failsafe_mask(SR_CR_FAILSAFE_ARM_SWITCH);
+    set_failsafe_mask(FAILSAFE_ARM_SWITCH);
   }
 
   /* Check if failsafe timeout is exceeded and force rearm */
   if(!rearm_timeout_expired &&
-     sl_cr_get_failsafe_set() && 
+     get_failsafe_set() && 
      ((millis()-armswitch_rearm_timeout_start) > SL_CR_FAILSAFE_ARMSWITCH_REARM_TIMEOUT))
   {
-    sl_cr_set_failsafe_mask(SR_CR_FAILSAFE_ARM_SWITCH_DISARM);
+    set_failsafe_mask(FAILSAFE_ARM_SWITCH_DISARM);
     rearm_timeout_expired = true;
   }
   if(!repeat_failsafe_rearm_required &&
-      sl_cr_get_failsafe_set() &&
+      get_failsafe_set() &&
       repeat_failsafe_rearm_counter > SL_CR_FAILSAFE_REPEAT_REARM_THRESHOLD)
   {
-    sl_cr_set_failsafe_mask(SR_CR_FAILSAFE_ARM_SWITCH_DISARM);
+    set_failsafe_mask(FAILSAFE_ARM_SWITCH_DISARM);
     repeat_failsafe_rearm_required = true;
   }
   /* If armswitch not requesting arming, clear disarm wait */
   if(SL_CR_RC_CH_VALUE_VALID(armswitch_raw) && !armswitch_armed)
   {
-    sl_cr_clear_failsafe_mask(SR_CR_FAILSAFE_ARM_SWITCH_DISARM);
+    clear_failsafe_mask(FAILSAFE_ARM_SWITCH_DISARM);
     /* Reset repeat failsafe counter */
     repeat_failsafe_rearm_counter = 0;
     repeat_failsafe_rearm_required = false;
