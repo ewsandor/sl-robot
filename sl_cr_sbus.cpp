@@ -12,6 +12,8 @@
 #include "sl_cr_failsafe.hpp"
 #include "sl_cr_sbus.hpp"
 
+using namespace sandor_laboratories::combat_robot;
+
 /* Time since last SBUS update to declare data stale (ms) */
 #define SL_CR_SBUS_STALE_TIMEOUT (4*SL_CR_SBUS_UPDATE_PERIOD)
 /* Channel to array mapping */
