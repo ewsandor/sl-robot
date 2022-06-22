@@ -9,9 +9,9 @@
 #define __SL_CR_VERSION_H__
 
 #define SL_CR_SOFTWARE_NAME    "Sandor Laboratories Combat Robot Software"
-#define SL_CR_SOFTWARE_VERSION "0.0.1-dev"
+#define SL_CR_SOFTWARE_VERSION "0.1.0"
 #define SL_CR_SOFTWARE_AUTHOR  "Edward Sandor"
-#define SL_CR_SOFTWARE_CONTACT "public@ewsandor.com"
+#define SL_CR_SOFTWARE_CONTACT "public@sandorlaboratories.com"
 
 #define SL_CR_SOFTWARE_INTRO   SL_CR_SOFTWARE_NAME " version " SL_CR_SOFTWARE_VERSION " by "  SL_CR_SOFTWARE_AUTHOR " <" SL_CR_SOFTWARE_CONTACT ">"
 
