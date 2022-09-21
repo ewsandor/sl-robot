@@ -1,13 +1,13 @@
 /*
-  sl_cr_circular_buffer.hpp
+  circular_buffer.hpp
   Sandor Laboratories Combat Robot Software
   Edward Sandor
   April 2022
 */
 
-#include "sl_cr_circular_buffer.hpp"
+#include "circular_buffer.hpp"
 
-using namespace sandor_laboratories::combat_robot;
+using namespace sandor_laboratories::robot;
 
 #define MUTEX_LOCK   if(mutex){mutex_lock(mutex);}
 #define MUTEX_UNLOCK if(mutex){mutex_unlock(mutex);}
@@ -50,11 +50,11 @@ bool circular_buffer_c<T>::push(const T* input, bool force)
   MUTEX_LOCK  
   buffer_entry_s *write_entry = &circular_buffer[write_index];
 
-  if((SL_CR_BUFFER_ENTRY_AVAILABLE == write_entry->hdr.state) ||
+  if((BUFFER_ENTRY_AVAILABLE == write_entry->hdr.state) ||
      (true == force))
   {
     write_entry->data      = *input;
-    write_entry->hdr.state = SL_CR_BUFFER_ENTRY_COMMITED;
+    write_entry->hdr.state = BUFFER_ENTRY_COMMITED;
     write_index = (write_index+1) % buffer_size;
   }
   MUTEX_UNLOCK  
@@ -70,10 +70,10 @@ T* circular_buffer_c<T>::allocate()
   MUTEX_LOCK  
   buffer_entry_s *write_entry = &circular_buffer[write_index];
 
-  if(SL_CR_BUFFER_ENTRY_AVAILABLE == write_entry->hdr.state)
+  if(BUFFER_ENTRY_AVAILABLE == write_entry->hdr.state)
   {
     ret_ptr = &write_entry->data;
-    write_entry->hdr.state = SL_CR_BUFFER_ENTRY_ALLOCATED;
+    write_entry->hdr.state = BUFFER_ENTRY_ALLOCATED;
     write_index = (write_index+1) % buffer_size;
   }
   MUTEX_UNLOCK  
@@ -91,9 +91,9 @@ bool circular_buffer_c<T>::commit(const T* commit_data)
   for(i = 0; i < buffer_size; i++)
   {
     if((&circular_buffer[i].data == commit_data) &&
-       (SL_CR_BUFFER_ENTRY_ALLOCATED == circular_buffer[i].hdr.state))
+       (BUFFER_ENTRY_ALLOCATED == circular_buffer[i].hdr.state))
     {
-      circular_buffer[i].hdr.state = SL_CR_BUFFER_ENTRY_COMMITED;
+      circular_buffer[i].hdr.state = BUFFER_ENTRY_COMMITED;
       ret_val = true;
       break;
     }
@@ -109,7 +109,7 @@ template <typename T>
 bool circular_buffer_c<T>::available()
 {
   MUTEX_LOCK  
-  bool ret_val = (SL_CR_BUFFER_ENTRY_COMMITED == circular_buffer[read_index].hdr.state);
+  bool ret_val = (BUFFER_ENTRY_COMMITED == circular_buffer[read_index].hdr.state);
   MUTEX_UNLOCK  
 
   return ret_val;
@@ -122,7 +122,7 @@ T circular_buffer_c<T>::pop()
   memset(&ret_val, 0, sizeof(T));
 
   MUTEX_LOCK  
-  if(SL_CR_BUFFER_ENTRY_COMMITED == circular_buffer[read_index].hdr.state)
+  if(BUFFER_ENTRY_COMMITED == circular_buffer[read_index].hdr.state)
   {
     ret_val = circular_buffer[read_index].data;
     memset(&circular_buffer[read_index], 0, sizeof(circular_buffer[read_index]));
@@ -137,7 +137,7 @@ template <typename T>
 void circular_buffer_c<T>::pop_void()
 {
   MUTEX_LOCK  
-  if(SL_CR_BUFFER_ENTRY_COMMITED == circular_buffer[read_index].hdr.state)
+  if(BUFFER_ENTRY_COMMITED == circular_buffer[read_index].hdr.state)
   {
     memset(&circular_buffer[read_index], 0, sizeof(circular_buffer[read_index]));
     read_index = (read_index + 1) % buffer_size;
@@ -151,7 +151,7 @@ const T* circular_buffer_c<T>::peek_ptr()
   const T* ret_ptr = nullptr;
 
   MUTEX_LOCK  
-  if(SL_CR_BUFFER_ENTRY_COMMITED == circular_buffer[read_index].hdr.state)
+  if(BUFFER_ENTRY_COMMITED == circular_buffer[read_index].hdr.state)
   {
     ret_ptr = &circular_buffer[read_index].data;
   }
@@ -167,7 +167,7 @@ T circular_buffer_c<T>::peek()
   memset(&ret_val, 0, sizeof(T));
 
   MUTEX_LOCK  
-  if(SL_CR_BUFFER_ENTRY_COMMITED == circular_buffer[read_index].hdr.state)
+  if(BUFFER_ENTRY_COMMITED == circular_buffer[read_index].hdr.state)
   {
     ret_val = circular_buffer[read_index].data;
   }

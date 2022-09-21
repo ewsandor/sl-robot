@@ -1,20 +1,20 @@
 /*
-  sl_cr_circular_buffer.hpp
+  circular_buffer.hpp
   Sandor Laboratories Combat Robot Software
   Edward Sandor
   April 2022
 */
 
-#ifndef __SL_CR_CIRCULAR_BUFFER_HPP__
-#define __SL_CR_CIRCULAR_BUFFER_HPP__
+#ifndef __CIRCULAR_BUFFER_HPP__
+#define __CIRCULAR_BUFFER_HPP__
 
-#include "sl_cr_log.hpp"
-#include "sl_cr_types.hpp"
-#include "sl_cr_utils.hpp"
+#include "log.hpp"
+#include "types.hpp"
+#include "utils.hpp"
 
 namespace sandor_laboratories
 {
-  namespace combat_robot
+  namespace robot
   {
     typedef unsigned int circular_buffer_index_t;
 
@@ -30,9 +30,9 @@ namespace sandor_laboratories
 
         typedef enum
         {
-          SL_CR_BUFFER_ENTRY_AVAILABLE,
-          SL_CR_BUFFER_ENTRY_ALLOCATED,
-          SL_CR_BUFFER_ENTRY_COMMITED,
+          BUFFER_ENTRY_AVAILABLE,
+          BUFFER_ENTRY_ALLOCATED,
+          BUFFER_ENTRY_COMMITED,
 
         } buffer_entry_state_e;
 
@@ -86,4 +86,4 @@ namespace sandor_laboratories
   }
 }
 
-#endif /* __SL_CR_CIRCULAR_BUFFER_HPP__ */
+#endif /* __CIRCULAR_BUFFER_HPP__ */

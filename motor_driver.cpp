@@ -1,32 +1,35 @@
 /*
-  sl_cr_motor_driver.cpp
+  motor_driver.cpp
   Sandor Laboratories Combat Robot Software
   Edward Sandor
   February 2022
 */
 
-#include "sl_cr_motor_driver.hpp"
-#include "sl_cr_utils.hpp"
+#include "motor_driver.hpp"
+#include "utils.hpp"
 
-#define SL_CR_DISABLE_BIT(reason) (1 << reason)
+using namespace sandor_laboratories::robot;
 
-using namespace sandor_laboratories::combat_robot;
+#define DISABLE_BIT(reason) (1 << reason)
 
-const sl_cr_motor_driver_config_s default_motor_driver_config = 
+#define MOTOR_DRIVER_DEFAULT_MAX_RPM 1024
+#define MOTOR_DRIVER_DEFAULT_MIN_RPM (-MOTOR_DRIVER_DEFAULT_MAX_RPM)
+
+const motor_driver_config_s default_motor_driver_config = 
 {
   .failsafe_check    = nullptr,
   .log_key           = LOG_KEY_MOTOR_DRIVER,
   .invert_direction  = false,
-  .min_rpm           = SL_CR_MOTOR_DRIVER_DEFAULT_MIN_RPM,
-  .max_rpm           = SL_CR_MOTOR_DRIVER_DEFAULT_MAX_RPM,
-  .min_commanded_rpm = SL_CR_MOTOR_DRIVER_DEFAULT_MIN_RPM,
-  .max_commanded_rpm = SL_CR_MOTOR_DRIVER_DEFAULT_MAX_RPM,
+  .min_rpm           = MOTOR_DRIVER_DEFAULT_MIN_RPM,
+  .max_rpm           = MOTOR_DRIVER_DEFAULT_MAX_RPM,
+  .min_commanded_rpm = MOTOR_DRIVER_DEFAULT_MIN_RPM,
+  .max_commanded_rpm = MOTOR_DRIVER_DEFAULT_MAX_RPM,
   .encoder           = nullptr,
   .control_loop      = nullptr,
 };
 
 
-void sl_cr_motor_driver_c::init_config(sl_cr_motor_driver_config_s* config)
+void motor_driver_c::init_config(motor_driver_config_s* config)
 {
   if(config)
   {
@@ -34,7 +37,7 @@ void sl_cr_motor_driver_c::init_config(sl_cr_motor_driver_config_s* config)
   }
 }
 
-void sl_cr_motor_driver_c::init()
+void motor_driver_c::init()
 {
   disable_mask = 0x0;
   limp         = false;
@@ -42,43 +45,43 @@ void sl_cr_motor_driver_c::init()
   change_set_rpm(get_neutral_rpm());
 }
 
-sl_cr_motor_driver_c::sl_cr_motor_driver_c()
+motor_driver_c::motor_driver_c()
   : config(default_motor_driver_config)
 {
   init();
 }
 
-sl_cr_motor_driver_c::sl_cr_motor_driver_c(sl_cr_motor_driver_config_s constructor_config)
+motor_driver_c::motor_driver_c(motor_driver_config_s constructor_config)
   : config(constructor_config)
 {
   init();
 }
 
-sl_cr_rpm_t sl_cr_motor_driver_c::commanded_from_set_rpm(sl_cr_rpm_t ref_set_rpm) const
+rpm_t motor_driver_c::commanded_from_set_rpm(rpm_t ref_set_rpm) const
 {
-  sl_cr_rpm_t ret_val = get_neutral_commanded_rpm();
+  rpm_t ret_val = get_neutral_commanded_rpm();
 
   if (ref_set_rpm > get_neutral_rpm())
   {
     /* Positive direction */
-    const sl_cr_rpm_t set_positive_range       = (get_max_rpm()          -get_neutral_rpm());
-    const sl_cr_rpm_t commanded_positive_range = (get_max_commanded_rpm()-get_neutral_commanded_rpm());
-    const sl_cr_rpm_t ref_set_rpm_no_offset    = (ref_set_rpm-get_neutral_rpm());
+    const rpm_t set_positive_range       = (get_max_rpm()          -get_neutral_rpm());
+    const rpm_t commanded_positive_range = (get_max_commanded_rpm()-get_neutral_commanded_rpm());
+    const rpm_t ref_set_rpm_no_offset    = (ref_set_rpm-get_neutral_rpm());
     ret_val = (get_neutral_commanded_rpm() + ((ref_set_rpm_no_offset*commanded_positive_range)/set_positive_range));
   }
   else if (ref_set_rpm < get_neutral_rpm())
   {
     /* Negative direction */
-    const sl_cr_rpm_t set_negative_range       = (get_min_rpm()          -get_neutral_rpm());
-    const sl_cr_rpm_t commanded_negative_range = (get_min_commanded_rpm()-get_neutral_commanded_rpm());
-    const sl_cr_rpm_t ref_set_rpm_no_offset    = (ref_set_rpm-get_neutral_rpm());
+    const rpm_t set_negative_range       = (get_min_rpm()          -get_neutral_rpm());
+    const rpm_t commanded_negative_range = (get_min_commanded_rpm()-get_neutral_commanded_rpm());
+    const rpm_t ref_set_rpm_no_offset    = (ref_set_rpm-get_neutral_rpm());
     ret_val = (get_neutral_commanded_rpm() + ((ref_set_rpm_no_offset*commanded_negative_range)/set_negative_range));
   }
 
   return ret_val;
 }
 
-void sl_cr_motor_driver_c::change_set_rpm(sl_cr_rpm_t new_rpm)
+void motor_driver_c::change_set_rpm(rpm_t new_rpm)
 {
   if(new_rpm > config.max_rpm)
   {
@@ -99,7 +102,7 @@ void sl_cr_motor_driver_c::change_set_rpm(sl_cr_rpm_t new_rpm)
   critical_section_exit();
 }
 
-inline void sl_cr_motor_driver_c::change_commanded_rpm(sl_cr_rpm_t new_rpm)
+inline void motor_driver_c::change_commanded_rpm(rpm_t new_rpm)
 {
   if(new_rpm > config.max_commanded_rpm)
   {
@@ -113,21 +116,21 @@ inline void sl_cr_motor_driver_c::change_commanded_rpm(sl_cr_rpm_t new_rpm)
   commanded_rpm = new_rpm;
 }
 
-void sl_cr_motor_driver_c::brake_motor()
+void motor_driver_c::brake_motor()
 {
   change_set_rpm(get_neutral_rpm());
 }
 
-void sl_cr_motor_driver_c::disable(sl_cr_motor_disable_reason_e reason)
+void motor_driver_c::disable(motor_disable_reason_e reason)
 {
-  disable_mask |= SL_CR_DISABLE_BIT(reason);
+  disable_mask |= DISABLE_BIT(reason);
   disable_motor();
 }
-void sl_cr_motor_driver_c::enable(sl_cr_motor_disable_reason_e reason)
+void motor_driver_c::enable(motor_disable_reason_e reason)
 {
-  disable_mask &= ~(SL_CR_DISABLE_BIT(reason));
+  disable_mask &= ~(DISABLE_BIT(reason));
 }
-bool sl_cr_motor_driver_c::disabled() const
+bool motor_driver_c::disabled() const
 {
   bool ret_val = false;
 
@@ -140,12 +143,12 @@ bool sl_cr_motor_driver_c::disabled() const
   return ret_val;
 }
 
-sl_cr_motor_driver_fault_status_e sl_cr_motor_driver_c::get_fault_status() const
+motor_driver_fault_status_e motor_driver_c::get_fault_status() const
 {
-  return SL_CR_MOTOR_DRIVER_FAULT_STATUS_UNKNOWN;
+  return MOTOR_DRIVER_FAULT_STATUS_UNKNOWN;
 }
 
-void sl_cr_motor_driver_c::loop()
+void motor_driver_c::loop()
 {
   if(disabled())
   {
@@ -181,9 +184,9 @@ void sl_cr_motor_driver_c::loop()
   }
 }
 
-sl_cr_rpm_t sl_cr_motor_driver_c::get_set_rpm() const
+rpm_t motor_driver_c::get_set_rpm() const
 {
-  sl_cr_rpm_t ret_val;
+  rpm_t ret_val;
 
   critical_section_enter();
   ret_val = set_rpm;
@@ -192,9 +195,9 @@ sl_cr_rpm_t sl_cr_motor_driver_c::get_set_rpm() const
   return ret_val;
 }
 
-sl_cr_rpm_t sl_cr_motor_driver_c::get_real_rpm() const
+rpm_t motor_driver_c::get_real_rpm() const
 {
-  sl_cr_rpm_t real_rpm = get_set_rpm();
+  rpm_t real_rpm = get_set_rpm();
 
   if(config.encoder)
   {
@@ -205,7 +208,7 @@ sl_cr_rpm_t sl_cr_motor_driver_c::get_real_rpm() const
 };
 
 
-void sl_cr_motor_driver_c::set_limp_mode(bool new_limp)
+void motor_driver_c::set_limp_mode(bool new_limp)
 {
   limp = new_limp;
 }
