@@ -1,27 +1,27 @@
 /*
-  sl_cr_log_task.hpp
+  sl_robot_log_task.hpp
   Sandor Laboratories Combat Robot Software
   Edward Sandor
   April 2022
 */
 
-#ifndef __SL_CR_LOG_TASK_HPP__
-#define __SL_CR_LOG_TASK_HPP__
+#ifndef __SL_ROBOT_LOG_TASK_HPP__
+#define __SL_ROBOT_LOG_TASK_HPP__
 
 #include <FreeRTOS.h>
 #include <task.h>
 
-#include "sl_cr_log.hpp"
+#include "sl_robot_log.hpp"
 
 namespace sandor_laboratories
 {
-  namespace combat_robot
+  namespace robot
   {
-    #define SL_CR_LOG_TASK_STACK_SIZE 256
+    #define SL_ROBOT_LOG_TASK_STACK_SIZE 256
 
     void log_init(const TaskHandle_t * log_task_handle);
     void log_flush();
   }
 }
 
-#endif /* __SL_CR_LOG_TASK_HPP__ */
+#endif /* __SL_ROBOT_LOG_TASK_HPP__ */

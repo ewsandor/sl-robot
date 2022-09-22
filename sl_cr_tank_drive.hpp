@@ -8,7 +8,7 @@
 #ifndef __SL_CR_TANK_DRIVE_HPP__
 #define __SL_CR_TANK_DRIVE_HPP__
 
-#include "sl_cr_motor_driver.hpp"
+#include "sl_robot_motor_driver.hpp"
 #include "sl_cr_types.hpp"
 
 /* RC channel values < CENTER+DEADZONE && > CENTER-DEADZONE will be treated as neutral */

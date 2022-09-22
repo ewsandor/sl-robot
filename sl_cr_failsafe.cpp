@@ -8,9 +8,9 @@
 #include <Arduino.h>
 
 #include "sl_cr_failsafe.hpp"
-#include "sl_cr_log.hpp"
+#include "sl_robot_log.hpp"
 #include "sl_cr_sbus.hpp"
-#include "sl_cr_utils.hpp"
+#include "sl_robot_utils.hpp"
 
 using namespace sandor_laboratories::combat_robot;
 

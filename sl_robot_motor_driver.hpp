@@ -54,8 +54,8 @@ namespace sandor_laboratories
     typedef struct
     {
       failsafe_f                                failsafe_check;
-      sandor_laboratories::combat_robot::log_key_e    log_key;
-      bool                                            invert_direction;
+      sandor_laboratories::robot::log_key_e     log_key;
+      bool                                      invert_direction;
       rpm_t                                     min_rpm;
       rpm_t                                     max_rpm;
       rpm_t                                     min_commanded_rpm;
@@ -77,7 +77,7 @@ namespace sandor_laboratories
         /* Active Parameters */
         rpm_t                       set_rpm;
         rpm_t                       commanded_rpm;
-        bool                              limp;
+        bool                        limp;
 
         /* Sets motor to a given rpm */
         void change_commanded_rpm(rpm_t);
@@ -89,7 +89,7 @@ namespace sandor_laboratories
         virtual void command_motor() = 0;
 
         rpm_t commanded_from_set_rpm(rpm_t) const;
-        inline sandor_laboratories::combat_robot::log_key_e get_log_key() const { return config.log_key; }
+        inline sandor_laboratories::robot::log_key_e get_log_key() const { return config.log_key; }
 
       public:
         static void init_config(motor_driver_config_s*);

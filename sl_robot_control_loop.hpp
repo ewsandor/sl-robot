@@ -35,7 +35,7 @@ namespace sandor_laboratories
         const SETPOINT_T  sp_max;
         const OUTPUT_T    output_min;
         const OUTPUT_T    output_max;
-        const sandor_laboratories::combat_robot::log_key_e log_key;
+        const sandor_laboratories::robot::log_key_e log_key;
 
         void              set_initial_state();
 
@@ -44,7 +44,7 @@ namespace sandor_laboratories
         inline SETPOINT_T get_sp_max()     const {return sp_max;}
         inline SETPOINT_T get_output_min() const {return output_min;}
         inline SETPOINT_T get_output_max() const {return output_max;}
-        inline sandor_laboratories::combat_robot::log_key_e get_log_key() const {return log_key;}
+        inline sandor_laboratories::robot::log_key_e get_log_key() const {return log_key;}
 
         /* Sanitizes and sets output value, returns false if out of bounds */
         bool              set_output(OUTPUT_T new_output);
@@ -52,10 +52,10 @@ namespace sandor_laboratories
       public:
         /* Initialize control loop with Setpoint min, neutral, and max values */
         control_loop_c(SETPOINT_T sp_min,     SETPOINT_T sp_max, 
-                            sandor_laboratories::combat_robot::log_key_e log_key=sandor_laboratories::combat_robot::LOG_KEY_MOTOR_CONTROL_LOOP);
+                            sandor_laboratories::robot::log_key_e log_key=sandor_laboratories::robot::LOG_KEY_MOTOR_CONTROL_LOOP);
         control_loop_c(SETPOINT_T sp_min,     SETPOINT_T sp_max,
                             OUTPUT_T   output_min, OUTPUT_T   output_max, 
-                            sandor_laboratories::combat_robot::log_key_e log_key=sandor_laboratories::combat_robot::LOG_KEY_MOTOR_CONTROL_LOOP);
+                            sandor_laboratories::robot::log_key_e log_key=sandor_laboratories::robot::LOG_KEY_MOTOR_CONTROL_LOOP);
 
         /* Get current setpoint */
         inline SETPOINT_T get_setpoint() const {return sp;}

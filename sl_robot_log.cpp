@@ -9,9 +9,9 @@
 #include <Arduino.h>
 
 #include "sl_cr_config.h"
-#include "sl_cr_circular_buffer.hpp"
-#include "sl_cr_log.hpp"
-#include "sl_cr_log_task.hpp"
+#include "sl_robot_circular_buffer.hpp"
+#include "sl_robot_log.hpp"
+#include "sl_robot_log_task.hpp"
 
 using namespace sandor_laboratories::robot;
 
@@ -53,7 +53,7 @@ void sandor_laboratories::combat_robot::log_init(const TaskHandle_t * log_task_h
 
 void sandor_laboratories::combat_robot::log_flush()
 {
-  char output_buffer[SL_CR_LOG_PAYLOAD_SIZE+16];
+  char output_buffer[SL_ROBOT_LOG_PAYLOAD_SIZE+16];
 
   /* Log pending log entries */
   while(log_buffer->available())

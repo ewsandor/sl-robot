@@ -47,11 +47,11 @@ namespace sandor_laboratories
         /* Initialize control loop with Setpoint min, neutral, and max values */
         pid_loop_c(SETPOINT_T sp_min,     SETPOINT_T sp_max,
                         pid_loop_params_s pid_params, 
-                        sandor_laboratories::combat_robot::log_key_e log_key=sandor_laboratories::combat_robot::LOG_KEY_MOTOR_CONTROL_LOOP);
+                        sandor_laboratories::robot::log_key_e log_key=sandor_laboratories::robot::LOG_KEY_MOTOR_CONTROL_LOOP);
         pid_loop_c(SETPOINT_T sp_min,     SETPOINT_T sp_max,
                         OUTPUT_T   output_min, OUTPUT_T   output_max,
                         pid_loop_params_s pid_params, 
-                        sandor_laboratories::combat_robot::log_key_e log_key=sandor_laboratories::combat_robot::LOG_KEY_MOTOR_CONTROL_LOOP);
+                        sandor_laboratories::robot::log_key_e log_key=sandor_laboratories::robot::LOG_KEY_MOTOR_CONTROL_LOOP);
 
         virtual void reset(SETPOINT_T new_setpoint=control_loop_c<SETPOINT_T, OUTPUT_T>::get_setpoint());
     };

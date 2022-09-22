@@ -5,28 +5,19 @@
   April 2022
 */
 
-#ifndef __SL_CR_LOG_HPP__
-#define __SL_CR_LOG_HPP__
+#ifndef __SL_ROBOT_LOG_HPP__
+#define __SL_ROBOT_LOG_HPP__
 
-#include <stdint.h>
-#include <stdio.h>
+#include <cstdarg>
+#include <cstdint>
+#include <cstdio>
 
 namespace sandor_laboratories
 {
-  namespace combat_robot
+  namespace robot
   {
     /* Log size minus 5 bytes for packing (1 byte circular buffer header + 4 bytes log header*/
-    #define SL_CR_LOG_PAYLOAD_SIZE (128-5)
-
-    #define SL_CR_LOG_SNPRINTF(key, level, string, ...)                                \
-    {                                                                                  \
-      log_entry_s * log_entry = log_entry_allocate(key, level);                        \
-      if(log_entry)                                                                    \
-      {                                                                                \
-        snprintf(log_entry->payload, sizeof(log_entry->payload), string, __VA_ARGS__); \
-        log_entry_commit(log_entry);                                                   \
-      }                                                                                \
-    }
+    #define SL_ROBOT_LOG_PAYLOAD_SIZE (128-5)
 
     typedef uint32_t log_timestamp_t;
 
@@ -73,14 +64,30 @@ namespace sandor_laboratories
     {
       log_entry_header_s hdr;
 
-      char payload[SL_CR_LOG_PAYLOAD_SIZE];
+      char payload[SL_ROBOT_LOG_PAYLOAD_SIZE];
 
     } log_entry_s;
-    
+
     log_entry_s * log_entry_allocate(log_key_e, log_level_e);
     void          log_entry_commit(const log_entry_s *);
     void          log_cstring(log_key_e, log_level_e, const char *);
+
+    inline void log_snprintf(log_key_e key, log_level_e level, const char *string, ...)
+    {
+      va_list args;
+      va_start(args, string);
+ 
+      log_entry_s * log_entry = log_entry_allocate(key, level);
+      if(log_entry)
+      {
+        vsnprintf(log_entry->payload, sizeof(log_entry->payload), string, args);
+        log_entry_commit(log_entry);
+      }
+
+      va_end(args);
+    }
+
   }
 }
 
-#endif /* __SL_CR_LOG_HPP__ */
+#endif /* __SL_ROBOT_LOG_HPP__ */
