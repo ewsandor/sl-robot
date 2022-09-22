@@ -13,6 +13,8 @@
 #include "sl_cr_log.hpp"
 #include "sl_cr_log_task.hpp"
 
+using namespace sandor_laboratories::robot;
+
 #define LOG_BUFFER_ENTRIES 16
 #define LOG_HDR_STRING_FORMAT "[0x%02x|0x%01x|0x%06lx] "
 

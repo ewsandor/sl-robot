@@ -1,11 +1,11 @@
 /*
-  control_loop.hpp
+  sl_robot_control_loop.hpp
   Sandor Laboratories Combat Robot Software
   Edward Sandor
   February 2022
 */
 
-#include "control_loop.hpp"
+#include "sl_robot_control_loop.hpp"
 
 using namespace sandor_laboratories::robot;
 

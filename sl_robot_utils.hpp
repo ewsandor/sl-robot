@@ -1,21 +1,22 @@
 /*
-  sl_cr_utils.hpp
+  sl_robot_utils.hpp
   Sandor Laboratories Combat Robot Software
   Edward Sandor
   April 2022
 */
 
-#ifndef __SL_CR_UTILS_HPP__
-#define __SL_CR_UTILS_HPP__
+#ifndef __SL_ROBOT_UTILS_HPP__
+#define __SL_ROBOT_UTILS_HPP__
+
+#include <cassert>
 
 /* FreeRTOS Includes */
 #include <arduino_freertos.h>
 #include <semphr.h>
-#include <cassert>
 
 namespace sandor_laboratories
 {
-  namespace combat_robot
+  namespace robot
   { 
     #define ASSERT(condition) assert(condition)
 
@@ -40,4 +41,4 @@ namespace sandor_laboratories
   }
 }
 
-#endif /* __SL_CR_UTILS_HPP__ */
+#endif /* __SL_ROBOT_UTILS_HPP__ */

@@ -1,11 +1,11 @@
 /*
-  circular_buffer.hpp
+  sl_robot_circular_buffer.hpp
   Sandor Laboratories Combat Robot Software
   Edward Sandor
   April 2022
 */
 
-#include "circular_buffer.hpp"
+#include "sl_robot_circular_buffer.hpp"
 
 using namespace sandor_laboratories::robot;
 

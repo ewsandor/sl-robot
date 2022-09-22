@@ -1,17 +1,17 @@
 /*
-  motor_driver.hpp
+  sl_robot_motor_driver.hpp
   Sandor Laboratories Combat Robot Software
   Edward Sandor
   February 2022
 */
 
-#ifndef __MOTOR_DRIVER_HPP__
-#define __MOTOR_DRIVER_HPP__
+#ifndef __SL_ROBOT_MOTOR_DRIVER_HPP__
+#define __SL_ROBOT_MOTOR_DRIVER_HPP__
 
-#include "control_loop.hpp"
-#include "encoder.hpp"
-#include "log.hpp"
-#include "types.hpp"
+#include "sl_robot_control_loop.hpp"
+#include "sl_robot_encoder.hpp"
+#include "sl_robot_log.hpp"
+#include "sl_robot_types.hpp"
 
 namespace sandor_laboratories
 {
