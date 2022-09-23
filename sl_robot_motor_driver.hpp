@@ -54,6 +54,7 @@ namespace sandor_laboratories
     typedef struct
     {
       failsafe_f                                failsafe_check;
+      const void*                               failsafe_user_data_ptr;
       sandor_laboratories::robot::log_key_e     log_key;
       bool                                      invert_direction;
       rpm_t                                     min_rpm;

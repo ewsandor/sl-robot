@@ -154,7 +154,7 @@ void encoder_c::sample_channels()
 
 inline void encoder_c::compute_rotation_frequency()
 {
-  const time_t    snapshot_time = millis();
+  const time_ms_t    snapshot_time = millis();
 
   /* Only update if millis has incremented to avoid divide by 0 */
   if(snapshot_time > last_frequency_update)

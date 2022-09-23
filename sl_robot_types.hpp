@@ -13,7 +13,7 @@ namespace sandor_laboratories
   namespace robot
   {
     /* Time type (ms) */
-    typedef unsigned long time_t;
+    typedef unsigned long time_ms_t;
 
     /* Velocity type */
     typedef int           velocity_t;
@@ -21,8 +21,11 @@ namespace sandor_laboratories
     typedef int           rpm_t;
 
     /* Hardware Pin Type */
+    enum
+    {
+      PIN_INVALID = 0xFF
+    };
     typedef uint8_t       pin_t;
-    #define SL_CR_PIN_INVALID 0xFF
 
     /* PWM Frequency in Hz */
     typedef float         pwm_freq_t;
@@ -37,8 +40,10 @@ namespace sandor_laboratories
       pwm_value_t         max_value;
     } pwm_config_s;
 
-    /* Failsafe function pointer, return true if failsafe is active */
-    typedef bool (*failsafe_f)(void);
+    /* Failsafe function pointer.  
+        Caller to echo user_data pointer.
+        This function shall return true if failsafe is active. */
+    typedef bool (*failsafe_f)(const void*);
 
   }
 }

@@ -18,11 +18,11 @@
 #include "sl_robot_utils.hpp"
 #include "sl_cr_version.h"
 
-using namespace sandor_laboratories::combat_robot;
+using namespace sandor_laboratories::robot;
 
 const sl_cr_drive_data_s *drive_data_ptr = nullptr;
 
-sl_cr_time_t watchdog_fed;
+time_ms_t watchdog_fed;
 /* Watchdog Timeout in ms, 32ms to 522.232s */
 #define SL_CR_WATCHDOG_TIMEOUT 100
 /* Watchdog feeding schedule in ms */
@@ -93,7 +93,7 @@ static void sbus_task(void *)
     /* Read any new SBUS data */
     sl_cr_sbus_loop();
     /* Check if ARM switch is set */
-    failsafe_armswitch_loop();
+    combat::failsafe_armswitch_loop();
   }
 }
 
@@ -188,7 +188,7 @@ void setup()
   watchdog_fed = millis();
   wdt.begin(wdt_config);
 
-  SL_CR_LOG_SNPRINTF(LOG_KEY_BOOT, LOG_LEVEL_INFO, "Failsafe mask: 0x%x", get_failsafe_mask());
+  log_snprintf(LOG_KEY_BOOT, LOG_LEVEL_INFO, "Failsafe mask: 0x%x", combat::get_failsafe_mask());
 
   /* Configure PWM resolution */
   analogWriteResolution(SL_CR_PWM_RESOLUTION);
@@ -215,7 +215,7 @@ void setup()
   /* Clear Bootup LED */
   digitalWrite(SL_CR_PIN_ONBOARD_LED, arduino::LOW);
   /* Clear Bootup failsafe */
-  clear_failsafe_mask(FAILSAFE_BOOT);
+  combat::clear_failsafe_mask(combat::FAILSAFE_BOOT);
 
   log_cstring(LOG_KEY_BOOT, LOG_LEVEL_INFO, "Attaching Pin Interrupts.");
   sl_cr_drive_register_interrupts();

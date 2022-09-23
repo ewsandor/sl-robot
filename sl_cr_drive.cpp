@@ -20,7 +20,7 @@
 
 using namespace sandor_laboratories::robot;
 
-const sl_cr_pid_loop_params_s pid_params = 
+const pid_loop_params_s pid_params = 
 {
   .p_num = 50,
   .p_den = 100,
@@ -30,7 +30,7 @@ const sl_cr_pid_loop_params_s pid_params =
   .d_den = 100,
 };
 
-const sl_cr_pwm_config_s pwm_config
+const pwm_config_s pwm_config
 {
   .frequency  = SL_CR_DEFAULT_PWM_FREQ,
   .resolution = SL_CR_PWM_RESOLUTION,
@@ -91,9 +91,9 @@ void interrupt_right_encoder_b()
 
 void sl_cr_drive_init_motor_stacks()
 {
-  sl_cr_motor_driver_config_s drive_motor_config;
-  sl_cr_motor_driver_c::init_config(&drive_motor_config);
-  drive_motor_config.failsafe_check = get_failsafe_set;
+  motor_driver_config_s drive_motor_config;
+  motor_driver_c::init_config(&drive_motor_config);
+  drive_motor_config.failsafe_check = combat::failsafe_check;
   drive_motor_config.min_rpm = SL_CR_MOTOR_DRIVER_REAL_MIN_RPM;
   drive_motor_config.max_rpm = SL_CR_MOTOR_DRIVER_REAL_MAX_RPM;
 
@@ -108,13 +108,13 @@ void sl_cr_drive_init_motor_stacks()
   drive_motor_config.min_commanded_rpm = -SL_CR_PWM_MAX_VALUE;
   drive_motor_config.max_commanded_rpm =  SL_CR_PWM_MAX_VALUE;
 
-  drive_data.left_motor_stack.control_loop = new sl_cr_pid_loop_c<rpm_t,rpm_t>
+  drive_data.left_motor_stack.control_loop = new pid_loop_c<rpm_t,rpm_t>
   (
     drive_motor_config.min_rpm, drive_motor_config.max_rpm, 
     drive_motor_config.min_commanded_rpm, drive_motor_config.max_commanded_rpm,
     pid_params, LOG_KEY_MOTOR_CONTROL_LOOP_LEFT
   );
-  drive_data.right_motor_stack.control_loop = new sl_cr_pid_loop_c<rpm_t,rpm_t>
+  drive_data.right_motor_stack.control_loop = new pid_loop_c<rpm_t,rpm_t>
   (
     drive_motor_config.min_rpm, drive_motor_config.max_rpm, 
     drive_motor_config.min_commanded_rpm, drive_motor_config.max_commanded_rpm,
@@ -122,18 +122,18 @@ void sl_cr_drive_init_motor_stacks()
   );
 
   /* Left Motor */
-  drive_data.left_motor_stack.encoder = new sl_cr_encoder_c(left_encoder_a_pin, left_encoder_b_pin,false,12,1,30);
+  drive_data.left_motor_stack.encoder = new encoder_c(left_encoder_a_pin, left_encoder_b_pin,false,12,1,30);
   drive_motor_config.log_key      = LOG_KEY_MOTOR_DRIVER_LEFT;
   drive_motor_config.encoder      = drive_data.left_motor_stack.encoder;
   drive_motor_config.control_loop = drive_data.left_motor_stack.control_loop;
-  drive_data.left_motor_stack.driver  = new sl_cr_motor_driver_drv8256p_c(left_motor_sleep_pin, left_motor_in1_pin, left_motor_in2_pin, pwm_config, drive_motor_config);
+  drive_data.left_motor_stack.driver  = new motor_driver_drv8256p_c(left_motor_sleep_pin, left_motor_in1_pin, left_motor_in2_pin, pwm_config, drive_motor_config);
 
   /* Right Motor */
-  drive_data.right_motor_stack.encoder = new sl_cr_encoder_c(right_encoder_a_pin, right_encoder_b_pin,true,12,1,30);
+  drive_data.right_motor_stack.encoder = new encoder_c(right_encoder_a_pin, right_encoder_b_pin,true,12,1,30);
   drive_motor_config.log_key      = LOG_KEY_MOTOR_DRIVER_RIGHT;
   drive_motor_config.encoder      = drive_data.right_motor_stack.encoder;
   drive_motor_config.control_loop = drive_data.right_motor_stack.control_loop;
-  drive_data.right_motor_stack.driver = new sl_cr_motor_driver_drv8256p_c(right_motor_sleep_pin, right_motor_in1_pin, right_motor_in2_pin, pwm_config, drive_motor_config);
+  drive_data.right_motor_stack.driver = new motor_driver_drv8256p_c(right_motor_sleep_pin, right_motor_in1_pin, right_motor_in2_pin, pwm_config, drive_motor_config);
 #endif
 
   #ifdef _FORCE_LIMP_MODE_

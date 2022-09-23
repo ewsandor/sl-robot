@@ -36,7 +36,7 @@ namespace sandor_laboratories
         volatile encoder_count_t         count;
         volatile encoder_count_t         skipped_count;
         encoder_count_t                  last_count;
-        time_t                           last_frequency_update;
+        time_ms_t                           last_frequency_update;
         encoder_frequency_t              count_frequency;
         rpm_t                            rpm;
 

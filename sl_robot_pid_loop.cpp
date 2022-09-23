@@ -9,16 +9,16 @@
 
 #include "sl_robot_pid_loop.hpp"
 
+using namespace sandor_laboratories::robot;
+
 template <typename SETPOINT_T, typename OUTPUT_T>
 pid_loop_c<SETPOINT_T, OUTPUT_T>::pid_loop_c(SETPOINT_T sp_min,     SETPOINT_T sp_max,
                                                          OUTPUT_T   output_min, OUTPUT_T   output_max,
-                                                         pid_loop_params_s pid_params,
-                                                         sandor_laboratories::combat_robot::log_key_e log_key)
+                                                         pid_loop_params_s pid_params, log_key_e log_key)
   : control_loop_c<SETPOINT_T, OUTPUT_T>(sp_min, sp_max, output_min, output_max, log_key), pid_params(pid_params) {}
 template <typename SETPOINT_T, typename OUTPUT_T>
 pid_loop_c<SETPOINT_T, OUTPUT_T>::pid_loop_c(SETPOINT_T sp_min, SETPOINT_T sp_max,
-                                                         pid_loop_params_s pid_params,
-                                                         sandor_laboratories::combat_robot::log_key_e log_key)
+                                                         pid_loop_params_s pid_params, log_key_e log_key)
   : pid_loop_c<SETPOINT_T, OUTPUT_T>(sp_min, sp_max, sp_min, sp_max, pid_params, log_key) {}
 
 template <typename SETPOINT_T, typename OUTPUT_T>

@@ -25,8 +25,9 @@ class sl_cr_arcade_drive_c
     /* RC channel values < CENTER+DEADZONE && > CENTER-DEADZONE will be treated as neutral */
     sl_cr_rc_channel_value_t  deadzone;
 
+    const void * failsafe_user_data_ptr = nullptr;
     /* Function pointer to call to check if failsafe has been triggered */
-    sandor_laboratories::robot::failsafe_f      failsafe_check;
+    sandor_laboratories::robot::failsafe_f failsafe;
 
     /* Initializes class with default values */
     void init();

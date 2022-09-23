@@ -17,15 +17,16 @@ using namespace sandor_laboratories::robot;
 
 const motor_driver_config_s default_motor_driver_config = 
 {
-  .failsafe_check    = nullptr,
-  .log_key           = LOG_KEY_MOTOR_DRIVER,
-  .invert_direction  = false,
-  .min_rpm           = MOTOR_DRIVER_DEFAULT_MIN_RPM,
-  .max_rpm           = MOTOR_DRIVER_DEFAULT_MAX_RPM,
-  .min_commanded_rpm = MOTOR_DRIVER_DEFAULT_MIN_RPM,
-  .max_commanded_rpm = MOTOR_DRIVER_DEFAULT_MAX_RPM,
-  .encoder           = nullptr,
-  .control_loop      = nullptr,
+  .failsafe               = nullptr,
+  .failsafe_user_data_ptr = nullptr,
+  .log_key                = LOG_KEY_MOTOR_DRIVER,
+  .invert_direction       = false,
+  .min_rpm                = MOTOR_DRIVER_DEFAULT_MIN_RPM,
+  .max_rpm                = MOTOR_DRIVER_DEFAULT_MAX_RPM,
+  .min_commanded_rpm      = MOTOR_DRIVER_DEFAULT_MIN_RPM,
+  .max_commanded_rpm      = MOTOR_DRIVER_DEFAULT_MAX_RPM,
+  .encoder                = nullptr,
+  .control_loop           = nullptr,
 };
 
 

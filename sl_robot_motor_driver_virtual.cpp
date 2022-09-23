@@ -17,7 +17,7 @@ void motor_driver_virtual_c::disable_motor()
 {
   if(active)
   {
-    LOG_SNPRINTF(get_log_key(), LOG_LEVEL_INFO, "%s deactivated.", this->name);
+    log_snprintf(get_log_key(), LOG_LEVEL_INFO, "%s deactivated.", this->name);
   }
   active = false;
 }
@@ -26,17 +26,17 @@ void motor_driver_virtual_c::command_motor()
 {
   if(!active)
   {
-    LOG_SNPRINTF(get_log_key(), LOG_LEVEL_INFO, "%s activated.", this->name);
+    log_snprintf(get_log_key(), LOG_LEVEL_INFO, "%s activated.", this->name);
   }
   active = true;
 
   if(get_neutral_commanded_rpm() == get_commanded_rpm())
   {
-    LOG_SNPRINTF(get_log_key(), LOG_LEVEL_INFO, "%s braking.", this->name);
+    log_snprintf(get_log_key(), LOG_LEVEL_INFO, "%s braking.", this->name);
   }
   else
   {
-    LOG_SNPRINTF(get_log_key(), LOG_LEVEL_INFO, "%s set_rpm: %d, commanded_rpm: %d.", this->name, get_set_rpm(), get_commanded_rpm());
+    log_snprintf(get_log_key(), LOG_LEVEL_INFO, "%s set_rpm: %d, commanded_rpm: %d.", this->name, get_set_rpm(), get_commanded_rpm());
   }
 }
 
@@ -48,5 +48,5 @@ motor_driver_virtual_c::motor_driver_virtual_c(const char* name, motor_driver_co
   memset(this->name, '\0',  sizeof(this->name));
   strlcpy(this->name, name, sizeof(this->name));
 
-  LOG_SNPRINTF(get_log_key(), LOG_LEVEL_INFO, "%s initialized.", this->name);
+  log_snprintf(get_log_key(), LOG_LEVEL_INFO, "%s initialized.", this->name);
 }

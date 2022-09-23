@@ -17,8 +17,6 @@ namespace sandor_laboratories
 {
   namespace robot
   {
-    #define SL_ROBOT_LOG_TASK_STACK_SIZE 256
-
     void log_init(const TaskHandle_t * log_task_handle);
     void log_flush();
   }

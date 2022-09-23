@@ -18,8 +18,6 @@ using namespace sandor_laboratories::robot;
 #define LOG_BUFFER_ENTRIES 16
 #define LOG_HDR_STRING_FORMAT "[0x%02x|0x%01x|0x%06lx] "
 
-using namespace sandor_laboratories::combat_robot;
-
 const TaskHandle_t * log_task_h_ptr;
 
 circular_buffer_c<log_entry_s> *log_buffer;
@@ -44,14 +42,14 @@ inline log_timestamp_t get_timestamp()
   return millis();
 }
 
-void sandor_laboratories::combat_robot::log_init(const TaskHandle_t * log_task_handle)
+void sandor_laboratories::robot::log_init(const TaskHandle_t * log_task_handle)
 {
   log_task_h_ptr = log_task_handle;
   failed_log_allocations = 0;
   log_buffer = new circular_buffer_c<log_entry_s>(LOG_BUFFER_ENTRIES, true);
 }
 
-void sandor_laboratories::combat_robot::log_flush()
+void sandor_laboratories::robot::log_flush()
 {
   char output_buffer[SL_ROBOT_LOG_PAYLOAD_SIZE+16];
 
@@ -78,7 +76,7 @@ void sandor_laboratories::combat_robot::log_flush()
   Serial.flush();
 }
 
-log_entry_s * sandor_laboratories::combat_robot::log_entry_allocate(log_key_e key, log_level_e level)
+log_entry_s * sandor_laboratories::robot::log_entry_allocate(log_key_e key, log_level_e level)
 {
   log_entry_s * ret_value = nullptr;
 
@@ -102,7 +100,7 @@ log_entry_s * sandor_laboratories::combat_robot::log_entry_allocate(log_key_e ke
   return ret_value;
 }
 
-void sandor_laboratories::combat_robot::log_entry_commit(const log_entry_s * log_entry)
+void sandor_laboratories::robot::log_entry_commit(const log_entry_s * log_entry)
 {
   if(log_entry)
   {
@@ -114,7 +112,7 @@ void sandor_laboratories::combat_robot::log_entry_commit(const log_entry_s * log
   }
 }
 
-void sandor_laboratories::combat_robot::log_cstring(log_key_e key, log_level_e level, const char *log_string)
+void sandor_laboratories::robot::log_cstring(log_key_e key, log_level_e level, const char *log_string)
 {
   log_entry_s * log_entry = log_entry_allocate(key, level);
 

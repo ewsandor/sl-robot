@@ -12,7 +12,7 @@
 #include "sl_cr_failsafe.hpp"
 #include "sl_cr_sbus.hpp"
 
-using namespace sandor_laboratories::combat_robot;
+using namespace sandor_laboratories::robot;
 
 /* Time since last SBUS update to declare data stale (ms) */
 #define SL_CR_SBUS_STALE_TIMEOUT (4*SL_CR_SBUS_UPDATE_PERIOD)
@@ -23,7 +23,7 @@ bfs::SbusRx sbus_rx(&Serial1);
 /* Array for storing SBUS data */
 std::array<int16_t, bfs::SbusRx::NUM_CH()> sbus_data = {0};
 /* TIme of last update */
-sl_cr_time_t last_sbus_read_time;
+time_ms_t last_sbus_read_time;
 
 void sl_cr_sbus_init()
 {
