@@ -50,7 +50,7 @@ namespace sandor_laboratories
       bool get_failsafe_set(failsafe_reason_e reason);
 
       extern const void* failsafe_check_user_data_ptr;
-      bool failsafe_check(const void*) {return get_failsafe_set();};
+      bool failsafe_check(const void*);
 
       /* Time (in ms) failsafe may be active until re-arming the arm switch is required 
         (allow short, self-correcting failsafes to correct, long events require explict user re-arm) */

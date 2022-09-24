@@ -167,3 +167,8 @@ void combat::failsafe_armswitch_loop()
     armswitches_released_first = true;
   }
 }
+
+bool combat::failsafe_check(const void*) 
+{
+  return get_failsafe_set();
+};

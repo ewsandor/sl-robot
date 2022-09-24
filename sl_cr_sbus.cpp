@@ -27,29 +27,29 @@ time_ms_t last_sbus_read_time;
 
 void sl_cr_sbus_init()
 {
-  set_failsafe_mask(FAILSAFE_SBUS_STALE);
+  set_failsafe_mask(combat::FAILSAFE_SBUS_STALE);
   last_sbus_read_time = millis();
   sbus_rx.Begin();
 }
 
 void sl_cr_sbus_loop()
 {
-  sl_cr_time_t loop_time = millis();
+  time_ms_t loop_time = millis();
 
   if (sbus_rx.Read()) {
     /* Grab the received data */
     sbus_data = sbus_rx.ch();
     /* Set failsafes */
-    set_failsafe_mask_value(FAILSAFE_SBUS, sbus_rx.failsafe());
+    set_failsafe_mask_value(combat::FAILSAFE_SBUS, sbus_rx.failsafe());
     /* Clear stale data failsafe */
     last_sbus_read_time = loop_time;
-    clear_failsafe_mask(FAILSAFE_SBUS_STALE);
+    clear_failsafe_mask(combat::FAILSAFE_SBUS_STALE);
   }
   else
   {
     if((loop_time - last_sbus_read_time) > SL_CR_SBUS_STALE_TIMEOUT)
     {
-      set_failsafe_mask(FAILSAFE_SBUS_STALE);
+      set_failsafe_mask(combat::FAILSAFE_SBUS_STALE);
     }
   }
 
@@ -59,7 +59,7 @@ sl_cr_rc_channel_value_t sl_cr_sbus_get_ch_value(sl_cr_rc_channel_t channel)
 {
   sl_cr_rc_channel_value_t value = SL_CR_RC_CH_INVALID_VALUE;
 
-  if(!get_failsafe_set(FAILSAFE_SBUS_STALE) &&
+  if(!get_failsafe_set(combat::FAILSAFE_SBUS_STALE) &&
      SL_CR_CH_TO_ARRAY_INDEX(channel) < bfs::SbusRx::NUM_CH())
   {
     value = sbus_data[SL_CR_CH_TO_ARRAY_INDEX(channel)];

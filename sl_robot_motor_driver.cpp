@@ -136,7 +136,7 @@ bool motor_driver_c::disabled() const
   bool ret_val = false;
 
   if((disable_mask != 0) ||
-     (config.failsafe_check != nullptr && config.failsafe_check() == true))
+     (config.failsafe != nullptr && config.failsafe(config.failsafe_user_data_ptr) == true))
   {
     ret_val = true;
   }

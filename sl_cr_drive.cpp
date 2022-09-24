@@ -93,9 +93,9 @@ void sl_cr_drive_init_motor_stacks()
 {
   motor_driver_config_s drive_motor_config;
   motor_driver_c::init_config(&drive_motor_config);
-  drive_motor_config.failsafe_check = combat::failsafe_check;
-  drive_motor_config.min_rpm = SL_CR_MOTOR_DRIVER_REAL_MIN_RPM;
-  drive_motor_config.max_rpm = SL_CR_MOTOR_DRIVER_REAL_MAX_RPM;
+  drive_motor_config.failsafe = combat::failsafe_check;
+  drive_motor_config.min_rpm  = SL_CR_MOTOR_DRIVER_REAL_MIN_RPM;
+  drive_motor_config.max_rpm  = SL_CR_MOTOR_DRIVER_REAL_MAX_RPM;
 
 #ifdef _VIRTUAL_MOTORS_
   drive_motor_config.min_commanded_rpm = -100;
