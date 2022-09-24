@@ -5,7 +5,7 @@ Ed Sandor - February-September 2022
 This is my library with common utilities for any robotics software.  
 
 ## History
-This is forked from my combat robot software which ran on a Teensy 4.x board with FreeRTOS and the Arduino.  Initially, there may be some assumptions that depend on these, but I plan to remove/featurize any external dependencies overtime.
+This is forked from my combat robot software (https://git.sandorlaboratories.com/edward/sl-combat-robot) which ran on a Teensy 4.x board with FreeRTOS and the Arduino IDE.  Initially, there may be some assumptions that depend on these, but I plan to remove/featurize any external dependencies overtime.
 
 ## Features:
 ### Common Types
