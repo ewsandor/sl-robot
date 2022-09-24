@@ -170,7 +170,7 @@ void setup()
   {
   }
 #endif
-  log_init(&log_task_handle);
+  log_init(&log_task_handle, SL_CR_ACTIVE_LOG_LEVEL);
   log_cstring(LOG_KEY_BOOT, LOG_LEVEL_INFO, "Log Initialized.");
 
   /* Start of Bootup */

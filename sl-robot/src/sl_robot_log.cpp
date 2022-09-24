@@ -8,7 +8,6 @@
 
 #include <Arduino.h>
 
-#include "sl_cr_config.h"
 #include "sl_robot_circular_buffer.hpp"
 #include "sl_robot_log.hpp"
 #include "sl_robot_log_task.hpp"
@@ -19,8 +18,8 @@ using namespace sandor_laboratories::robot;
 #define LOG_HDR_STRING_FORMAT "[0x%02x|0x%01x|0x%06lx] "
 
 const TaskHandle_t * log_task_h_ptr;
-
 circular_buffer_c<log_entry_s> *log_buffer;
+log_level_e active_log_level = LOG_LEVEL_ALL;
 
 typedef unsigned int failed_log_allocations_t;
 volatile failed_log_allocations_t failed_log_allocations;
@@ -42,9 +41,17 @@ inline log_timestamp_t get_timestamp()
   return millis();
 }
 
-void sandor_laboratories::robot::log_init(const TaskHandle_t * log_task_handle)
+void sandor_laboratories::robot::change_log_level(log_level_e new_log_level)
 {
-  log_task_h_ptr = log_task_handle;
+  critical_section_enter();
+  active_log_level = new_log_level;
+  critical_section_exit();
+}
+
+void sandor_laboratories::robot::log_init(const TaskHandle_t * log_task_handle, log_level_e log_level)
+{
+  active_log_level       = log_level;
+  log_task_h_ptr         = log_task_handle;
   failed_log_allocations = 0;
   log_buffer = new circular_buffer_c<log_entry_s>(LOG_BUFFER_ENTRIES, true);
 }
@@ -66,7 +73,7 @@ void sandor_laboratories::robot::log_flush()
 
   /* Log warning if log entries were dropped */
   failed_log_allocations_t failed_allocations = get_and_clear_failed_log_allocations();
-  if(failed_allocations && (LOG_LEVEL_WARNING <= SL_CR_ACTIVE_LOG_LEVEL))
+  if(failed_allocations && (LOG_LEVEL_WARNING <= active_log_level))
   {
     snprintf(output_buffer, sizeof(output_buffer), LOG_HDR_STRING_FORMAT "WARNING - %u log entries dropped!", 
       LOG_KEY_LOG_DROP, LOG_LEVEL_WARNING, get_timestamp(), failed_allocations);
@@ -80,7 +87,7 @@ log_entry_s * sandor_laboratories::robot::log_entry_allocate(log_key_e key, log_
 {
   log_entry_s * ret_value = nullptr;
 
-  if(level <= SL_CR_ACTIVE_LOG_LEVEL)
+  if(level <= active_log_level)
   {
     ret_value = log_buffer->allocate();
     if(ret_value)

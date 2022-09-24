@@ -40,6 +40,7 @@ namespace sandor_laboratories
 
     typedef enum
     {
+      LOG_LEVEL_NONE,
       LOG_LEVEL_ERROR,
       LOG_LEVEL_WARNING,
       LOG_LEVEL_INFO,
@@ -48,8 +49,7 @@ namespace sandor_laboratories
       LOG_LEVEL_DEBUG_1,
       LOG_LEVEL_DEBUG_2,
       LOG_LEVEL_DEBUG_3,
-      LOG_LEVEL_DEBUG_4,
-      LOG_LEVEL_ALL = LOG_LEVEL_DEBUG_4,
+      LOG_LEVEL_ALL = LOG_LEVEL_DEBUG_3,
     } log_level_e;
 
     typedef struct __attribute__((packed))
@@ -71,6 +71,7 @@ namespace sandor_laboratories
     log_entry_s * log_entry_allocate(log_key_e, log_level_e);
     void          log_entry_commit(const log_entry_s *);
     void          log_cstring(log_key_e, log_level_e, const char *);
+    void          change_log_level(log_level_e);
 
     inline void log_snprintf(log_key_e key, log_level_e level, const char *string, ...)
     {

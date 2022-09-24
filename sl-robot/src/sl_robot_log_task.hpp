@@ -17,7 +17,7 @@ namespace sandor_laboratories
 {
   namespace robot
   {
-    void log_init(const TaskHandle_t * log_task_handle);
+    void log_init(const TaskHandle_t * log_task_handle, log_level_e);
     void log_flush();
   }
 }
