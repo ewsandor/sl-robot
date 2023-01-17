@@ -41,7 +41,7 @@ namespace sandor_laboratories
     }
     inline radians_ps_t rpm_to_radians_ps(rpm_t mrpm)
     {
-      return mrpm_to_m_radians_ps(rpm*1000)/1000
+      return mrpm_to_m_radians_ps(rpm*1000)/1000;
     }
     inline mrpm_t m_radians_ps_to_mrpm(mradians_ps_t m_radians_ps)
     {
@@ -49,7 +49,7 @@ namespace sandor_laboratories
     }
     inline rpm_t radians_ps_to_rpm(radians_ps_t radians_ps)
     {
-      return m_radians_ps_to_mrpm(radians_ps*1000)/1000
+      return m_radians_ps_to_mrpm(radians_ps*1000)/1000;
     }
 
     /* Cartesian Axis Enum */
