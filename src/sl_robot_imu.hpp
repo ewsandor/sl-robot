@@ -15,8 +15,9 @@ namespace sandor_laboratories
 {
   namespace robot
   {
-   typedef struct
+    typedef struct
     {
+      dimension_t dimensions;
     } imu_config_s;
 
     class imu_c
@@ -30,12 +31,14 @@ namespace sandor_laboratories
       protected:
 
       public:
-        static void init_config(static imu_config_s*);
+        static void init_config(imu_config_s*);
 
         imu_c();
         imu_c(imu_config_s);
 
         void loop();
+
+        m_radians_ps_t get_rotation(axis_e);
     };
   }
 }
