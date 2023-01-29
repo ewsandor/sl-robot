@@ -26,19 +26,22 @@ namespace sandor_laboratories
         /* Config Parameters */
         const imu_config_s config;
 
-        void init();
-
       protected:
 
       public:
+        /* Utility to initialize a default config */
         static void init_config(imu_config_s*);
 
-        imu_c();
+        /* Initializers */
         imu_c(imu_config_s);
 
+        /* Service API to be called in the main loop */
         void loop();
 
-        m_radians_ps_t get_rotation(axis_e);
+        /* APIs to query current measurements */
+        m_rad_t    get_orientation  (axis_e);
+        m_rad_ps_t get_rotation_rate(axis_e);
+        mm_ps_t    get_acceleration (axis_e);
     };
   }
 }
