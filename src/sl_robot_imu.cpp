@@ -60,6 +60,22 @@ imu_c::imu_c(imu_config_s constructor_config)
   init();
 }
 
+imu_c::~imu_c()
+{
+  if(orientation)
+  {
+    heap_free(orientation);
+  }
+  if(rotation_rate)
+  {
+    heap_free(rotation_rate);
+  }
+  if(acceleration)
+  {
+    heap_free(acceleration);
+  }
+}
+
 void imu_c::set_orientation  (axis_e axis, mrad_t mrad)
 {
   SL_ROBOT_ASSERT(config.orientation_support && AXIS_VALID(axis));

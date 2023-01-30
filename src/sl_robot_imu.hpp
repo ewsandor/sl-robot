@@ -49,6 +49,8 @@ namespace sandor_laboratories
         imu_c();
         /* Init IMU with provided config*/
         imu_c(imu_config_s);
+        /* Destructor */
+        ~imu_c();
 
         /* Service API to be called in the main loop */
         virtual void loop();
