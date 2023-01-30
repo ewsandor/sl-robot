@@ -7,6 +7,8 @@
 #ifndef __SL_ROBOT_TYPES_HPP__
 #define __SL_ROBOT_TYPES_HPP__
 
+#include <cstdint>
+
 namespace sandor_laboratories
 {
   namespace robot
@@ -41,9 +43,9 @@ namespace sandor_laboratories
 
     // Rotation Types
     /* Radians */
-    typedef int            rad_t
+    typedef int            rad_t;
     /* milli-radians */
-    typedef int           mrad_t
+    typedef int           mrad_t;
     /* RPM type */
     typedef int            rpm_t;
     /* milli-RPM type */
@@ -54,25 +56,25 @@ namespace sandor_laboratories
     typedef int           mrad_ps_t;
 
     /* Rotation Conversions */
-    inline m_radians_ps_t mrpm_to_m_radians_ps(mrpm_t mrpm)
+    inline mrad_ps_t mrpm_to_m_rad_ps(mrpm_t mrpm)
     {
       return (mrpm * (2 * SL_ROBOT_1000PI))/(1000*60);
     }
-    inline radians_ps_t rpm_to_radians_ps(rpm_t mrpm)
+    inline rad_ps_t rpm_to_rad_ps(rpm_t rpm)
     {
-      return mrpm_to_m_radians_ps(rpm*1000)/1000;
+      return mrpm_to_m_rad_ps(rpm*1000)/1000;
     }
-    inline mrpm_t m_radians_ps_to_mrpm(mradians_ps_t m_radians_ps)
+    inline mrpm_t m_rad_ps_to_mrpm(mrad_ps_t m_radians_ps)
     {
       return (m_radians_ps * (1000*60))/(2 * SL_ROBOT_1000PI);
     }
-    inline rpm_t radians_ps_to_rpm(radians_ps_t radians_ps)
+    inline rpm_t rad_ps_to_rpm(rad_ps_t radians_ps)
     {
-      return m_radians_ps_to_mrpm(radians_ps*1000)/1000;
+      return m_rad_ps_to_mrpm(radians_ps*1000)/1000;
     }
 
     /* Cartesian Axis Enum */
-    typedef enum axis_e
+    enum axis_e
     {
       AXIS_X,
       AXIS_Y,
@@ -80,7 +82,7 @@ namespace sandor_laboratories
     };
 
     /* Physical Dimensions Enum */
-    typedef enum dimension_e
+    enum dimension_e
     {
       DIMENSION_0D,
       DIMENSION_1D,

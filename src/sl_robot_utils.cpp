@@ -74,9 +74,17 @@ void sandor_laboratories::robot::mutex_unlock(mutex_handle_t* mutex_handle)
 
 void* sandor_laboratories::robot::heap_malloc(size_t size)
 {
+  SL_ROBOT_ASSERT(size > 0);
   return malloc(size);
+}
+void* sandor_laboratories::robot::heap_calloc(size_t num, size_t size)
+{
+  SL_ROBOT_ASSERT(num > 0);
+  SL_ROBOT_ASSERT(size > 0);
+  return calloc(num, size);
 }
 void  sandor_laboratories::robot::heap_free(void * ptr)
 {
+  SL_ROBOT_ASSERT(ptr != nullptr);
   free(ptr);
 }

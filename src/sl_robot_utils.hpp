@@ -18,10 +18,14 @@ namespace sandor_laboratories
 {
   namespace robot
   { 
-    #define ASSERT(condition) assert(condition)
+    //TODO: deprecate and replace with function that uses vargs or the like to leverage namespaces and type checks
+    #define SL_ROBOT_ASSERT(condition) assert(condition)
+    //TODO: deprecate and replace with safer SL_ROBOT_ASSERT
+    #define ASSERT(condition) SL_ROBOT_ASSERT(condition)
 
     /* Heap Malloc and Free */
     void* heap_malloc(size_t);
+    void* heap_calloc(size_t num, size_t);
     void  heap_free(void *);
 
     /* Utility functions to enter and exit critical sections */
