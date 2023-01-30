@@ -52,7 +52,9 @@ namespace sandor_laboratories
         /* Destructor */
         ~imu_c();
 
-        /* Service API to be called in the main loop */
+        /* Service API to be called in the main loop.  
+            Subclasses should define logic to update IMU states in this context.
+            If subclass is event/interrupt driven, this function should be defined as a stub or debug assert */
         virtual void loop();
 
         /* Getters */
