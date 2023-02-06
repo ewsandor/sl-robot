@@ -18,10 +18,9 @@ namespace sandor_laboratories
     typedef struct
     {
       sandor_laboratories::robot::log_key_e log_key;
-      dimension_t                           dimensions;
-      bool                                  orientation_support;
-      bool                                  rotation_rate_support;
-      bool                                  acceleration_support;
+      dimension_t                           orientation_dimensions;
+      dimension_t                           rotation_rate_dimensions;
+      dimension_t                           acceleration_dimensions;
       
     } imu_config_s;
 
